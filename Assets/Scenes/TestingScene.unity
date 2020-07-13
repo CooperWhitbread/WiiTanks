@@ -319,6 +319,10 @@ MonoBehaviour:
   I_BodyTransform: {fileID: 1938224867}
   I_TurretTransform: {fileID: 616690632}
   I_MainRigidBody2D: {fileID: 812863804}
+  m_collissionBuffer: 0.1
+  m_rotateSpeed: 15
+  d_CeckingOnCollision: 0
+  d_CheckingGradualRoatation: 1
 --- !u!4 &812863802
 Transform:
   m_ObjectHideFlags: 0

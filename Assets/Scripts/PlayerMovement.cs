@@ -10,13 +10,16 @@ public class PlayerMovement : MonoBehaviour
 {
     ///Inspector Variables///
     [SerializeField] private float I_MoveSpeed = 1.0f;
-    [SerializeField] private Transform I_BodyTransform;
     [SerializeField] private Transform I_TurretTransform;
     [SerializeField] private Rigidbody2D I_MainRigidBody2D;
 
     ///Private Variables///
     private Vector2 m_PreviousBodyRoation = Vector2.zero;
     private ContactFilter2D m_ContactFilter;
+    private float m_collissionBuffer = 0.1f;
+    private float m_rotateSpeed = 15.0f;
+    private float m_targetRotation = 0.0f;
+
 
     ///Unity Functions///
     private void Start()
@@ -54,6 +57,42 @@ public class PlayerMovement : MonoBehaviour
         MoveTank(moveDirection);
         RotateTurret();
 
+        //Gradually rotate the tank
+            //The angle that still needs to be made up
+            float diff = m_targetRotation - I_MainRigidBody2D.rotation;
+
+            if (diff > 180)
+            {
+                //The difference is greater that 180 so needs to be changed to rotate the shorter distance
+                m_targetRotation = m_targetRotation - 360;
+
+                //Recalculate the diff
+                diff = m_targetRotation - I_MainRigidBody2D.rotation;
+            }
+            else if (diff < -180)
+            {
+                //The difference is greater that 180 so needs to be changed to rotate the shorter distance
+                m_targetRotation = m_targetRotation + 360;
+
+                //Recalculate the diff
+                diff = m_targetRotation - I_MainRigidBody2D.rotation;
+            }
+
+            if (diff == 180 || diff == -180) //Don't want to be seen to rotate but still rotate it for logic
+                I_MainRigidBody2D.SetRotation(m_targetRotation);
+            else if (diff > m_rotateSpeed) //Want to rotate anticlockwise if larger than min rotation
+                I_MainRigidBody2D.SetRotation(I_MainRigidBody2D.rotation + m_rotateSpeed); 
+            else if (diff < -m_rotateSpeed) //Want to rotate clockwise if larger than min rotation
+                I_MainRigidBody2D.SetRotation(I_MainRigidBody2D.rotation - m_rotateSpeed);
+            else //Value is too small to do min rotation so rotation is done to exact value
+                I_MainRigidBody2D.SetRotation(diff + I_MainRigidBody2D.rotation);
+
+            //Fix the rotation to -180 <= r <= 180
+            if (I_MainRigidBody2D.rotation > 180)
+                I_MainRigidBody2D.SetRotation(I_MainRigidBody2D.rotation - 360);
+            else if (I_MainRigidBody2D.rotation < -180)
+                I_MainRigidBody2D.SetRotation(I_MainRigidBody2D.rotation + 360);
+        
         //Move Camera
         Camera.main.transform.SetPositionAndRotation(
             new Vector3 (transform.position.x, transform.position.y, Camera.main.transform.position.z), 
@@ -62,6 +101,22 @@ public class PlayerMovement : MonoBehaviour
         //Update variables for next frame
         //If there is no input from the player take position from the previous frame
         m_PreviousBodyRoation = moveDirection == Vector2.zero ? m_PreviousBodyRoation : moveDirection;
+    }
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        float rotateDegree1 = Vector3.SignedAngle(Vector3.forward,
+            new Vector3(-collision.contacts[0].normal.y, 0.0f, collision.contacts[0].normal.x),
+            Vector3.down);
+
+        float rotateDegree2 = Vector3.SignedAngle(Vector3.forward,
+            new Vector3(collision.contacts[0].normal.y, 0.0f, -collision.contacts[0].normal.x),
+            Vector3.down);
+
+        //Want the smallest change
+        if (Math.Abs(I_MainRigidBody2D.rotation - rotateDegree1) < Math.Abs(I_MainRigidBody2D.rotation - rotateDegree2))
+            m_targetRotation = rotateDegree1;
+        else
+            m_targetRotation = rotateDegree2;
     }
 
     ///Public Functions///
@@ -78,88 +133,48 @@ public class PlayerMovement : MonoBehaviour
     ///Private Functions///
     private void MoveTank(Vector2 moveDirection)
     {
-        Vector2 velocity = moveDirection;
-        Vector2 normalsToRemove = Vector2.zero;
-
         if (moveDirection != Vector2.zero)
         {
+            //Normalise the move direction
+            moveDirection = moveDirection.normalized;
+
+
             //Don't want to do any of this checking if the object is motionless
             float rotateDegree = Vector3.SignedAngle(Vector3.forward,
-                   new Vector3(velocity.x, 0.0f, velocity.y),
+                   new Vector3(moveDirection.x, 0.0f, moveDirection.y),
                    Vector3.down);
 
-            //Rotate it first
-            Vector3 oldRotDir = I_BodyTransform.eulerAngles;
-            float oldRotAng = GetComponent<Rigidbody2D>().rotation;
-            GetComponent<Rigidbody2D>().rotation = rotateDegree;
-            Debug.Log("RotatingBody");
-            Debug.Log("MoveDir" + moveDirection.x + ", " + moveDirection.y);
-
-            //check
-            RaycastHit2D[] results = new RaycastHit2D[16];
-            float distance = I_MoveSpeed;
-            int numResults = GetComponent<Rigidbody2D>().Cast(velocity, m_ContactFilter, results, distance * Time.deltaTime + 0.01f);
-
-            bool OKToMOve = false;
-            Debug.Log(numResults + ": NumResults");
-
-            //If collides, rotate back
-            if (numResults != 0)
-            {
-                I_BodyTransform.eulerAngles = oldRotDir;
-                Debug.Log("IsColliding");
-
-                for (int i = 0; i < numResults; i++)
-                {
-                    RaycastHit2D[] results2 = new RaycastHit2D[16];
-
-                    Vector2 toMoveDir = new Vector2(-results[i].normal.y, results[i].normal.x);
-                    int numResults2 = GetComponent<Rigidbody2D>().Cast(toMoveDir, m_ContactFilter, results2, distance * Time.deltaTime + 0.01f);
-                    Debug.Log("numResults2" + numResults2);
-                    Debug.Log("NormalAdded" + results[i].normal.x + ", " + results[i].normal.y);
-                    //normalsToRemove += results[i].normal;
-
-                    if (numResults2 == 0)
-                    {
-                        //move
-                        OKToMOve = true;
-                    }
-                    else
-                    {
-                        RaycastHit2D[] results3 = new RaycastHit2D[16];
-
-                        Vector2 toMoveDir3 = new Vector2(results[i].normal.y, -results[i].normal.x);
-                        int numResults3 = GetComponent<Rigidbody2D>().Cast(toMoveDir3, m_ContactFilter, results3, distance * Time.deltaTime + 0.01f);
-
-                        Debug.Log("numResults3" + numResults3);
-                        if (numResults3 == 0)
-                        {
-                            //move
-                            OKToMOve = true;
-                        }
-                    }
-                }
-            }
-            else
-            {
-                OKToMOve = true;
-            }
-
-            if (OKToMOve)
-            {
-                //Rotate body
-                I_BodyTransform.eulerAngles = Vector3.forward * rotateDegree;
-            }
-
-            //Rotate Back
-            GetComponent<Rigidbody2D>().rotation = oldRotAng;
-
-            //move body
-            Debug.Log("Normals To Remove: " + normalsToRemove.x + ", " + normalsToRemove.y);
-            //Vector2 actualMove = velocity.normalized - new Vector2(Math.Abs(normalsToRemove.normalized.x), Math.Abs(normalsToRemove.normalized.y));
-            //I_MainRigidBody2D.velocity = (actualMove.normalized + normalsToRemove.normalized) * distance; 
-            I_MainRigidBody2D.velocity = velocity.normalized * distance;
+            if (CheckCollisionForRotation(rotateDegree, moveDirection, I_MoveSpeed * Time.deltaTime + m_collissionBuffer))
+                m_targetRotation = rotateDegree;
+            I_MainRigidBody2D.velocity = moveDirection.normalized * I_MoveSpeed;
         }
     }
+
+    //Returns true if Ok to move
+    private bool CheckCollisionForRotation(float rotation, float distance)
+    {
+        RaycastHit2D[] results = new RaycastHit2D[16];
+        Vector2 moveDirection = Vector2.right * rotation;
+        return CheckCollisionForRotation(rotation, moveDirection, distance, ref results) == 0 ? true : false;
+    }
+    private bool CheckCollisionForRotation(float rotation, Vector2 moveDirection, float distance)
+    {
+        RaycastHit2D[] results = new RaycastHit2D[16];
+        return CheckCollisionForRotation(rotation, moveDirection, distance, ref results) == 0 ? true : false;
+    }
+    private int CheckCollisionForRotation(float rotation, Vector2 moveDirection, float distance, ref RaycastHit2D[] rayCastHit )
+    {
+        //Rotate it first
+        float oldRotAng = GetComponent<Rigidbody2D>().rotation;
+        I_MainRigidBody2D.MoveRotation(rotation);
+
+        //Do the check
+        int numResults = I_MainRigidBody2D.Cast(moveDirection, m_ContactFilter, rayCastHit, distance);
+
+        //Rotate Back
+        I_MainRigidBody2D.MoveRotation(oldRotAng);
+        return numResults;
+    }
+    private float Dot(Vector2 vec1, Vector2 vec2) => vec1.x * vec2.x + vec1.y* vec2.y;
 
 }
