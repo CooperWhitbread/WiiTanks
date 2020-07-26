@@ -8,8 +8,16 @@ using UnityEngine.Events;
 
 public class PlayerMovement : Tank
 {
-    ///Unity Functions///
+    ///Virtual Functions///
     protected override void InheritedUpdate()
+    {
+        //Shoot check per frame
+        if (Input.GetMouseButtonDown(0)) //Input.GetButtonDown("Shoot") if want space bar
+        {
+            Shoot();
+        }
+    }
+    protected override void InheritedFixedUpdate()
     {
         //Set Up and reset
         Vector2 moveDirection = Vector2.zero;

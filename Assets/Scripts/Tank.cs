@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,20 +9,29 @@ using UnityEngine;
 abstract public class Tank : MonoBehaviour
 {
     ///Inspector Variables
+    [SerializeField] protected BulletScript I_BulletScript;
+    [SerializeField] protected Bullet I_BulletPrefab;
     [SerializeField] protected Transform I_TurretTransform;
+    [SerializeField] protected Transform I_ShootTransform;
     [SerializeField] protected float I_MoveSpeed = 1.0f;
+    [SerializeField] protected float I_StopDelayForShoot = 0.1f;
 
     ///Protected Variables
     protected Rigidbody2D m_RigidBody2D;
     static protected ContactFilter2D s_ContactFilter = new ContactFilter2D();
     protected float m_targetRotation = 0.0f;
     protected Vector2 m_PreviousBodyRoation = Vector2.zero;
+    protected Bullet[] m_Bullets = new Bullet[5];
+    protected int m_NumOfBullets = 0;
+    protected bool m_ShootDelayActive = false;
+    protected float m_DesiredTimeForShoot = 0.0f;
 
     ///Constant Variables
     protected const float m_collissionBuffer = 0.1f;
     protected const float m_rotateSpeed = 15.0f;
 
     ///Inherited Function
+    protected virtual void InheritedFixedUpdate() { }
     protected virtual void InheritedUpdate() { }
 
     ///Unity Functions
@@ -33,6 +43,14 @@ abstract public class Tank : MonoBehaviour
         s_ContactFilter.useTriggers = false;
         s_ContactFilter.SetLayerMask(Physics2D.GetLayerCollisionMask(gameObject.layer));
         s_ContactFilter.useLayerMask = true;
+
+        //Initialize all the bullets
+        for (int i = 0; i < 5; i++)
+        {
+            m_Bullets[i] = Instantiate(I_BulletPrefab, I_ShootTransform.position, I_ShootTransform.rotation);
+            m_Bullets[i].gameObject.SetActive(false);
+            m_Bullets[i].gameObject.transform.SetParent(gameObject.transform);
+        }
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -53,8 +71,18 @@ abstract public class Tank : MonoBehaviour
     private void FixedUpdate()
     {
         ConstantUpdatePre();
-        InheritedUpdate();
+        InheritedFixedUpdate();
         ConstantUpdatePost();
+    }
+    private void Update()
+    {
+        InheritedUpdate();
+    }
+
+    ///Public Functions
+    public void DestroyBullet(int numberInArray)
+    {
+        m_Bullets[numberInArray].gameObject.SetActive(false);
     }
 
     ///Private Functions
@@ -62,6 +90,7 @@ abstract public class Tank : MonoBehaviour
     {
         //Set Up and reset
         m_RigidBody2D.velocity = Vector2.zero;
+        DelayShoot(false);
     }
     private void ConstantUpdatePost()
     {
@@ -72,18 +101,38 @@ abstract public class Tank : MonoBehaviour
     {
         if (moveDirection != Vector2.zero)
         {
-            //Normalise the move direction
-            moveDirection = moveDirection.normalized;
+            //Only want to move if it can move
+            if (!m_ShootDelayActive)
+            {
+                //Normalise the move direction
+                moveDirection = moveDirection.normalized;
 
+                //Calculate rotation in degrees
+                float rotateDegree = Vector3.SignedAngle(Vector3.forward,
+                       new Vector3(moveDirection.x, 0.0f, moveDirection.y),
+                       Vector3.down);
 
-            //Don't want to do any of this checking if the object is motionless
-            float rotateDegree = Vector3.SignedAngle(Vector3.forward,
-                   new Vector3(moveDirection.x, 0.0f, moveDirection.y),
-                   Vector3.down);
+                //Check Rotation Fine
+                if (CheckCollisionForRotation(rotateDegree, moveDirection, I_MoveSpeed * Time.deltaTime + m_collissionBuffer))
+                    m_targetRotation = rotateDegree;
+                m_RigidBody2D.velocity = moveDirection.normalized * I_MoveSpeed;
+            }
+        }
+    }
+    protected void Shoot()
+    {
+        for (int i = 0; i < 5; i++)
+        {
+            if (!m_Bullets[i].gameObject.activeSelf)
+            {
+                //Shoot Bullets
+                m_Bullets[i].Initialize(I_BulletScript, i, I_ShootTransform.position, I_ShootTransform.rotation);
+                m_Bullets[i].gameObject.SetActive(true);
 
-            if (CheckCollisionForRotation(rotateDegree, moveDirection, I_MoveSpeed * Time.deltaTime + m_collissionBuffer))
-                m_targetRotation = rotateDegree;
-            m_RigidBody2D.velocity = moveDirection.normalized * I_MoveSpeed;
+                //Stop Tank Temperarily
+                DelayShoot();
+                break;
+            }
         }
     }
     protected void RotateTurret()
@@ -95,6 +144,29 @@ abstract public class Tank : MonoBehaviour
         angle = angle - 90;
         I_TurretTransform.rotation = Quaternion.Euler(0.0f, 0.0f, angle);
     }
+    protected void DelayShoot(bool TurnOn = true)
+    {
+        if (TurnOn)
+        {
+            //Initiate shoot delay
+            m_ShootDelayActive = true;
+            m_DesiredTimeForShoot = Time.time + I_StopDelayForShoot;
+            return;
+        }
+
+        //Check for shoot delay stop
+        if (m_ShootDelayActive)
+        {
+            if (m_DesiredTimeForShoot <= Time.time)
+            {
+                m_ShootDelayActive = false;
+                m_DesiredTimeForShoot = 0.0f;
+                return;
+            }
+        }
+    }
+
+    ///Logic Protected Functions
     protected bool CheckCollisionForRotation(float rotation, float distance)
     {
         RaycastHit2D[] results = new RaycastHit2D[16];
