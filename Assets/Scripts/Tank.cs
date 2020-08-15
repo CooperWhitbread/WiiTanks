@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-
+﻿using UnityEngine;
 
 ///Abstract Tank Class
 abstract public class Tank : MonoBehaviour
@@ -11,13 +6,14 @@ abstract public class Tank : MonoBehaviour
     ///Inspector Variables
     [SerializeField] protected BulletScript I_BulletScript;
     [SerializeField] protected Bullet I_BulletPrefab;
-    [SerializeField] protected Transform I_TurretTransform;
     [SerializeField] protected Transform I_ShootTransform;
     [SerializeField] protected float I_MoveSpeed = 1.0f;
     [SerializeField] protected float I_StopDelayForShoot = 0.1f;
+    [SerializeField] protected float m_rotateSpeed = 15.0f;
+    [SerializeField] protected Rigidbody2D I_BodyRB2D;
+    [SerializeField] protected Rigidbody2D I_TurretRB2D;
 
     ///Protected Variables
-    protected Rigidbody2D m_RigidBody2D;
     static protected ContactFilter2D s_ContactFilter = new ContactFilter2D();
     protected float m_targetRotation = 0.0f;
     protected Vector2 m_PreviousBodyRoation = Vector2.zero;
@@ -28,17 +24,17 @@ abstract public class Tank : MonoBehaviour
 
     ///Constant Variables
     protected const float m_collissionBuffer = 0.1f;
-    protected const float m_rotateSpeed = 15.0f;
 
     ///Inherited Function
+    protected virtual void InheritedStart() { }
     protected virtual void InheritedFixedUpdate() { }
     protected virtual void InheritedUpdate() { }
+    protected virtual void InheritedOnCollisionEnter(Collision2D collision) { }
+    protected virtual void InheritedOnCollisionStay(Collision2D collision) { }
 
     ///Unity Functions
-    public void Start()
+    private void Start()
     {
-        m_RigidBody2D = transform.GetComponent<Rigidbody2D>();
-
         //Contact filter initializeation
         s_ContactFilter.useTriggers = false;
         s_ContactFilter.SetLayerMask(Physics2D.GetLayerCollisionMask(gameObject.layer));
@@ -51,22 +47,8 @@ abstract public class Tank : MonoBehaviour
             m_Bullets[i].gameObject.SetActive(false);
             m_Bullets[i].gameObject.transform.SetParent(gameObject.transform);
         }
-    }
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        float rotateDegree1 = Vector3.SignedAngle(Vector3.forward,
-            new Vector3(-collision.contacts[0].normal.y, 0.0f, collision.contacts[0].normal.x),
-            Vector3.down);
 
-        float rotateDegree2 = Vector3.SignedAngle(Vector3.forward,
-            new Vector3(collision.contacts[0].normal.y, 0.0f, -collision.contacts[0].normal.x),
-            Vector3.down);
-
-        //Want the smallest change
-        if (Mathf.Abs(m_RigidBody2D.rotation - rotateDegree1) < Mathf.Abs(m_RigidBody2D.rotation - rotateDegree2))
-            m_targetRotation = rotateDegree1;
-        else
-            m_targetRotation = rotateDegree2;
+        InheritedStart();
     }
     private void FixedUpdate()
     {
@@ -84,16 +66,52 @@ abstract public class Tank : MonoBehaviour
     {
         m_Bullets[numberInArray].gameObject.SetActive(false);
     }
+    public void CollisionEnter(Collision2D collision)
+    {
+        //Check What is colliding
+        switch (collision.gameObject.layer)
+        {
+            case GlobalVariables.LayerBullets:
+                DestroyTank();
+                break;
+            case GlobalVariables.LayerWalls:
+                //WallRotate(collision);
+                break;
+        }
+
+        InheritedOnCollisionEnter(collision);
+    }
+    public void CollisionStay(Collision2D collision)
+    {
+        InheritedOnCollisionStay(collision);
+    }
 
     ///Private Functions
     private void ConstantUpdatePre()
     {
         //Set Up and reset
-        m_RigidBody2D.velocity = Vector2.zero;
+        I_BodyRB2D.velocity = Vector2.zero;
         DelayShoot(false);
     }
     private void ConstantUpdatePost()
     {
+    }
+    private void WallRotate(Collision2D collision)
+    {
+
+        float rotateDegree1 = GetAngleFromVector2(new Vector2(-collision.contacts[0].normal.y, collision.contacts[0].normal.x));
+        float rotateDegree2 = GetAngleFromVector2(new Vector2(collision.contacts[0].normal.y, -collision.contacts[0].normal.x));
+
+        //Want the smallest change
+        if (Mathf.Abs(I_BodyRB2D.rotation - rotateDegree1) < Mathf.Abs(I_BodyRB2D.rotation - rotateDegree2))
+            m_targetRotation = rotateDegree1;
+        else
+            m_targetRotation = rotateDegree2;
+
+    }
+    private void DestroyTank()
+    {
+        Destroy(gameObject);
     }
 
     ///Protected Functions
@@ -108,14 +126,14 @@ abstract public class Tank : MonoBehaviour
                 moveDirection = moveDirection.normalized;
 
                 //Calculate rotation in degrees
-                float rotateDegree = Vector3.SignedAngle(Vector3.forward,
-                       new Vector3(moveDirection.x, 0.0f, moveDirection.y),
-                       Vector3.down);
+                float rotateDegree = GetAngleFromVector2(moveDirection);
 
                 //Check Rotation Fine
                 if (CheckCollisionForRotation(rotateDegree, moveDirection, I_MoveSpeed * Time.deltaTime + m_collissionBuffer))
+                {
                     m_targetRotation = rotateDegree;
-                m_RigidBody2D.velocity = moveDirection.normalized * I_MoveSpeed;
+                }
+                I_BodyRB2D.velocity = moveDirection.normalized * I_MoveSpeed;
             }
         }
     }
@@ -135,14 +153,21 @@ abstract public class Tank : MonoBehaviour
             }
         }
     }
-    protected void RotateTurret()
+    protected void RotateTurret(Vector3 lookAt)
     {
-        Vector3 mouse = Input.mousePosition;
-        Vector3 screenPoint = Camera.main.WorldToScreenPoint(transform.localPosition);
-        Vector2 offset = new Vector2(mouse.x - screenPoint.x, mouse.y - screenPoint.y);
+        Vector3 screenPoint = I_BodyRB2D.position;
+        Vector2 offset = new Vector2(lookAt.x - screenPoint.x, lookAt.y - screenPoint.y);
         float angle = Mathf.Atan2(offset.y, offset.x) * Mathf.Rad2Deg;
         angle = angle - 90;
-        I_TurretTransform.rotation = Quaternion.Euler(0.0f, 0.0f, angle);
+        I_TurretRB2D.SetRotation(angle);
+    }
+    protected void RotateTurret(Vector2 lookAt)
+    {
+        Vector2 screenPoint = I_BodyRB2D.position;
+        Vector2 offset = lookAt - screenPoint;
+        float angle = Mathf.Atan2(offset.y, offset.x) * Mathf.Rad2Deg;
+        angle = angle - 90;
+        I_TurretRB2D.SetRotation(angle);
     }
     protected void DelayShoot(bool TurnOn = true)
     {
@@ -165,6 +190,20 @@ abstract public class Tank : MonoBehaviour
             }
         }
     }
+    protected void GradualRotation(ref Rigidbody2D rb, float targetDeg, float current, float rotationSpeed)
+    {
+        //The angle that still needs to be made up
+        float diff = GetDiffInRotation(targetDeg, current);
+
+        if (diff == 180 || diff == -180) //Don't want to be seen to rotate but still rotate it for logic
+            rb.SetRotation(targetDeg);
+        else if (diff > rotationSpeed) //Want to rotate anticlockwise if larger than min rotation
+            rb.SetRotation(rb.rotation + rotationSpeed);
+        else if (diff < -rotationSpeed) //Want to rotate clockwise if larger than min rotation
+            rb.SetRotation(rb.rotation - rotationSpeed);
+        else //Value is too small to do min rotation so rotation is done to exact value
+            rb.SetRotation(diff + rb.rotation);
+    }
 
     ///Logic Protected Functions
     protected bool CheckCollisionForRotation(float rotation, float distance)
@@ -181,15 +220,51 @@ abstract public class Tank : MonoBehaviour
     protected int CheckCollisionForRotation(float rotation, Vector2 moveDirection, float distance, ref RaycastHit2D[] rayCastHit)
     {
         //Rotate it first
-        float oldRotAng = GetComponent<Rigidbody2D>().rotation;
-        m_RigidBody2D.MoveRotation(rotation);
+        float oldRotAng = I_BodyRB2D.rotation;
+        I_BodyRB2D.MoveRotation(rotation);
 
         //Do the check
-        int numResults = m_RigidBody2D.Cast(moveDirection, s_ContactFilter, rayCastHit, distance);
+        int numResults = I_BodyRB2D.Cast(moveDirection, s_ContactFilter, rayCastHit, distance);
 
         //Rotate Back
-        m_RigidBody2D.MoveRotation(oldRotAng);
+        I_BodyRB2D.MoveRotation(oldRotAng);
         return numResults;
     }
     protected float Dot(Vector2 vec1, Vector2 vec2) => vec1.x * vec2.x + vec1.y * vec2.y;
+    protected float GetAngleFromVector2(Vector2 angle)
+    {
+        return Vector3.SignedAngle(Vector3.forward,
+                       new Vector3(angle.x, 0.0f, angle.y),
+                       Vector3.down);
+    }
+    protected float GetAngleFromVector3(Vector3 angle)
+    {
+        return Vector3.SignedAngle(Vector3.forward,
+                        new Vector3(angle.x, 0.0f, angle.y),
+                        Vector3.down);
+    }
+    protected float GetDiffInRotation(float target, float current)
+    {
+        float diff = target - current;
+
+        if (diff > 180)
+        {
+            //The difference is greater that 180 so needs to be changed to rotate the shorter distance
+            target = target - 360;
+
+            //Recalculate the diff
+            diff = target - current;
+        }
+        else if (diff < -180)
+        {
+            //The difference is greater that 180 so needs to be changed to rotate the shorter distance
+            target = target + 360;
+
+            //Recalculate the diff
+            diff = target - current;
+        }
+
+        return diff;
+
+    }
 }

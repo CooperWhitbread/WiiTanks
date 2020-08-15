@@ -5,9 +5,13 @@ using System.Dynamic;
 using System.Net.NetworkInformation;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Tilemaps;
 
 public class PlayerMovement : Tank
 {
+    /// Inspector Variables
+    [SerializeField] protected BoxCollider2D I_CameraBoundsBox;
+
     ///Virtual Functions///
     protected override void InheritedUpdate()
     {
@@ -16,6 +20,9 @@ public class PlayerMovement : Tank
         {
             Shoot();
         }
+
+        //Update the Camera
+        MoveCamera();
     }
     protected override void InheritedFixedUpdate()
     {
@@ -42,53 +49,40 @@ public class PlayerMovement : Tank
 
         //Move and rotate the tank
         MoveTank(moveDirection);
-        RotateTurret();
+        RotateTurret(Camera.main.ScreenToWorldPoint(Input.mousePosition));
 
         //Gradually rotate the tank
-        //The angle that still needs to be made up
-        float diff = m_targetRotation - m_RigidBody2D.rotation;
-
-        if (diff > 180)
-        {
-            //The difference is greater that 180 so needs to be changed to rotate the shorter distance
-            m_targetRotation = m_targetRotation - 360;
-
-            //Recalculate the diff
-            diff = m_targetRotation - m_RigidBody2D.rotation;
-        }
-        else if (diff < -180)
-        {
-            //The difference is greater that 180 so needs to be changed to rotate the shorter distance
-            m_targetRotation = m_targetRotation + 360;
-
-            //Recalculate the diff
-            diff = m_targetRotation - m_RigidBody2D.rotation;
-        }
-
-        if (diff == 180 || diff == -180) //Don't want to be seen to rotate but still rotate it for logic
-            m_RigidBody2D.SetRotation(m_targetRotation);
-        else if (diff > m_rotateSpeed) //Want to rotate anticlockwise if larger than min rotation
-            m_RigidBody2D.SetRotation(m_RigidBody2D.rotation + m_rotateSpeed); 
-        else if (diff < -m_rotateSpeed) //Want to rotate clockwise if larger than min rotation
-            m_RigidBody2D.SetRotation(m_RigidBody2D.rotation - m_rotateSpeed);
-        else //Value is too small to do min rotation so rotation is done to exact value
-            m_RigidBody2D.SetRotation(diff + m_RigidBody2D.rotation);
+        GradualRotation(ref I_BodyRB2D, m_targetRotation, I_BodyRB2D.rotation, m_rotateSpeed);
 
         //Fix the rotation to -180 <= r <= 180
-        if (m_RigidBody2D.rotation > 180)
-            m_RigidBody2D.SetRotation(m_RigidBody2D.rotation - 360);
-        else if (m_RigidBody2D.rotation < -180)
-            m_RigidBody2D.SetRotation(m_RigidBody2D.rotation + 360);
-
-
-        //Move Camera
-        Camera.main.transform.SetPositionAndRotation(
-            new Vector3(transform.position.x, transform.position.y, Camera.main.transform.position.z),
-            Camera.main.transform.rotation);
+        if (I_BodyRB2D.rotation > 180)
+            I_BodyRB2D.SetRotation(I_BodyRB2D.rotation - 360);
+        else if (I_BodyRB2D.rotation < -180)
+            I_BodyRB2D.SetRotation(I_BodyRB2D.rotation + 360);
 
         //Update variables for next frame
         //If there is no input from the player take position from the previous frame
         m_PreviousBodyRoation = moveDirection == Vector2.zero ? m_PreviousBodyRoation : moveDirection;
+    }
+    protected override void InheritedStart() { }
+
+    void MoveCamera()
+    {
+        //Get the left bottom corner and the top right corner of the map
+        Vector3 p0 = I_CameraBoundsBox.bounds.center - I_CameraBoundsBox.bounds.size / 2;
+        Vector3 p1 = I_CameraBoundsBox.bounds.center + I_CameraBoundsBox.bounds.size / 2;
+        
+        //Get Width and height of camera screen in units
+        float height = 2 * Camera.main.orthographicSize;
+        float width = height * Camera.main.aspect;
+
+        //Set the camera's position 
+        Vector3 pos = new Vector3(I_BodyRB2D.position.x, I_BodyRB2D.position.y, Camera.main.transform.position.z);
+        pos.x = Mathf.Clamp(pos.x, p0.x + width / 2, p1.x - width / 2);
+        pos.y = Mathf.Clamp(pos.y, p0.y + height / 2, p1.y - height / 2);
+
+        //Update the camera
+        Camera.main.transform.SetPositionAndRotation(pos, Camera.main.transform.rotation);
     }
 
 }
