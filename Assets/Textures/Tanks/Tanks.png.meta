@@ -14,6 +14,84 @@ TextureImporter:
   - first:
       213: 114041575782168934
     second: Tanks_3
+  - first:
+      213: 7612416551489183094
+    second: Tanks_0
+  - first:
+      213: 5423468663454351211
+    second: Tanks_1
+  - first:
+      213: -3321588534386006136
+    second: Tanks_2
+  - first:
+      213: -5046273711707895987
+    second: Tanks_3
+  - first:
+      213: -2072038468702977127
+    second: Tanks_4
+  - first:
+      213: -995580392115382208
+    second: Tanks_5
+  - first:
+      213: -6965864573155788488
+    second: Tanks_4
+  - first:
+      213: 945602563155399829
+    second: Tanks_5
+  - first:
+      213: 5228198911775917173
+    second: Tanks_6
+  - first:
+      213: -8627659152491121480
+    second: Tanks_7
+  - first:
+      213: -3206531110674126801
+    second: Tanks_8
+  - first:
+      213: 769992891098123094
+    second: Tanks_9
+  - first:
+      213: 396732735775326835
+    second: Tanks_10
+  - first:
+      213: -5729083747018591566
+    second: Tanks_11
+  - first:
+      213: -5003441805911773482
+    second: Tanks_12
+  - first:
+      213: -1122094474531169145
+    second: Tanks_13
+  - first:
+      213: 6243581923662751277
+    second: Tanks_14
+  - first:
+      213: 3519529513924866202
+    second: Tanks_15
+  - first:
+      213: -2015901961681485058
+    second: Tanks_16
+  - first:
+      213: -5936394344712596718
+    second: Tanks_17
+  - first:
+      213: 5669823213284423688
+    second: Tanks_18
+  - first:
+      213: -4316592164830538274
+    second: Tanks_19
+  - first:
+      213: -5800861129757255216
+    second: Tanks_20
+  - first:
+      213: 1219458201319533448
+    second: Tanks_21
+  - first:
+      213: 290398441325212779
+    second: Tanks_22
+  - first:
+      213: -4982753438549594078
+    second: Tanks_23
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -35,6 +113,7 @@ TextureImporter:
   isReadable: 0
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
+  vTOnly: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -69,6 +148,7 @@ TextureImporter:
   maxTextureSizeSet: 0
   compressionQualitySet: 0
   textureFormatSet: 0
+  ignorePngGamma: 0
   applyGammaDecoding: 1
   platformSettings:
   - serializedVersion: 3
@@ -102,19 +182,19 @@ TextureImporter:
       name: Tanks_0
       rect:
         serializedVersion: 2
-        x: 36
-        y: 160
-        width: 56
-        height: 64
+        x: 0
+        y: 256
+        width: 128
+        height: 128
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 560504a047e2b7a448ecf5b85af478d4
-      internalID: 2909458258800530498
+      spriteID: 67d11d1758cb4a960800000000000000
+      internalID: 7612416551489183094
       vertices: []
       indices: 
       edges: []
@@ -124,39 +204,18 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 128
-        y: 128
+        y: 256
         width: 128
         height: 128
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 26f95771787c9cb43aabefdc87b1d778
-      internalID: 114431900800630296
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Tanks_2
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 0
-        width: 128
-        height: 128
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 1a8d47c1aef6103448d9f681983f96d1
-      internalID: -8637928809046126964
+      spriteID: b6fb8afb308044b40800000000000000
+      internalID: 5423468663454351211
       vertices: []
       indices: 
       edges: []
@@ -166,18 +225,81 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 128
-        y: 0
+        y: 128
         width: 128
         height: 128
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2b4945dc58de0ff46bd44f88a8ce885a
-      internalID: 114041575782168934
+      spriteID: d474246abc808f9b0800000000000000
+      internalID: -5046273711707895987
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tanks_4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8393293d317445f90800000000000000
+      internalID: -6965864573155788488
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tanks_2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 128
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c8e41bd8389ef1880800000000000000
+      internalID: -8637928809046126964
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tanks_5
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0485e9e78ecfe22f0800000000000000
+      internalID: -995580392115382208
       vertices: []
       indices: 
       edges: []
