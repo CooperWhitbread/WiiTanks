@@ -5,6 +5,8 @@ using Unity.Profiling;
 
 public class BasicEnemy : EnemyTank
 {
+    public float movevariation = 0.01f;
+
     ///Inspector Variables
     [SerializeField] Rigidbody2D I_PlayerRB;
     [SerializeField] float I_MoveToNextPointDistance = 1.0f;
@@ -12,7 +14,7 @@ public class BasicEnemy : EnemyTank
 
     ///Private Variables
     private float m_ResetTimeForMove = 0.0f;
-    private float m_SecondsForUpdateTargetTracking = 0.5f;
+    private float m_SecondsForUpdateTargetTracking = 1.0f;
     private float m_SecondsForUpdateAllTracking = 2.0f;
     private int m_TimesBetweenTracking = 0;
 
@@ -31,6 +33,8 @@ public class BasicEnemy : EnemyTank
         //Vector2 move = m_MoveTo - I_BodyRB2D.position;
         //MoveTank(move.normalized);
         //I_BodyRB2D.SetRotation(GetAngleFromVector2(move.normalized));
+
+        //Path Finding
         if (m_ResetTimeForMove <= Time.unscaledTime)
         {
             if (m_TimesBetweenTracking < m_SecondsForUpdateAllTracking / m_SecondsForUpdateTargetTracking)
@@ -49,8 +53,6 @@ public class BasicEnemy : EnemyTank
             m_ResetTimeForMove = Time.unscaledTime + m_SecondsForUpdateTargetTracking;
         }
 
-
-        UpdateTurret();
         UpdateMove();
         I_StateManager.Update(Time.unscaledTime);
     }
@@ -65,10 +67,6 @@ public class BasicEnemy : EnemyTank
     }
 
     ///Private Functions
-    private void UpdateTurret()
-    {
-        //GradualRotation(ref I_TurretRB2D, GetAngleFromVector2(I_PlayerRB.position - I_BodyRB2D.position), I_TurretRB2D.rotation, I_TurretRotationSpeed);
-    }
     private void SeekerReturn(Path p)
     {
         if (!p.error)
@@ -94,9 +92,12 @@ public class BasicEnemy : EnemyTank
             {
                 m_ReachedEndOfPath = false;
                 Vector2 move = ((Vector2)m_MovePath.vectorPath[m_CurrentWayPath] - I_BodyRB2D.position).normalized;
-                MoveTank(move);
-                GradualRotation(ref I_BodyRB2D, GetAngleFromVector2(move), I_BodyRB2D.rotation, m_rotateSpeed);
 
+                //move and rotate
+                GradualMoveTank(move);
+                //GradualRotation(ref I_BodyRB2D, GetAngleFromVector2(move), I_BodyRB2D.rotation, m_rotateSpeed);
+
+                //if ready to move on to next section of path, do so
                 if (Vector2.Distance(I_BodyRB2D.position, m_MovePath.vectorPath[m_CurrentWayPath]) <= I_MoveToNextPointDistance)
                 {
                     m_CurrentWayPath++;

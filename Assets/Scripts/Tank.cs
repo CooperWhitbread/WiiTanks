@@ -22,6 +22,9 @@ abstract public class Tank : MonoBehaviour
     protected int m_NumOfBullets = 0;
     protected bool m_ShootDelayActive = false;
     protected float m_DesiredTimeForShoot = 0.0f;
+    protected float m_PreviousVelocity = 0.0f;
+    protected float m_SpeedForGradualChangeVelocity = 2.0f;
+    protected float m_SpeedForGradualChangeVelocityStationary = 3.0f;
 
     ///Constant Variables
     protected const float m_collissionBuffer = 0.1f;
@@ -135,6 +138,51 @@ abstract public class Tank : MonoBehaviour
                     m_targetRotation = rotateDegree;
                 }
                 I_BodyRB2D.velocity = moveDirection.normalized * I_MoveSpeed;
+            }
+        }
+    }
+    protected void GradualMoveTank(Vector2 moveDirection)
+    {
+        if (moveDirection != Vector2.zero)
+        {
+            //Only want to move if it can move
+            if (!m_ShootDelayActive)
+            {
+                //Normalise the move direction
+                moveDirection = moveDirection.normalized;
+
+                //Calculate rotation in degrees
+                float rotateDegree = GetAngleFromVector2(moveDirection);
+                float diff = GetDiffInRotation(rotateDegree, m_PreviousVelocity);
+                float rotatingChange = m_PreviousVelocity;
+
+                if (diff == 180 && diff == -180)
+                    rotatingChange = rotateDegree;
+                else if (diff > m_SpeedForGradualChangeVelocity) //Want to rotate anticlockwise if larger than min rotation
+                    rotatingChange += m_SpeedForGradualChangeVelocity;
+                else if (diff < -m_SpeedForGradualChangeVelocity) //Want to rotate clockwise if larger than min rotation
+                    rotatingChange -= m_SpeedForGradualChangeVelocity;
+                else //Don't want to be seen to rotate but still rotate it for logic
+                    rotatingChange = rotateDegree;
+
+                //Fix the rotation to -180 <= r <= 180
+                if (rotatingChange > 180)
+                    rotatingChange -= 360;
+                else if (rotatingChange < -180)
+                    rotatingChange += 360;
+
+                //do a stationary rotation if distance is too great
+                if (diff > 90)
+                    rotatingChange += (m_SpeedForGradualChangeVelocityStationary - m_SpeedForGradualChangeVelocity);
+                else if (diff < -90)
+                    rotatingChange -= (m_SpeedForGradualChangeVelocityStationary - m_SpeedForGradualChangeVelocity);
+                else
+                    I_BodyRB2D.velocity = new Vector2(Mathf.Cos(Mathf.Deg2Rad * (rotatingChange + 90)), 
+                        Mathf.Sin(Mathf.Deg2Rad * (rotatingChange + 90))) * I_MoveSpeed;
+
+                m_targetRotation = rotatingChange;
+                m_PreviousVelocity = rotatingChange;
+                I_BodyRB2D.SetRotation(rotatingChange);
             }
         }
     }

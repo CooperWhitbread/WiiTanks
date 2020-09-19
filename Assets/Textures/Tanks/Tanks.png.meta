@@ -92,6 +92,30 @@ TextureImporter:
   - first:
       213: -4982753438549594078
     second: Tanks_23
+  - first:
+      213: -633776839387804688
+    second: Tanks_24
+  - first:
+      213: -657506697796951664
+    second: Tanks_25
+  - first:
+      213: -8352752053314470277
+    second: Tanks_26
+  - first:
+      213: 2305633253029399481
+    second: Tanks_27
+  - first:
+      213: 6266405938624046850
+    second: Tanks_28
+  - first:
+      213: 6582300073358416353
+    second: Tanks_29
+  - first:
+      213: 3027888696702014469
+    second: Tanks_30
+  - first:
+      213: 6814114978095795368
+    second: Tanks_31
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -183,7 +207,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 256
+        y: 384
         width: 128
         height: 128
       alignment: 0
@@ -204,7 +228,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 128
-        y: 256
+        y: 384
         width: 128
         height: 128
       alignment: 0
@@ -225,7 +249,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 128
-        y: 128
+        y: 256
         width: 128
         height: 128
       alignment: 0
@@ -246,7 +270,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 0
+        y: 128
         width: 128
         height: 128
       alignment: 0
@@ -267,6 +291,27 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
+        y: 256
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 88769e593d857e1d0800000000000000
+      internalID: -3321588534386006136
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tanks_5
+      rect:
+        serializedVersion: 2
+        x: 128
         y: 128
         width: 128
         height: 128
@@ -277,14 +322,35 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c8e41bd8389ef1880800000000000000
-      internalID: -8637928809046126964
+      spriteID: 594939b65847f1d00800000000000000
+      internalID: 945602563155399829
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Tanks_5
+      name: Tanks_6
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 574cc77c53b4e8840800000000000000
+      internalID: 5228198911775917173
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tanks_7
       rect:
         serializedVersion: 2
         x: 128
@@ -298,8 +364,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0485e9e78ecfe22f0800000000000000
-      internalID: -995580392115382208
+      spriteID: 8b47e9c46b5644880800000000000000
+      internalID: -8627659152491121480
       vertices: []
       indices: 
       edges: []
