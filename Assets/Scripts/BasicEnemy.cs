@@ -5,12 +5,11 @@ using Unity.Profiling;
 
 public class BasicEnemy : EnemyTank
 {
-    public float movevariation = 0.01f;
-
     ///Inspector Variables
     [SerializeField] Rigidbody2D I_PlayerRB;
     [SerializeField] float I_MoveToNextPointDistance = 1.0f;
     [SerializeField] StateManager I_StateManager;
+    [SerializeField] protected float m_rotateSpeed = 15.0f;
 
     ///Private Variables
     private float m_ResetTimeForMove = 0.0f;
@@ -94,7 +93,7 @@ public class BasicEnemy : EnemyTank
                 Vector2 move = ((Vector2)m_MovePath.vectorPath[m_CurrentWayPath] - I_BodyRB2D.position).normalized;
 
                 //move and rotate
-                GradualMoveTank(move);
+                GradualMoveTank(move, m_rotateSpeed);
                 //GradualRotation(ref I_BodyRB2D, GetAngleFromVector2(move), I_BodyRB2D.rotation, m_rotateSpeed);
 
                 //if ready to move on to next section of path, do so

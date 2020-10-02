@@ -14,12 +14,12 @@ public class Bullet : MonoBehaviour
     ///Unity Functions
     public void Awake()
     {
-        m_SpriteRenderer = transform.GetComponent<SpriteRenderer>();
-        m_RigidBody2D = transform.GetComponent<Rigidbody2D>();
+        m_SpriteRenderer = GetComponent<SpriteRenderer>();
+        m_RigidBody2D = GetComponent<Rigidbody2D>();
     }
     public void FixedUpdate()
     {
-        m_RigidBody2D.velocity = new Vector2(transform.up.x, transform.up.y) *  m_Velocity;
+        m_RigidBody2D.velocity = new Vector2(Mathf.Cos(Mathf.Deg2Rad * m_RigidBody2D.rotation), Mathf.Sin(Mathf.Deg2Rad * m_RigidBody2D.rotation)) *  m_Velocity;
         //Debug.Log(transform.up);
     }
     private void OnCollisionEnter2D(Collision2D col)
@@ -34,10 +34,10 @@ public class Bullet : MonoBehaviour
         {
             if (m_FirstHit)
             {
-                Vector2 post = transform.up; //Origion Direction
+                Vector2 post = transform.right; //Origion Direction
                 Vector2 normal = col.contacts[0].normal; //Wall's normal
                 Vector2 ang = post - (2 * Vector3.Dot(post, normal) * normal); //vector of desired direction
-                m_RigidBody2D.SetRotation(Vector2.SignedAngle(Vector2.up, ang));
+                m_RigidBody2D.SetRotation(Vector2.SignedAngle(Vector2.right, ang));
                 m_FirstHit = false;
             }
             else
@@ -48,14 +48,17 @@ public class Bullet : MonoBehaviour
     }
 
     ///Public Functions
-    public void Initialize(BulletScript objectScript, int numberInArray, Vector3 position, Quaternion rotation)
+    public void Initialize(BulletScript objectScript, int numberInArray, Vector3 position, float rotation)
     {
-        transform.SetPositionAndRotation(position, rotation);
+        Vector3 rot = new Vector3(0.0f, 0.0f, rotation);
+        transform.eulerAngles = rot;
+        //m_RigidBody2D.MoveRotation(rotation);
+        transform.position = position;
         m_SpriteRenderer.sprite = objectScript.Sprite;
         m_Velocity = objectScript.Velocity;
         m_NumberInArray = numberInArray;
         m_FirstHit = true;
         //Adjust Bullet
-        transform.position += transform.forward * transform.position.y / 2;
+        //transform.position += transform.forward * transform.position.y / 2;
     }
 }

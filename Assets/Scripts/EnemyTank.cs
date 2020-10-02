@@ -31,6 +31,7 @@ public class EnemyTank : Tank
                 //Time to shoot
                 Shoot();
                 m_HasShot = true;
+                DelayShoot();
             }
         }
     }

@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Dynamic;
-using System.Net.NetworkInformation;
-using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.Tilemaps;
+﻿using UnityEngine;
 
 public class PlayerMovement : Tank
 {
     /// Inspector Variables
     [SerializeField] protected BoxCollider2D I_CameraBoundsBox;
+    [SerializeField] protected float m_rotateSpeed = 15.0f;
 
     ///Virtual Functions///
     protected override void InheritedUpdate()
@@ -48,21 +42,15 @@ public class PlayerMovement : Tank
         }
 
         //Move and rotate the tank
-        MoveTank(moveDirection);
         RotateTurret(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+        GradualMoveTank(moveDirection, m_rotateSpeed, 180.0f);
 
-        //Gradually rotate the tank
-        GradualRotation(ref I_BodyRB2D, m_targetRotation, I_BodyRB2D.rotation, m_rotateSpeed);
-
+        /*
         //Fix the rotation to -180 <= r <= 180
         if (I_BodyRB2D.rotation > 180)
             I_BodyRB2D.SetRotation(I_BodyRB2D.rotation - 360);
         else if (I_BodyRB2D.rotation < -180)
-            I_BodyRB2D.SetRotation(I_BodyRB2D.rotation + 360);
-
-        //Update variables for next frame
-        //If there is no input from the player take position from the previous frame
-        m_PreviousBodyRoation = moveDirection == Vector2.zero ? m_PreviousBodyRoation : moveDirection;
+            I_BodyRB2D.SetRotation(I_BodyRB2D.rotation + 360);*/
     }
     protected override void InheritedStart() { }
 

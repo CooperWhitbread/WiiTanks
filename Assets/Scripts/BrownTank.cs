@@ -32,7 +32,7 @@ public class BrownTank : EnemyTank
     ///Private Functions
     private void UpdateTurret()
     {
-        GradualRotation(ref I_TurretRB2D, m_DesiredTurretRotation, I_TurretRB2D.rotation, I_TurretRotationSpeed);
+        GradualRotation(ref I_TurretRB2D, m_DesiredTurretRotation, I_TurretRotationSpeed);
 
         if (Mathf.Abs(I_TurretRB2D.rotation - m_DesiredTurretRotation) < 0.5f)
         {
@@ -43,7 +43,5 @@ public class BrownTank : EnemyTank
                 m_DelayTurretUpdate = 0;
             }
         }
-
-        //m_TimeUntilTurretTargetReset = Time.deltaTime + m_TimeBufferForTurretTargetReset;
     }
 }

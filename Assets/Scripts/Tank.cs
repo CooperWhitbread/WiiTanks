@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
 
 ///Abstract Tank Class
 abstract public class Tank : MonoBehaviour
@@ -10,24 +9,24 @@ abstract public class Tank : MonoBehaviour
     [SerializeField] protected Transform I_ShootTransform;
     [SerializeField] protected float I_MoveSpeed = 1.0f;
     [SerializeField] protected float I_StopDelayForShoot = 0.1f;
-    [SerializeField] protected float m_rotateSpeed = 15.0f;
     [SerializeField] protected Rigidbody2D I_BodyRB2D;
     [SerializeField] protected Rigidbody2D I_TurretRB2D;
 
     ///Protected Variables
+    //Objects
     static protected ContactFilter2D s_ContactFilter = new ContactFilter2D();
-    protected float m_targetRotation = 0.0f;
-    protected Vector2 m_PreviousBodyRoation = Vector2.zero;
     protected Bullet[] m_Bullets = new Bullet[5];
+    //Shooting variables
     protected int m_NumOfBullets = 0;
     protected bool m_ShootDelayActive = false;
     protected float m_DesiredTimeForShoot = 0.0f;
-    protected float m_PreviousVelocity = 0.0f;
-    protected float m_SpeedForGradualChangeVelocity = 2.0f;
-    protected float m_SpeedForGradualChangeVelocityStationary = 3.0f;
+    //Body Rotation
+    protected bool m_SharpRotationOn = false;
 
     ///Constant Variables
     protected const float m_collissionBuffer = 0.1f;
+    protected const float m_SpeedForGradualChangeVelocity = 2.0f;
+    protected const float m_SpeedForGradualChangeVelocityStationary = 3.0f;
 
     ///Inherited Function
     protected virtual void InheritedStart() { }
@@ -100,123 +99,43 @@ abstract public class Tank : MonoBehaviour
     private void ConstantUpdatePost()
     {
     }
-    private void WallRotate(Collision2D collision)
+    /*private void WallRotate(Collision2D collision)
     {
 
         float rotateDegree1 = GetAngleFromVector2(new Vector2(-collision.contacts[0].normal.y, collision.contacts[0].normal.x));
         float rotateDegree2 = GetAngleFromVector2(new Vector2(collision.contacts[0].normal.y, -collision.contacts[0].normal.x));
 
         //Want the smallest change
-        if (Mathf.Abs(I_BodyRB2D.rotation - rotateDegree1) < Mathf.Abs(I_BodyRB2D.rotation - rotateDegree2))
-            m_targetRotation = rotateDegree1;
-        else
-            m_targetRotation = rotateDegree2;
+        //if (Mathf.Abs(I_BodyRB2D.rotation - rotateDegree1) < Mathf.Abs(I_BodyRB2D.rotation - rotateDegree2))
+            //m_targetRotation = rotateDegree1;
+        //else
+            //m_targetRotation = rotateDegree2;
 
-    }
+    } */ //Not using
     private void DestroyTank()
     {
         Destroy(gameObject);
     }
 
     ///Protected Functions
-    protected void MoveTank(Vector2 moveDirection)
-    {
-        if (moveDirection != Vector2.zero)
-        {
-            //Only want to move if it can move
-            if (!m_ShootDelayActive)
-            {
-                //Normalise the move direction
-                moveDirection = moveDirection.normalized;
-
-                //Calculate rotation in degrees
-                float rotateDegree = GetAngleFromVector2(moveDirection);
-
-                //Check Rotation Fine
-                if (CheckCollisionForRotation(rotateDegree, moveDirection, I_MoveSpeed * Time.deltaTime + m_collissionBuffer))
-                {
-                    m_targetRotation = rotateDegree;
-                }
-                I_BodyRB2D.velocity = moveDirection.normalized * I_MoveSpeed;
-            }
-        }
-    }
-    protected void GradualMoveTank(Vector2 moveDirection)
-    {
-        if (moveDirection != Vector2.zero)
-        {
-            //Only want to move if it can move
-            if (!m_ShootDelayActive)
-            {
-                //Normalise the move direction
-                moveDirection = moveDirection.normalized;
-
-                //Calculate rotation in degrees
-                float rotateDegree = GetAngleFromVector2(moveDirection);
-                float diff = GetDiffInRotation(rotateDegree, m_PreviousVelocity);
-                float rotatingChange = m_PreviousVelocity;
-
-                if (diff == 180 && diff == -180)
-                    rotatingChange = rotateDegree;
-                else if (diff > m_SpeedForGradualChangeVelocity) //Want to rotate anticlockwise if larger than min rotation
-                    rotatingChange += m_SpeedForGradualChangeVelocity;
-                else if (diff < -m_SpeedForGradualChangeVelocity) //Want to rotate clockwise if larger than min rotation
-                    rotatingChange -= m_SpeedForGradualChangeVelocity;
-                else //Don't want to be seen to rotate but still rotate it for logic
-                    rotatingChange = rotateDegree;
-
-                //Fix the rotation to -180 <= r <= 180
-                if (rotatingChange > 180)
-                    rotatingChange -= 360;
-                else if (rotatingChange < -180)
-                    rotatingChange += 360;
-
-                //do a stationary rotation if distance is too great
-                if (diff > 90)
-                    rotatingChange += (m_SpeedForGradualChangeVelocityStationary - m_SpeedForGradualChangeVelocity);
-                else if (diff < -90)
-                    rotatingChange -= (m_SpeedForGradualChangeVelocityStationary - m_SpeedForGradualChangeVelocity);
-                else
-                    I_BodyRB2D.velocity = new Vector2(Mathf.Cos(Mathf.Deg2Rad * (rotatingChange + 90)), 
-                        Mathf.Sin(Mathf.Deg2Rad * (rotatingChange + 90))) * I_MoveSpeed;
-
-                m_targetRotation = rotatingChange;
-                m_PreviousVelocity = rotatingChange;
-                I_BodyRB2D.SetRotation(rotatingChange);
-            }
-        }
-    }
     protected void Shoot()
     {
-        for (int i = 0; i < 5; i++)
+        if (CheckForOkShootHit())
         {
-            if (!m_Bullets[i].gameObject.activeSelf)
+            for (int i = 0; i < 5; i++)
             {
-                //Shoot Bullets
-                m_Bullets[i].Initialize(I_BulletScript, i, I_ShootTransform.position, I_ShootTransform.rotation);
-                m_Bullets[i].gameObject.SetActive(true);
+                if (!m_Bullets[i].gameObject.activeSelf)
+                {
+                    //Shoot Bullets
+                    m_Bullets[i].Initialize(I_BulletScript, i, I_ShootTransform.position, I_TurretRB2D.rotation);
+                    m_Bullets[i].gameObject.SetActive(true);
 
-                //Stop Tank Temperarily
-                DelayShoot();
-                break;
+                    //Stop Tank Temperarily
+                    DelayShoot();
+                    break;
+                }
             }
         }
-    }
-    protected void RotateTurret(Vector3 lookAt)
-    {
-        Vector3 screenPoint = I_BodyRB2D.position;
-        Vector2 offset = new Vector2(lookAt.x - screenPoint.x, lookAt.y - screenPoint.y);
-        float angle = Mathf.Atan2(offset.y, offset.x) * Mathf.Rad2Deg;
-        angle = angle - 90;
-        I_TurretRB2D.SetRotation(angle);
-    }
-    protected void RotateTurret(Vector2 lookAt)
-    {
-        Vector2 screenPoint = I_BodyRB2D.position;
-        Vector2 offset = lookAt - screenPoint;
-        float angle = Mathf.Atan2(offset.y, offset.x) * Mathf.Rad2Deg;
-        angle = angle - 90;
-        I_TurretRB2D.SetRotation(angle);
     }
     protected void DelayShoot(bool TurnOn = true)
     {
@@ -239,10 +158,97 @@ abstract public class Tank : MonoBehaviour
             }
         }
     }
-    protected void GradualRotation(ref Rigidbody2D rb, float targetDeg, float current, float rotationSpeed)
+    /*protected void MoveTank(Vector2 moveDirection)
+    {
+        if (moveDirection != Vector2.zero)
+        {
+            //Only want to move if it can move
+            if (!m_ShootDelayActive)
+            {
+                //Normalise the move direction
+                moveDirection = moveDirection.normalized;
+
+                //Calculate rotation in degrees
+                float rotateDegree = GetAngleFromVector2(moveDirection);
+
+                //Check Rotation Fine
+                //if (CheckCollisionForRotation(rotateDegree, moveDirection, I_MoveSpeed * Time.deltaTime + m_collissionBuffer))
+                
+                I_BodyRB2D.velocity = moveDirection.normalized * I_MoveSpeed;
+            }
+        }
+    } */ //Not Using
+    protected void GradualMoveTank(Vector2 moveDirection, float rotationSpeed, float sharpTurnRot = 90.0f, float sharpRotationSpeed = 3.0f)
+    {
+        if (moveDirection != Vector2.zero)
+        {
+            //Only want to move if it can move
+            if (!m_ShootDelayActive)
+            {
+                //Normalise the move direction
+                moveDirection = moveDirection.normalized;
+
+                //Calculate rotation in degrees
+                float fullRotateDegree = GetAngleFromVector2(moveDirection);
+                float diff = GetDiffInRotation(fullRotateDegree, I_BodyRB2D.rotation);
+                float newRotateDegree = I_BodyRB2D.rotation;
+
+                if (diff == 180 || diff == -180)
+                    newRotateDegree = fullRotateDegree;
+                else if (diff > rotationSpeed) //Want to rotate anticlockwise if larger than min rotation
+                    newRotateDegree += rotationSpeed;
+                else if (diff < -rotationSpeed) //Want to rotate clockwise if larger than min rotation
+                    newRotateDegree -= rotationSpeed;
+                else
+                {
+                    newRotateDegree = fullRotateDegree;
+                    m_SharpRotationOn = false;
+                }
+
+                //Fix the rotation to -180 <= r <= 180
+                if (newRotateDegree > 180)
+                    newRotateDegree -= 360;
+                else if (newRotateDegree < -180)
+                    newRotateDegree += 360;
+
+                //do a stationary rotation if distance is too great
+                if (diff > sharpTurnRot ||
+                    m_SharpRotationOn && diff > sharpRotationSpeed)
+                {
+                    newRotateDegree += sharpRotationSpeed;
+                    m_SharpRotationOn = true;
+                }
+                else if (diff < -sharpTurnRot ||
+                    m_SharpRotationOn && diff < -sharpRotationSpeed)
+                {
+                    newRotateDegree -= sharpRotationSpeed;
+                    m_SharpRotationOn = true;
+                }
+                else
+                    I_BodyRB2D.velocity = GetVector2FromAngle(newRotateDegree) * I_MoveSpeed;
+
+                I_BodyRB2D.SetRotation(newRotateDegree);
+            }
+        }
+    }
+    protected void RotateTurret(Vector3 lookAt)
+    {
+        Vector3 screenPoint = I_BodyRB2D.position;
+        Vector2 offset = new Vector2(lookAt.x - screenPoint.x, lookAt.y - screenPoint.y);
+        float angle = Mathf.Atan2(offset.y, offset.x) * Mathf.Rad2Deg;
+        I_TurretRB2D.SetRotation(angle);
+    }
+    protected void RotateTurret(Vector2 lookAt)
+    {
+        Vector2 screenPoint = I_BodyRB2D.position;
+        Vector2 offset = lookAt - screenPoint;
+        float angle = Mathf.Atan2(offset.y, offset.x) * Mathf.Rad2Deg;
+        I_TurretRB2D.SetRotation(angle);
+    }
+    protected void GradualRotation(ref Rigidbody2D rb, float targetDeg, float rotationSpeed)
     {
         //The angle that still needs to be made up
-        float diff = GetDiffInRotation(targetDeg, current);
+        float diff = GetDiffInRotation(targetDeg, rb.rotation);
 
         if (diff == 180 || diff == -180) //Don't want to be seen to rotate but still rotate it for logic
             rb.SetRotation(targetDeg);
@@ -251,7 +257,7 @@ abstract public class Tank : MonoBehaviour
         else if (diff < -rotationSpeed) //Want to rotate clockwise if larger than min rotation
             rb.SetRotation(rb.rotation - rotationSpeed);
         else //Value is too small to do min rotation so rotation is done to exact value
-            rb.SetRotation(diff + rb.rotation);
+            rb.SetRotation(targetDeg);
 
         //Fix the rotation to -180 <= r <= 180
         if (rb.rotation > 180)
@@ -259,8 +265,38 @@ abstract public class Tank : MonoBehaviour
         else if (rb.rotation < -180)
             rb.SetRotation(rb.rotation + 360);
     }
+    protected bool CheckForOkShootHit()
+    {
+        Vector3 dir = GetVector2FromAngle(I_TurretRB2D.rotation) * 12;
+        Debug.DrawRay(I_ShootTransform.position + new Vector3(0.0f, 0.0f, 2.0f), dir, Color.blue, 5.0f);
+        RaycastHit2D rayCastHit = Physics2D.Raycast(I_ShootTransform.position, GetVector2FromAngle(I_TurretRB2D.rotation + 90.0f),
+            12.0f, 1 << GlobalVariables.LayerTanks | 1 << GlobalVariables.LayerWalls);
+        if (rayCastHit.collider != null)
+        {
+            if (rayCastHit.collider.gameObject.name == GlobalVariables.PlayerTankBodyName)
+                return true;
+            else if (rayCastHit.collider.gameObject.layer == GlobalVariables.LayerWalls)
+            {
+                Vector2 post = transform.up; //Origion Direction
+                Vector2 normal = rayCastHit.normal; //Wall's normal
+                Vector2 ang = post - (2 * Vector2.Dot(post, normal) * normal); //vector of desired direction
+                Debug.DrawRay(rayCastHit.point, ang*12, Color.blue, 5.0f);
+
+                rayCastHit = Physics2D.Raycast(rayCastHit.point, ang,
+                    12.0f, 1 << GlobalVariables.LayerTanks | 1 << GlobalVariables.LayerWalls);
+                if (rayCastHit.collider != null)
+                {
+                    if (rayCastHit.collider.gameObject.name == GlobalVariables.PlayerTankName ||
+                        rayCastHit.collider.gameObject.layer == GlobalVariables.LayerWalls)
+                        return true;
+                }
+            }
+        }
+        return false;
+    }
    
-    ///Logic Protected Functions
+    ///Logic protected Functions
+    //Not currently Using
     protected bool CheckCollisionForRotation(float rotation, float distance)
     {
         RaycastHit2D[] results = new RaycastHit2D[16];
@@ -285,20 +321,22 @@ abstract public class Tank : MonoBehaviour
         I_BodyRB2D.MoveRotation(oldRotAng);
         return numResults;
     }
-    protected float Dot(Vector2 vec1, Vector2 vec2) => vec1.x * vec2.x + vec1.y * vec2.y;
-    protected float GetAngleFromVector2(Vector2 angle)
+
+    ///Logic public Functions
+    public float Dot(Vector2 vec1, Vector2 vec2) => vec1.x * vec2.x + vec1.y * vec2.y;
+    public float GetAngleFromVector2(Vector2 angle)
     {
-        return Vector3.SignedAngle(Vector3.forward,
+        return Vector3.SignedAngle(Vector3.right,
                        new Vector3(angle.x, 0.0f, angle.y),
                        Vector3.down);
     }
-    protected float GetAngleFromVector3(Vector3 angle)
+    public float GetAngleFromVector3(Vector3 angle)
     {
-        return Vector3.SignedAngle(Vector3.forward,
+        return Vector3.SignedAngle(Vector3.right,
                         new Vector3(angle.x, 0.0f, angle.y),
                         Vector3.down);
     }
-    protected float GetDiffInRotation(float target, float current)
+    public float GetDiffInRotation(float target, float current)
     {
         float diff = target - current;
 
@@ -322,65 +360,8 @@ abstract public class Tank : MonoBehaviour
         return diff;
 
     }
-}
-
-//State Management
-[System.Serializable]
-class StateManager
-{
-    //Can be controlled mainly in parent class but contains basic functionality to work in the background
-
-    /// Data storage
-    public enum State
+    public Vector2 GetVector2FromAngle(float angleDeg)
     {
-        Empty,
-        Attack,
-        Idle,
-        Chase
-    }
-    [System.Serializable]
-    public struct StateInfo
-    {
-        public State M_State;
-        public float M_TimeLength;
-    }
-
-    /// Variables
-    public State M_CurrentState { get; set; } = State.Empty;
-    public float M_TimeForNextSwitch { get; set; } = 0.0f;
-    public int M_CurrentLevelInState { get; set; } = 0;
-    [SerializeField] List<StateInfo> M_States;
-
-    /// Functions
-    public void Start(float currentTime)
-    {
-        if (M_States.Count != 0)
-        {
-            M_CurrentState = M_States[M_CurrentLevelInState].M_State;
-            M_TimeForNextSwitch = currentTime + M_States[M_CurrentLevelInState].M_TimeLength;
-
-        }
-    }
-    public void Update(float currentTime)
-    {
-        if (M_CurrentState != State.Empty && M_States.Count != 0)
-        {
-            //Error checking to make sure states are initialized correctly
-            if (M_TimeForNextSwitch <= currentTime)
-            {
-                M_CurrentLevelInState++;
-                if (M_States.Count > M_CurrentLevelInState)
-                {
-                    M_CurrentState = M_States[M_CurrentLevelInState].M_State;
-                    M_TimeForNextSwitch = currentTime + M_States[M_CurrentLevelInState].M_TimeLength;
-                }
-                else
-                {
-                    M_CurrentLevelInState = 0;
-                    M_CurrentState = M_States[M_CurrentLevelInState].M_State;
-                    M_TimeForNextSwitch = currentTime + M_States[M_CurrentLevelInState].M_TimeLength;
-                }
-            }
-        }
+        return new Vector2(Mathf.Cos(Mathf.Deg2Rad * angleDeg), Mathf.Sin(Mathf.Deg2Rad * angleDeg));
     }
 }
