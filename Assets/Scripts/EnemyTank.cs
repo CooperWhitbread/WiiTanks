@@ -28,10 +28,13 @@ public class EnemyTank : Tank
         {
             if (Time.unscaledTime >= m_TimeAtNextShoot)
             {
-                //Time to shoot
-                Shoot();
-                m_HasShot = true;
-                DelayShoot();
+                if (CheckForOkShootHit())
+                {
+                    //Time to shoot
+                    Shoot();
+                    m_HasShot = true;
+                    DelayShoot();
+                }
             }
         }
     }

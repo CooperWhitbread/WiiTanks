@@ -84,7 +84,7 @@ public class GreyTank : EnemyTank
         switch (I_StateManager.M_CurrentState)
         {
             case StateManager.State.Stelth:
-            case StateManager.State.Idle:
+            case StateManager.State.Escape:
                 GradualRotation(ref I_TurretRB2D, m_DesiredTurretRotation, I_TurretRotationSpeed);
                 if (Mathf.Abs(I_TurretRB2D.rotation - m_DesiredTurretRotation) < 0.5f)
                 {
@@ -147,6 +147,7 @@ public class GreyTank : EnemyTank
             case StateManager.State.Stelth:
             case StateManager.State.Attack:
             case StateManager.State.Idle:
+            case StateManager.State.Escape:
                 Vector2 target = new Vector2(Random.Range(-1.0f, 1.0f), Random.Range(-1.0f, 1.0f)).normalized * 4;
                 target += I_BodyRB2D.position;
                 Vector2 pos = GetVector2FromAngle(I_BodyRB2D.rotation).normalized * 2f;

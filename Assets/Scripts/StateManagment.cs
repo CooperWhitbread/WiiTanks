@@ -15,7 +15,8 @@ class StateManager
         Attack,
         Stelth,
         Idle,
-        Chase
+        Chase,
+        Escape
     }
     [System.Serializable]
     public struct StateInfo

@@ -11,11 +11,19 @@ abstract public class Tank : MonoBehaviour
     [SerializeField] protected float I_StopDelayForShoot = 0.1f;
     [SerializeField] protected Rigidbody2D I_BodyRB2D;
     [SerializeField] protected Rigidbody2D I_TurretRB2D;
+    [SerializeField] protected GameObject I_TredPrefab;
+    [SerializeField] protected GameObject I_TredsParentObject;
+    [SerializeField] protected Transform I_TredTransform1;
+    [SerializeField] protected Transform I_TredTransform2;
+    [SerializeField] protected float I_TredDistanceBetweenTreds = 0.2f;
+
 
     ///Protected Variables
     //Objects
     static protected ContactFilter2D s_ContactFilter = new ContactFilter2D();
     protected Bullet[] m_Bullets = new Bullet[5];
+    //Treds
+    protected Vector2 m_TredLastTransform = Vector2.zero;
     //Shooting variables
     protected int m_NumOfBullets = 0;
     protected bool m_ShootDelayActive = false;
@@ -95,6 +103,14 @@ abstract public class Tank : MonoBehaviour
         //Set Up and reset
         I_BodyRB2D.velocity = Vector2.zero;
         DelayShoot(false);
+
+        //Treds
+        if (Vector2.Distance(m_TredLastTransform, I_BodyRB2D.position) >= I_TredDistanceBetweenTreds)
+        {
+            Instantiate(I_TredPrefab, I_TredTransform1.position, I_BodyRB2D.transform.rotation, I_TredsParentObject.transform);
+            Instantiate(I_TredPrefab, I_TredTransform2.position, I_BodyRB2D.transform.rotation, I_TredsParentObject.transform);
+            m_TredLastTransform = I_BodyRB2D.position;
+        }
     }
     private void ConstantUpdatePost()
     {
@@ -114,25 +130,31 @@ abstract public class Tank : MonoBehaviour
     } */ //Not using
     private void DestroyTank()
     {
+        GameObject.Find(GlobalVariables.GlobalVariableObjectName).GetComponent<GlobalVariables>().SetBullets(m_Bullets);
+        I_TredsParentObject.transform.parent = GameObject.Find(GlobalVariables.GlobalVariableObjectName).transform;
         Destroy(gameObject);
     }
 
     ///Protected Functions
     protected void Shoot()
     {
-        if (CheckForOkShootHit())
+        RaycastHit2D hit = Physics2D.Raycast(I_ShootTransform.position, GetVector2FromAngle(180 + I_TurretRB2D.rotation), 0.5f);
+        if(hit.collider != null)
         {
-            for (int i = 0; i < 5; i++)
+            if (hit.collider.gameObject.layer == GlobalVariables.LayerTanks)
             {
-                if (!m_Bullets[i].gameObject.activeSelf)
+                for (int i = 0; i < 5; i++)
                 {
-                    //Shoot Bullets
-                    m_Bullets[i].Initialize(I_BulletScript, i, I_ShootTransform.position, I_TurretRB2D.rotation);
-                    m_Bullets[i].gameObject.SetActive(true);
+                    if (!m_Bullets[i].gameObject.activeSelf)
+                    {
+                        //Shoot Bullets
+                        m_Bullets[i].Initialize(I_BulletScript, i, I_ShootTransform.position, I_TurretRB2D.rotation);
+                        m_Bullets[i].gameObject.SetActive(true);
 
-                    //Stop Tank Temperarily
-                    DelayShoot();
-                    break;
+                        //Stop Tank Temperarily
+                        DelayShoot();
+                        break;
+                    }
                 }
             }
         }
@@ -267,32 +289,33 @@ abstract public class Tank : MonoBehaviour
     }
     protected bool CheckForOkShootHit()
     {
-        Vector3 dir = GetVector2FromAngle(I_TurretRB2D.rotation) * 12;
-        Debug.DrawRay(I_ShootTransform.position + new Vector3(0.0f, 0.0f, 2.0f), dir, Color.blue, 5.0f);
-        RaycastHit2D rayCastHit = Physics2D.Raycast(I_ShootTransform.position, GetVector2FromAngle(I_TurretRB2D.rotation + 90.0f),
-            12.0f, 1 << GlobalVariables.LayerTanks | 1 << GlobalVariables.LayerWalls);
+        RaycastHit2D rayCastHit = Physics2D.Raycast(I_ShootTransform.position, GetVector2FromAngle(I_TurretRB2D.rotation),
+            30.0f, 1 << GlobalVariables.LayerTanks | 1 << GlobalVariables.LayerWalls);
         if (rayCastHit.collider != null)
         {
             if (rayCastHit.collider.gameObject.name == GlobalVariables.PlayerTankBodyName)
                 return true;
             else if (rayCastHit.collider.gameObject.layer == GlobalVariables.LayerWalls)
             {
-                Vector2 post = transform.up; //Origion Direction
+                Vector2 post = GetVector2FromAngle(I_TurretRB2D.rotation); //Origion Direction
                 Vector2 normal = rayCastHit.normal; //Wall's normal
                 Vector2 ang = post - (2 * Vector2.Dot(post, normal) * normal); //vector of desired direction
-                Debug.DrawRay(rayCastHit.point, ang*12, Color.blue, 5.0f);
 
                 rayCastHit = Physics2D.Raycast(rayCastHit.point, ang,
-                    12.0f, 1 << GlobalVariables.LayerTanks | 1 << GlobalVariables.LayerWalls);
+                    30.0f, 1 << GlobalVariables.LayerTanks | 1 << GlobalVariables.LayerWalls);
                 if (rayCastHit.collider != null)
                 {
                     if (rayCastHit.collider.gameObject.name == GlobalVariables.PlayerTankName ||
                         rayCastHit.collider.gameObject.layer == GlobalVariables.LayerWalls)
                         return true;
+
+                    return false;
                 }
+                return true;
             }
+            return false;
         }
-        return false;
+        return true;
     }
    
     ///Logic protected Functions

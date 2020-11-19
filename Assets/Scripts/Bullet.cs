@@ -28,7 +28,7 @@ public class Bullet : MonoBehaviour
         if (col.gameObject.layer == LayerMask.NameToLayer("Tanks") ||
             col.gameObject.layer == LayerMask.NameToLayer("Bullets"))
         {
-            GetComponentInParent<Tank>().DestroyBullet(m_NumberInArray);
+            DestroyBullet();
         }
         else if (col.gameObject.layer == LayerMask.NameToLayer("Walls"))
         {
@@ -42,8 +42,20 @@ public class Bullet : MonoBehaviour
             }
             else
             {
-                GetComponentInParent<Tank>().DestroyBullet(m_NumberInArray);
+                DestroyBullet();
             }
+        }
+    }
+
+    private void DestroyBullet()
+    {
+        if (GetComponentInParent<Tank>())
+        {
+            GetComponentInParent<Tank>().DestroyBullet(m_NumberInArray);
+        }
+        else
+        {
+            GetComponentInParent<GlobalVariables>().DestroyBullet(m_NumberInArray);
         }
     }
 
@@ -60,5 +72,10 @@ public class Bullet : MonoBehaviour
         m_FirstHit = true;
         //Adjust Bullet
         //transform.position += transform.forward * transform.position.y / 2;
+    }
+
+    public void SetLevelInArray(int level)
+    {
+        m_NumberInArray = level;
     }
 }
