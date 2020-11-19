@@ -1,0 +1,448 @@
+fileFormatVersion: 2
+guid: 868ca0bcf1ef0734abbacdef3c0810b4
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -566558058296674357
+    second: Crosses_0
+  - first:
+      213: -8298338510180623418
+    second: Crosses_1
+  - first:
+      213: 2550770731585939164
+    second: Crosses_2
+  - first:
+      213: -4144719009924888516
+    second: Crosses_3
+  - first:
+      213: -3651007014241657682
+    second: Crosses_4
+  - first:
+      213: 3385767916625473407
+    second: Crosses_5
+  - first:
+      213: -3987320697995548531
+    second: Crosses_6
+  - first:
+      213: 298158346300370372
+    second: Crosses_7
+  - first:
+      213: 4946601292520697097
+    second: Crosses_8
+  - first:
+      213: -619966655197038833
+    second: Crosses_9
+  - first:
+      213: -2071578370698533501
+    second: Crosses_10
+  - first:
+      213: 8919244267480565293
+    second: Crosses_11
+  - first:
+      213: 5615475493811461149
+    second: Crosses_12
+  - first:
+      213: -5002642348108015484
+    second: Crosses_13
+  - first:
+      213: -5104530140351974326
+    second: Crosses_14
+  - first:
+      213: 2875225060194427321
+    second: Crosses_15
+  - first:
+      213: 788236310050076753
+    second: Crosses_16
+  - first:
+      213: 4277464731263844075
+    second: Crosses_17
+  - first:
+      213: -4403166089856686625
+    second: Crosses_18
+  - first:
+      213: 4751692692720154417
+    second: Crosses_19
+  - first:
+      213: 2606451061261449254
+    second: Crosses_20
+  - first:
+      213: 4187936682874810781
+    second: Crosses_21
+  - first:
+      213: -4726744603206847276
+    second: Crosses_22
+  - first:
+      213: 4757973589291564468
+    second: Crosses_23
+  - first:
+      213: 2448548047799408888
+    second: Crosses_24
+  - first:
+      213: -5555652866351211580
+    second: Crosses_25
+  - first:
+      213: -1359584147202510180
+    second: Crosses_26
+  - first:
+      213: -6660204654960206446
+    second: Crosses_27
+  - first:
+      213: 2477183691708201494
+    second: Crosses_28
+  - first:
+      213: -4091177210279094208
+    second: Crosses_29
+  - first:
+      213: 8331465846413962757
+    second: Crosses_30
+  - first:
+      213: 4922623395885734491
+    second: Crosses_31
+  - first:
+      213: -6598883467417756033
+    second: Crosses_32
+  - first:
+      213: -8745925054485320052
+    second: Crosses_33
+  - first:
+      213: 5443028350445760661
+    second: Crosses_34
+  - first:
+      213: 7557080303280446907
+    second: Crosses_35
+  - first:
+      213: -6168165761642843274
+    second: Crosses_36
+  - first:
+      213: 4658755417206676460
+    second: Crosses_37
+  - first:
+      213: -7720992533891845990
+    second: Crosses_38
+  - first:
+      213: 8047821111596481742
+    second: Crosses_39
+  externalObjects: {}
+  serializedVersion: 11
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: -1
+    mipBias: -100
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 64
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Windows Store Apps
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Crosses_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1152
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bc7779e927e2328f0800000000000000
+      internalID: -566558058296674357
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crosses_1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1024
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6cb5dba671166dc80800000000000000
+      internalID: -8298338510180623418
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crosses_2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 896
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cd6a4af3778266320800000000000000
+      internalID: 2550770731585939164
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crosses_3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 768
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c384e9725000b76c0800000000000000
+      internalID: -4144719009924888516
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crosses_4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 640
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eac9aa3e674055dc0800000000000000
+      internalID: -3651007014241657682
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crosses_5
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 512
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f7f206a4bf9acfe20800000000000000
+      internalID: 3385767916625473407
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crosses_6
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 384
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d88a96e63f03aa8c0800000000000000
+      internalID: -3987320697995548531
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crosses_7
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 256
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4cd2d0eaf65432400800000000000000
+      internalID: 298158346300370372
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crosses_8
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 128
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 90d2f26daabd5a440800000000000000
+      internalID: 4946601292520697097
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crosses_9
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f07b460ac9f6567f0800000000000000
+      internalID: -619966655197038833
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+  spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

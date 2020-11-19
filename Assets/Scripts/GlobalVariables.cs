@@ -5,8 +5,15 @@ using UnityEngine.SceneManagement;
 
 public class GlobalVariables : MonoBehaviour
 {
+    ///Inspector Variables
+    [SerializeField] protected GameObject I_PlayerTankPrefab;
+    [SerializeField] protected GameObject I_BrownTankPrefab;
+    [SerializeField] protected GameObject I_GreyTankPrefab;
+
     //Variables
     public static int CurrentLevel = 0;
+
+    ///Protected Variables
     protected Bullet[] m_Bullets = new Bullet[1];
     protected int m_CurrentBulletIndex = -1;
 
@@ -22,6 +29,12 @@ public class GlobalVariables : MonoBehaviour
     public const string BulletLayerName = "Bullets";
     public const string FloorLayerName = "FloorBoards";
     public const string GlobalVariableObjectName = "Global";
+    public const string SpawnPointsName = "SpawnPoints";
+    public const string PlayerTankSpawnPoint = "PlayerTankSpawnPoint";
+    public const string BrownTankSpawnPoint = "BrownTankSpawnPoint";
+    public const string GreyTankSpawnPoint = "GreyTankSpawnPoint";
+    public const string NavyTankSpawnPoint = "NavyTankSpawnPoint";
+    public const string EnemyTankObjectName = "Enemy Tanks";
 
     //Maintainance Variables
     private static bool m_Start = false;
@@ -34,8 +47,34 @@ public class GlobalVariables : MonoBehaviour
             m_Start = true;
         }
 
+        //Bullets
         m_Bullets = new Bullet[1];
         m_CurrentBulletIndex = -1;
+
+        //Initialisizing Tanks
+        int numTanks = GameObject.Find(SpawnPointsName).transform.childCount;
+        if (numTanks != 0)
+        {
+            for (int i = 0; i < numTanks; i++)
+            {
+                Transform tank = GameObject.Find(SpawnPointsName).transform.GetChild(i);
+                switch (tank.name)
+                {
+                    case PlayerTankSpawnPoint:
+                        Instantiate(I_PlayerTankPrefab, tank.position, tank.rotation, transform.parent);
+                        tank.gameObject.SetActive(false);
+                        break;
+                    case BrownTankSpawnPoint:
+                        Instantiate(I_BrownTankPrefab, tank.position, tank.rotation, GameObject.Find(EnemyTankObjectName).transform);
+                        tank.gameObject.SetActive(false);
+                        break;
+                    case GreyTankSpawnPoint:
+                        Instantiate(I_GreyTankPrefab, tank.position, tank.rotation, GameObject.Find(EnemyTankObjectName).transform);
+                        tank.gameObject.SetActive(false);
+                        break;
+                }
+            }
+        }
     }
 
     public void SetBullets(Bullet[] bullets)
