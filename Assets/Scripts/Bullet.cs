@@ -10,6 +10,8 @@ public class Bullet : MonoBehaviour
     private float m_Velocity = 0.0f;
     private int m_NumberInArray = -1;
     private bool m_FirstHit = true;
+    private float m_TimeForWeirdBulletWallCheck = 0.0f;
+
 
     ///Unity Functions
     void Awake()
@@ -21,6 +23,17 @@ public class Bullet : MonoBehaviour
     { 
         m_RigidBody2D.velocity = new Vector2(Mathf.Cos(Mathf.Deg2Rad * m_RigidBody2D.rotation), Mathf.Sin(Mathf.Deg2Rad * m_RigidBody2D.rotation)) *  m_Velocity;
         //Debug.Log(transform.up);
+
+        //Check if bullet is going slowly against the wall
+        if (Time.fixedTime <= m_TimeForWeirdBulletWallCheck)//Haven't tested, if problem doesn't turn up, all good
+        {
+            m_TimeForWeirdBulletWallCheck = Time.fixedTime + 0.5f;
+            if (new Vector2(Mathf.Cos(Mathf.Deg2Rad * m_RigidBody2D.rotation), Mathf.Sin(Mathf.Deg2Rad * m_RigidBody2D.rotation)) != 
+                new Vector2 (transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y))
+            {
+                DestroyBullet();
+            }
+        }
     }
     void OnCollisionEnter2D(Collision2D col)
     {
@@ -63,15 +76,13 @@ public class Bullet : MonoBehaviour
     {
         Vector3 rot = new Vector3(0.0f, 0.0f, rotation);
         transform.eulerAngles = rot;
-        //m_RigidBody2D.MoveRotation(rotation);
         transform.position = position;
         m_SpriteRenderer.sprite = objectScript.Sprite;
         m_Velocity = objectScript.Velocity;
         m_NumberInArray = numberInArray;
         m_FirstHit = true;
-        //Adjust Bullet
-        //transform.position += transform.forward * transform.position.y / 2;
-    }
+        m_TimeForWeirdBulletWallCheck = 0.0f;
+}
 
     public void SetLevelInArray(int level)
     {

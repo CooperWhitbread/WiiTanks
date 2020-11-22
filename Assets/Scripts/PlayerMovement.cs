@@ -5,10 +5,7 @@ public class PlayerMovement : Tank
     /// Inspector Variables
     [SerializeField] protected BoxCollider2D I_CameraBoundsBox;
     [SerializeField] protected float m_rotateSpeed = 15.0f;
-
-    ///Private Variable
-    private Bomb[] m_Bombs = new Bomb[2];
-
+    
     ///Virtual Functions///
     protected override void InheritedUpdate()
     {

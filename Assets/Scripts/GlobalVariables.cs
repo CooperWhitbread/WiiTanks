@@ -52,7 +52,8 @@ public class GlobalVariables : MonoBehaviour
         }
         for (int i = 0; i < m_Bullets.Length; i++)
         {
-            Destroy(m_Bullets[i].gameObject);
+            if (m_Bullets[i] != null)
+                Destroy(m_Bullets[i].gameObject);
         }
         for (int i = 0; i < m_Bombs.Length; i++)
         {
