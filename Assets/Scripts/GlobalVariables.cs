@@ -19,24 +19,34 @@ public class GlobalVariables : MonoBehaviour
     protected static Bomb[] m_Bombs = new Bomb[0];
     protected static int m_CurrentBombIndex = -1;
 
-    //Game Constants
+    //Layers
     public const int LayerFloorBoards  = 8;
     public const int LayerTanks        = 9;
     public const int LayerWalls        = 10;
     public const int LayerBullets      = 11;
+    public const int LayerWallHole     = 12;
+
+    //Tank Name
     public const string PlayerTankName = "Player Tank";
     public const string PlayerTankBodyName = "PlayerBody";
+
+    //Layer Names
     public const string TankLayerName = "Tanks";
     public const string WallLayerName = "Walls";
     public const string BulletLayerName = "Bullets";
     public const string FloorLayerName = "FloorBoards";
+
     public const string GlobalVariableObjectName = "Global";
+
+    //Spawn Point Names
     public const string SpawnPointsName = "SpawnPoints";
     public const string PlayerTankSpawnPoint = "PlayerTankSpawnPoint";
     public const string BrownTankSpawnPoint = "BrownTankSpawnPoint";
     public const string GreyTankSpawnPoint = "GreyTankSpawnPoint";
     public const string NavyTankSpawnPoint = "NavyTankSpawnPoint";
     public const string EnemyTankObjectName = "Enemy Tanks";
+
+    //Weapon Names
     public const string TagBomb = "Bomb";
     public const string TagBullet = "Bullet";
 

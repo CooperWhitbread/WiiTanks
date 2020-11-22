@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class Bomb : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class Bomb : MonoBehaviour
     [SerializeField] protected float I_FlashingSpeed = 0.4f;
     [SerializeField] protected float I_TimeDelayForTankNearExposion = 0.4f;
     [SerializeField] protected GameObject I_DistanceColliderObject;
+    [SerializeField] protected DoodaRuleTile I_DestructableTile;
 
     ///Private Variables
     private SpriteRenderer m_SpriteRenderer;
@@ -113,12 +115,13 @@ public class Bomb : MonoBehaviour
                 }
             }
 
+            //Set non trigger collider to true
+            Collider2D[] hits = new Collider2D[16];
             m_HasCheckedForExternalExplodeCollider = true;
             I_DistanceColliderObject.GetComponent<CircleCollider2D>().enabled = true;
-            Collider2D[] hits = new Collider2D[16];
             ContactFilter2D contactF = new ContactFilter2D();
             contactF.useTriggers = true;
-            contactF.SetLayerMask(1 << GlobalVariables.LayerTanks | 1 << GlobalVariables.LayerBullets);
+            contactF.SetLayerMask(1 << GlobalVariables.LayerTanks | 1 << GlobalVariables.LayerBullets | 1 << GlobalVariables.LayerWalls);
             int hit = I_DistanceColliderObject.GetComponent<CircleCollider2D>().OverlapCollider(contactF, hits);
             for (int i = 0; i < hit; i++)
             {
@@ -135,6 +138,27 @@ public class Bomb : MonoBehaviour
                     else if (hits[i].gameObject.tag == GlobalVariables.TagBomb)
                     {
                         hits[i].transform.parent.GetComponent<Bomb>().Explode();
+                    }
+                    else if (hits[i].gameObject.layer == GlobalVariables.LayerWalls)
+                    {
+                        //do collision
+                        Tilemap tileMap = hits[i].GetComponent<Tilemap>();
+                        Grid tileMapGrid = tileMap.layoutGrid; 
+                        Vector3Int pos = tileMapGrid.WorldToCell(m_Position);
+                        for (int y = -3; y <= 3; y++)
+                        {
+                            for (int x = -3; x <= 3; x++)
+                            {
+                                Vector3Int tilePos = new Vector3Int(x + pos.x, y + pos.y, pos.z);
+                                if (Vector3.Distance(tileMapGrid.LocalToCell(tilePos), transform.position) <= 2.5f && tileMap.GetTile(tilePos) != null)
+                                {
+                                    if (tileMap.GetTile(tilePos).name == "DestructableRuleTile")
+                                    {
+                                        tileMap.SetTile(tilePos, null);
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }

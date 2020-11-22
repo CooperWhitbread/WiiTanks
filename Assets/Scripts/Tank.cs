@@ -156,7 +156,7 @@ abstract public class Tank : MonoBehaviour
         RaycastHit2D hit = Physics2D.Raycast(I_ShootTransform.position, GetVector2FromAngle(180 + I_TurretRB2D.rotation), 0.5f);
         if(hit.collider != null)
         {
-            if (hit.collider.gameObject.layer == GlobalVariables.LayerTanks)
+            if (hit.collider.gameObject.layer == GlobalVariables.LayerTanks || hit.collider.gameObject.layer == GlobalVariables.LayerWallHole)
             {
                 for (int i = 0; i < m_Bullets.Length; i++)
                 {

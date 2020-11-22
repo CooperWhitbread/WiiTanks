@@ -1,172 +1,49 @@
 fileFormatVersion: 2
-guid: 868ca0bcf1ef0734abbacdef3c0810b4
+guid: 232701c4b14ce6045b6df17dcf227a1e
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -566558058296674357
-    second: Crosses_0
+      213: 9116981225652495152
+    second: WallDestructable_0
   - first:
-      213: -8298338510180623418
-    second: Crosses_1
+      213: -3585410334414355214
+    second: WallDestructable_1
   - first:
-      213: 2550770731585939164
-    second: Crosses_2
+      213: 7210925675451636778
+    second: WallDestructable_2
   - first:
-      213: -4144719009924888516
-    second: Crosses_3
+      213: -4340021421570599582
+    second: WallDestructable_3
   - first:
-      213: -3651007014241657682
-    second: Crosses_4
+      213: 3877291764319934185
+    second: WallDestructable_4
   - first:
-      213: 3385767916625473407
-    second: Crosses_5
+      213: 105421186507039061
+    second: WallDestructable_5
   - first:
-      213: -3987320697995548531
-    second: Crosses_6
+      213: -708459323350142111
+    second: WallDestructable_6
   - first:
-      213: 298158346300370372
-    second: Crosses_7
+      213: -1428818750040446308
+    second: WallDestructable_7
   - first:
-      213: 4946601292520697097
-    second: Crosses_8
+      213: -2933466654262299350
+    second: WallDestructable_8
   - first:
-      213: -619966655197038833
-    second: Crosses_9
+      213: -6343922437700494342
+    second: WallDestructable_9
   - first:
-      213: -2071578370698533501
-    second: Crosses_10
+      213: 3227203403037138922
+    second: WallDestructable_10
   - first:
-      213: 8919244267480565293
-    second: Crosses_11
+      213: -5202694866433228907
+    second: WallDestructable_11
   - first:
-      213: 5615475493811461149
-    second: Crosses_12
+      213: -6413160159655447193
+    second: WallDestructable_12
   - first:
-      213: -5002642348108015484
-    second: Crosses_13
-  - first:
-      213: -5104530140351974326
-    second: Crosses_14
-  - first:
-      213: 2875225060194427321
-    second: Crosses_15
-  - first:
-      213: 788236310050076753
-    second: Crosses_16
-  - first:
-      213: 4277464731263844075
-    second: Crosses_17
-  - first:
-      213: -4403166089856686625
-    second: Crosses_18
-  - first:
-      213: 4751692692720154417
-    second: Crosses_19
-  - first:
-      213: 2606451061261449254
-    second: Crosses_20
-  - first:
-      213: 4187936682874810781
-    second: Crosses_21
-  - first:
-      213: -4726744603206847276
-    second: Crosses_22
-  - first:
-      213: 4757973589291564468
-    second: Crosses_23
-  - first:
-      213: 2448548047799408888
-    second: Crosses_24
-  - first:
-      213: -5555652866351211580
-    second: Crosses_25
-  - first:
-      213: -1359584147202510180
-    second: Crosses_26
-  - first:
-      213: -6660204654960206446
-    second: Crosses_27
-  - first:
-      213: 2477183691708201494
-    second: Crosses_28
-  - first:
-      213: -4091177210279094208
-    second: Crosses_29
-  - first:
-      213: 8331465846413962757
-    second: Crosses_30
-  - first:
-      213: 4922623395885734491
-    second: Crosses_31
-  - first:
-      213: -6598883467417756033
-    second: Crosses_32
-  - first:
-      213: -8745925054485320052
-    second: Crosses_33
-  - first:
-      213: 5443028350445760661
-    second: Crosses_34
-  - first:
-      213: 7557080303280446907
-    second: Crosses_35
-  - first:
-      213: -6168165761642843274
-    second: Crosses_36
-  - first:
-      213: 4658755417206676460
-    second: Crosses_37
-  - first:
-      213: -7720992533891845990
-    second: Crosses_38
-  - first:
-      213: 8047821111596481742
-    second: Crosses_39
-  - first:
-      213: 1821630184959523893
-    second: Crosses_0
-  - first:
-      213: 8107524069280491412
-    second: Crosses_1
-  - first:
-      213: -8259412174306587412
-    second: Crosses_2
-  - first:
-      213: -7021810206678148691
-    second: Crosses_3
-  - first:
-      213: -8717352852305413907
-    second: Crosses_4
-  - first:
-      213: -6422803215123011943
-    second: Crosses_5
-  - first:
-      213: -1129443388315998380
-    second: Crosses_6
-  - first:
-      213: -6694487573362293791
-    second: Crosses_7
-  - first:
-      213: 3816333917119828571
-    second: Crosses_8
-  - first:
-      213: -1268791665081615081
-    second: Crosses_9
-  - first:
-      213: -2997525990399642670
-    second: Crosses_40
-  - first:
-      213: 5490616379363314722
-    second: Crosses_41
-  - first:
-      213: -8573581219242952198
-    second: Crosses_42
-  - first:
-      213: -2157584071339980400
-    second: Crosses_43
-  - first:
-      213: 169215167057479962
-    second: Crosses_10
+      213: 3867365408454007024
+    second: WallDestructable_13
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -266,253 +143,295 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Crosses_0
+      name: WallDestructable_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 1408
-        width: 128
-        height: 128
+        y: 192
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 53c34a6700bb74910800000000000000
-      internalID: 1821630184959523893
+      spriteID: 0332ce2fe16068e70800000000000000
+      internalID: 9116981225652495152
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crosses_1
+      name: WallDestructable_1
       rect:
         serializedVersion: 2
-        x: 0
-        y: 1280
-        width: 128
-        height: 128
+        x: 64
+        y: 192
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 497a46d7f26b38070800000000000000
-      internalID: 8107524069280491412
+      spriteID: 2f4c7331c401e3ec0800000000000000
+      internalID: -3585410334414355214
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crosses_2
+      name: WallDestructable_2
       rect:
         serializedVersion: 2
-        x: 0
-        y: 1152
-        width: 128
-        height: 128
+        x: 128
+        y: 192
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: cec4be0436ca06d80800000000000000
-      internalID: -8259412174306587412
+      spriteID: a2cd90b52ba521460800000000000000
+      internalID: 7210925675451636778
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crosses_3
+      name: WallDestructable_3
       rect:
         serializedVersion: 2
-        x: 0
-        y: 1024
-        width: 128
-        height: 128
+        x: 192
+        y: 192
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: da99cb6f1d48d8e90800000000000000
-      internalID: -7021810206678148691
+      spriteID: 265d2b1f28525c3c0800000000000000
+      internalID: -4340021421570599582
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crosses_4
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 896
-        width: 128
-        height: 128
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: de8f89074cdb50780800000000000000
-      internalID: -8717352852305413907
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Crosses_5
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 768
-        width: 128
-        height: 128
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 9962b5c518e9dd6a0800000000000000
-      internalID: -6422803215123011943
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Crosses_6
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 640
-        width: 128
-        height: 128
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 457e28de8396350f0800000000000000
-      internalID: -1129443388315998380
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Crosses_7
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 512
-        width: 128
-        height: 128
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 1e3497c55076813a0800000000000000
-      internalID: -6694487573362293791
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Crosses_8
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 384
-        width: 128
-        height: 128
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: b52d3325a7756f430800000000000000
-      internalID: 3816333917119828571
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Crosses_9
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 256
-        width: 128
-        height: 128
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 71d75d4f3b8546ee0800000000000000
-      internalID: -1268791665081615081
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Crosses_10
+      name: WallDestructable_4
       rect:
         serializedVersion: 2
         x: 0
         y: 128
-        width: 128
-        height: 128
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a19c1134c4c295200800000000000000
-      internalID: 169215167057479962
+      spriteID: 9e656de1158eec530800000000000000
+      internalID: 3877291764319934185
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crosses_11
+      name: WallDestructable_5
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 128
-        height: 128
+        x: 64
+        y: 128
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d264e14b76587cb70800000000000000
-      internalID: 8919244267480565293
+      spriteID: 5516d85b208867100800000000000000
+      internalID: 105421186507039061
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WallDestructable_6
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 128
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 163b6edbffb0b26f0800000000000000
+      internalID: -708459323350142111
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WallDestructable_7
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 128
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c9aeb63cae0db2ce0800000000000000
+      internalID: -1428818750040446308
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WallDestructable_8
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a25fd30ce9b3a47d0800000000000000
+      internalID: -2933466654262299350
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WallDestructable_9
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: afb5b3a872cd5f7a0800000000000000
+      internalID: -6343922437700494342
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WallDestructable_10
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aefd5f7856459cc20800000000000000
+      internalID: 3227203403037138922
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WallDestructable_11
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 59fbf7385905cc7b0800000000000000
+      internalID: -5202694866433228907
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WallDestructable_12
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 765bc0c20d0eff6a0800000000000000
+      internalID: -6413160159655447193
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WallDestructable_13
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0f8d88b4954aba530800000000000000
+      internalID: 3867365408454007024
       vertices: []
       indices: 
       edges: []
