@@ -208,7 +208,7 @@ PrefabInstance:
     - target: {fileID: 727429384845553391, guid: e00dcd60e0cc6f94b8ecdc4a480ed6d6,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e00dcd60e0cc6f94b8ecdc4a480ed6d6, type: 3}
@@ -883,9 +883,7 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 1215739560}
-  - {fileID: 1892346670}
+  m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -932,6 +930,10 @@ MonoBehaviour:
   I_TredTransform1: {fileID: 2076416451}
   I_TredTransform2: {fileID: 1230336603}
   I_TredDistanceBetweenTreds: 0.2
+  I_BombPrefab: {fileID: 4885465352932661211, guid: 749776e669ab09b4e8cb946d04ec2750,
+    type: 3}
+  I_DeathCrossPrefab: {fileID: 6032282327030068313, guid: 4cf548f2d6df9a6469c22dbc0977e231,
+    type: 3}
   I_CameraBoundsBox: {fileID: 1233640137}
   m_rotateSpeed: 6
 --- !u!4 &812863802
@@ -1023,7 +1025,7 @@ GameObject:
   - component: {fileID: 895877206}
   m_Layer: 8
   m_Name: Treds
-  m_TagString: Untagged
+  m_TagString: Tred
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1189,7 +1191,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1094944753
 Transform:
   m_ObjectHideFlags: 0
@@ -1233,6 +1235,10 @@ MonoBehaviour:
   I_TredTransform1: {fileID: 1643863142}
   I_TredTransform2: {fileID: 1914479414}
   I_TredDistanceBetweenTreds: 0.2
+  I_BombPrefab: {fileID: 4885465352932661211, guid: 749776e669ab09b4e8cb946d04ec2750,
+    type: 3}
+  I_DeathCrossPrefab: {fileID: 6032282327030068313, guid: 4cf548f2d6df9a6469c22dbc0977e231,
+    type: 3}
   I_TurretRotationSpeed: 1
   I_MinTimeToShoot: 6
   I_MaxTimeToShoot: 12
@@ -1316,12 +1322,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!4 &1215739560 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 981532302033729492, guid: 5bd2b4c076ae94b46be9d09792284ef0,
-    type: 3}
-  m_PrefabInstance: {fileID: 1378120038}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1230336602
 GameObject:
   m_ObjectHideFlags: 0
@@ -1427,75 +1427,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 32, y: 16}
   m_EdgeRadius: 0
---- !u!1001 &1378120038
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 758349197}
-    m_Modifications:
-    - target: {fileID: 981532302033729492, guid: 5bd2b4c076ae94b46be9d09792284ef0,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -1.05
-      objectReference: {fileID: 0}
-    - target: {fileID: 981532302033729492, guid: 5bd2b4c076ae94b46be9d09792284ef0,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 981532302033729492, guid: 5bd2b4c076ae94b46be9d09792284ef0,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 981532302033729492, guid: 5bd2b4c076ae94b46be9d09792284ef0,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 981532302033729492, guid: 5bd2b4c076ae94b46be9d09792284ef0,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 981532302033729492, guid: 5bd2b4c076ae94b46be9d09792284ef0,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 981532302033729492, guid: 5bd2b4c076ae94b46be9d09792284ef0,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 981532302033729492, guid: 5bd2b4c076ae94b46be9d09792284ef0,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 981532302033729492, guid: 5bd2b4c076ae94b46be9d09792284ef0,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 981532302033729492, guid: 5bd2b4c076ae94b46be9d09792284ef0,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 981532302033729492, guid: 5bd2b4c076ae94b46be9d09792284ef0,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 981532302033729495, guid: 5bd2b4c076ae94b46be9d09792284ef0,
-        type: 3}
-      propertyPath: m_Name
-      value: BrownTankSpawnPoint
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 5bd2b4c076ae94b46be9d09792284ef0, type: 3}
 --- !u!1 &1643863141
 GameObject:
   m_ObjectHideFlags: 0
@@ -1526,75 +1457,6 @@ Transform:
   m_Father: {fileID: 604123502}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &1660653991
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 758349197}
-    m_Modifications:
-    - target: {fileID: 5518563443354991529, guid: 52550e2412b146249afd0921c2849716,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -9.85
-      objectReference: {fileID: 0}
-    - target: {fileID: 5518563443354991529, guid: 52550e2412b146249afd0921c2849716,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 4.59
-      objectReference: {fileID: 0}
-    - target: {fileID: 5518563443354991529, guid: 52550e2412b146249afd0921c2849716,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5518563443354991529, guid: 52550e2412b146249afd0921c2849716,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5518563443354991529, guid: 52550e2412b146249afd0921c2849716,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5518563443354991529, guid: 52550e2412b146249afd0921c2849716,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5518563443354991529, guid: 52550e2412b146249afd0921c2849716,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5518563443354991529, guid: 52550e2412b146249afd0921c2849716,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5518563443354991529, guid: 52550e2412b146249afd0921c2849716,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5518563443354991529, guid: 52550e2412b146249afd0921c2849716,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5518563443354991529, guid: 52550e2412b146249afd0921c2849716,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5518563443354991530, guid: 52550e2412b146249afd0921c2849716,
-        type: 3}
-      propertyPath: m_Name
-      value: GreyTankSpawnPoint
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 52550e2412b146249afd0921c2849716, type: 3}
 --- !u!1 &1775161018
 GameObject:
   m_ObjectHideFlags: 0
@@ -3669,12 +3531,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!4 &1892346670 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 5518563443354991529, guid: 52550e2412b146249afd0921c2849716,
-    type: 3}
-  m_PrefabInstance: {fileID: 1660653991}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1914479413
 GameObject:
   m_ObjectHideFlags: 0
@@ -3865,7 +3721,7 @@ GameObject:
   - component: {fileID: 1966205137}
   m_Layer: 8
   m_Name: Treds
-  m_TagString: Untagged
+  m_TagString: Tred
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

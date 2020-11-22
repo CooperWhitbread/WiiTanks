@@ -393,6 +393,11 @@ MonoBehaviour:
   I_TredTransform1: {fileID: 4129441936683934224}
   I_TredTransform2: {fileID: 7200995923252189420}
   I_TredDistanceBetweenTreds: 0.2
+  I_BombPrefab: {fileID: 4885465352932661211, guid: 749776e669ab09b4e8cb946d04ec2750,
+    type: 3}
+  I_BombScript: {fileID: 11400000, guid: e718f2d597e4a8147a60ae780bc7e816, type: 2}
+  I_DeathCrossPrefab: {fileID: 6032282327030068313, guid: 4cf548f2d6df9a6469c22dbc0977e231,
+    type: 3}
   I_TurretRotationSpeed: 0.5
   I_MinTimeToShoot: 5
   I_MaxTimeToShoot: 10
@@ -438,7 +443,7 @@ GameObject:
   - component: {fileID: 3323769632799502971}
   m_Layer: 8
   m_Name: Treds
-  m_TagString: Untagged
+  m_TagString: Tred
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

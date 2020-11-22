@@ -16,12 +16,14 @@ abstract public class Tank : MonoBehaviour
     [SerializeField] protected Transform I_TredTransform1;
     [SerializeField] protected Transform I_TredTransform2;
     [SerializeField] protected float I_TredDistanceBetweenTreds = 0.2f;
-
+    [SerializeField] protected Bomb I_BombPrefab;
+    [SerializeField] protected GameObject I_DeathCrossPrefab;
 
     ///Protected Variables
     //Objects
     static protected ContactFilter2D s_ContactFilter = new ContactFilter2D();
     protected Bullet[] m_Bullets = new Bullet[5];
+    private Bomb[] m_Bombs = new Bomb[2];
     //Treds
     protected Vector2 m_TredLastTransform = Vector2.zero;
     //Shooting variables
@@ -51,12 +53,18 @@ abstract public class Tank : MonoBehaviour
         s_ContactFilter.SetLayerMask(Physics2D.GetLayerCollisionMask(gameObject.layer));
         s_ContactFilter.useLayerMask = true;
 
-        //Initialize all the bullets
-        for (int i = 0; i < 5; i++)
+        //Initialize all the bullets & bombs
+        for (int i = 0; i < m_Bullets.Length; i++)
         {
             m_Bullets[i] = Instantiate(I_BulletPrefab, I_ShootTransform.position, I_ShootTransform.rotation);
             m_Bullets[i].gameObject.SetActive(false);
             m_Bullets[i].gameObject.transform.SetParent(gameObject.transform);
+        }
+        for (int i = 0; i < m_Bombs.Length; i++)
+        {
+            m_Bombs[i] = Instantiate(I_BombPrefab, I_ShootTransform.position, I_ShootTransform.rotation);
+            m_Bombs[i].gameObject.SetActive(false);
+            m_Bombs[i].gameObject.transform.SetParent(gameObject.transform);
         }
 
         InheritedStart();
@@ -77,13 +85,18 @@ abstract public class Tank : MonoBehaviour
     {
         m_Bullets[numberInArray].gameObject.SetActive(false);
     }
+    public void ExplodeBomb(int numberInArray)
+    {
+        m_Bombs[numberInArray].gameObject.SetActive(false);
+    }
     public void CollisionEnter(Collision2D collision)
     {
         //Check What is colliding
         switch (collision.gameObject.layer)
         {
             case GlobalVariables.LayerBullets:
-                DestroyTank();
+                if (collision.gameObject.tag != GlobalVariables.TagBomb)
+                    DestroyTank();
                 break;
             case GlobalVariables.LayerWalls:
                 //WallRotate(collision);
@@ -95,6 +108,14 @@ abstract public class Tank : MonoBehaviour
     public void CollisionStay(Collision2D collision)
     {
         InheritedOnCollisionStay(collision);
+    }
+    public void DestroyTank()
+    {
+        GameObject.Find(GlobalVariables.GlobalVariableObjectName).GetComponent<GlobalVariables>().SetBullets(ref m_Bullets);
+        GameObject.Find(GlobalVariables.GlobalVariableObjectName).GetComponent<GlobalVariables>().SetBombs(ref m_Bombs);
+        I_TredsParentObject.transform.parent = GameObject.Find(GlobalVariables.GlobalVariableObjectName).transform;
+        SpawnDeathCross();
+       Destroy(gameObject);
     }
 
     ///Private Functions
@@ -128,12 +149,6 @@ abstract public class Tank : MonoBehaviour
             //m_targetRotation = rotateDegree2;
 
     } */ //Not using
-    private void DestroyTank()
-    {
-        GameObject.Find(GlobalVariables.GlobalVariableObjectName).GetComponent<GlobalVariables>().SetBullets(m_Bullets);
-        I_TredsParentObject.transform.parent = GameObject.Find(GlobalVariables.GlobalVariableObjectName).transform;
-        Destroy(gameObject);
-    }
 
     ///Protected Functions
     protected void Shoot()
@@ -143,7 +158,7 @@ abstract public class Tank : MonoBehaviour
         {
             if (hit.collider.gameObject.layer == GlobalVariables.LayerTanks)
             {
-                for (int i = 0; i < 5; i++)
+                for (int i = 0; i < m_Bullets.Length; i++)
                 {
                     if (!m_Bullets[i].gameObject.activeSelf)
                     {
@@ -156,6 +171,19 @@ abstract public class Tank : MonoBehaviour
                         break;
                     }
                 }
+            }
+        }
+    }
+    protected void DropBomb()
+    {
+        for (int i = 0; i < m_Bombs.Length; i++)
+        {
+            if (!m_Bombs[i].gameObject.activeSelf)
+            {
+                //Shoot Bullets
+                m_Bombs[i].Initialize(i, I_BodyRB2D.position, I_TurretRB2D.rotation);
+                m_Bombs[i].gameObject.SetActive(true);
+                break;
             }
         }
     }
@@ -317,7 +345,11 @@ abstract public class Tank : MonoBehaviour
         }
         return true;
     }
-   
+    protected void SpawnDeathCross()
+    {
+        Instantiate(I_DeathCrossPrefab, I_BodyRB2D.position, Quaternion.identity, GameObject.Find(GlobalVariables.GlobalVariableObjectName).transform);
+    }
+
     ///Logic protected Functions
     //Not currently Using
     protected bool CheckCollisionForRotation(float rotation, float distance)

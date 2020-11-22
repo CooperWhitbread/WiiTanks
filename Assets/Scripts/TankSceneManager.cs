@@ -21,7 +21,11 @@ public class TankSceneManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!I_Testing)
+        if (GameObject.Find(GlobalVariables.PlayerTankName) == null)
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+        /*if (!I_Testing)
         {
             //Check if Player is dead
             if (GameObject.Find(GlobalVariables.PlayerTankName) == null)
@@ -36,6 +40,6 @@ public class TankSceneManager : MonoBehaviour
             {
                 SceneManager.LoadScene("TestingScene");
             }
-        }
+        }*/
     }
 }

@@ -10,7 +10,7 @@ PrefabInstance:
     - target: {fileID: 5518563443354991529, guid: 52550e2412b146249afd0921c2849716,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -1.05
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5518563443354991529, guid: 52550e2412b146249afd0921c2849716,
         type: 3}
@@ -25,17 +25,17 @@ PrefabInstance:
     - target: {fileID: 5518563443354991529, guid: 52550e2412b146249afd0921c2849716,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5518563443354991529, guid: 52550e2412b146249afd0921c2849716,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5518563443354991529, guid: 52550e2412b146249afd0921c2849716,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5518563443354991529, guid: 52550e2412b146249afd0921c2849716,
         type: 3}
@@ -65,7 +65,7 @@ PrefabInstance:
     - target: {fileID: 5518563443354991530, guid: 52550e2412b146249afd0921c2849716,
         type: 3}
       propertyPath: m_Name
-      value: NavyTankSpawnPoint
+      value: TialTankSpawnPoint
       objectReference: {fileID: 0}
     - target: {fileID: 5518563443354991535, guid: 52550e2412b146249afd0921c2849716,
         type: 3}

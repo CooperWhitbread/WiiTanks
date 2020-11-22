@@ -12,17 +12,17 @@ public class Bullet : MonoBehaviour
     private bool m_FirstHit = true;
 
     ///Unity Functions
-    public void Awake()
+    void Awake()
     {
         m_SpriteRenderer = GetComponent<SpriteRenderer>();
         m_RigidBody2D = GetComponent<Rigidbody2D>();
     }
-    public void FixedUpdate()
-    {
+    void FixedUpdate()
+    { 
         m_RigidBody2D.velocity = new Vector2(Mathf.Cos(Mathf.Deg2Rad * m_RigidBody2D.rotation), Mathf.Sin(Mathf.Deg2Rad * m_RigidBody2D.rotation)) *  m_Velocity;
         //Debug.Log(transform.up);
     }
-    private void OnCollisionEnter2D(Collision2D col)
+    void OnCollisionEnter2D(Collision2D col)
     {
         //Check Collision Type
         if (col.gameObject.layer == LayerMask.NameToLayer("Tanks") ||
@@ -47,7 +47,8 @@ public class Bullet : MonoBehaviour
         }
     }
 
-    private void DestroyBullet()
+    ///Public Functions
+    public void DestroyBullet()
     {
         if (GetComponentInParent<Tank>())
         {
@@ -58,8 +59,6 @@ public class Bullet : MonoBehaviour
             GetComponentInParent<GlobalVariables>().DestroyBullet(m_NumberInArray);
         }
     }
-
-    ///Public Functions
     public void Initialize(BulletScript objectScript, int numberInArray, Vector3 position, float rotation)
     {
         Vector3 rot = new Vector3(0.0f, 0.0f, rotation);

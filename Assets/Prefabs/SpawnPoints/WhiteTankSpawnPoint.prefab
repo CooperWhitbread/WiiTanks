@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &4686833631684709501
+--- !u!1001 &6463986635214854066
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -11,7 +11,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 2550770731585939164, guid: 868ca0bcf1ef0734abbacdef3c0810b4,
+      objectReference: {fileID: 4946601292520697097, guid: 868ca0bcf1ef0734abbacdef3c0810b4,
         type: 3}
     - target: {fileID: 981532302033729492, guid: 5bd2b4c076ae94b46be9d09792284ef0,
         type: 3}
@@ -71,7 +71,7 @@ PrefabInstance:
     - target: {fileID: 981532302033729495, guid: 5bd2b4c076ae94b46be9d09792284ef0,
         type: 3}
       propertyPath: m_Name
-      value: GreyTankSpawnPoint
+      value: WhiteTankSpawnPoint
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5bd2b4c076ae94b46be9d09792284ef0, type: 3}

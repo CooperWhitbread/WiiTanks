@@ -1,0 +1,188 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Bomb : MonoBehaviour
+{
+    ///Inspector Variables
+    [SerializeField] protected Sprite I_NormalSprite;
+    [SerializeField] protected Sprite I_FlashingSprite;
+    [SerializeField] protected float I_FlashingSpeed = 0.4f;
+    [SerializeField] protected float I_TimeDelayForTankNearExposion = 0.4f;
+    [SerializeField] protected GameObject I_DistanceColliderObject;
+
+    ///Private Variables
+    private SpriteRenderer m_SpriteRenderer;
+    private int m_NumberInArray = -1;
+    private float m_TimeUntilDestory = 0.0f;
+    private Vector3 m_Position = Vector3.zero;
+    private float m_TimeOfCreation = 0.0f;
+    private bool m_HasCheckedForExternalExplodeCollider = false;
+
+    ///Unity Functions
+    private void Awake()
+    {
+        m_SpriteRenderer = GetComponent<SpriteRenderer>();
+    }
+    private void FixedUpdate()
+    {
+        //Check if time from hit to explode finished
+        if (m_TimeUntilDestory != 0.0f)
+        {
+            DestoryBomb();
+        }
+        else if (m_TimeOfCreation + 8.0f <= Time.fixedTime)
+        {
+            //Destroy
+            Explode();
+        }
+        else if (m_TimeOfCreation + 6.0f <= Time.fixedTime)
+        {
+            //Run Flashing
+            float interval = (Time.fixedTime - m_TimeOfCreation - 6.0f) / 2.0f / I_FlashingSpeed;
+            float redOrYellow = Mathf.Floor((interval - Mathf.Floor(interval)) * 2.0f);
+
+            if (redOrYellow == 0)
+                m_SpriteRenderer.sprite = I_FlashingSprite;
+            else
+                m_SpriteRenderer.sprite = I_NormalSprite;
+        }
+
+        //TurnColliderOn
+        GameObject parentBody = GameObject.Find(GlobalVariables.PlayerTankBodyName);
+        if (parentBody.transform.parent == transform.parent)
+        {
+            if (Vector3.Distance(parentBody.transform.position, transform.position) > 2.7f)
+                I_DistanceColliderObject.GetComponent<CircleCollider2D>().enabled = true;
+        }
+        else
+        {
+            for (int i = 0; i < transform.parent.childCount; i++)
+            {
+                if (transform.parent.GetChild(i).name == "Body")
+                {
+                    if (Vector3.Distance(transform.parent.GetChild(i).transform.position, transform.position) >= 2.0f)
+                        I_DistanceColliderObject.GetComponent<CircleCollider2D>().enabled = true;
+                }
+            }
+        }
+
+        //Keep position constant
+        transform.position = m_Position;
+    }
+
+    /// Private Functions
+    private void Explode()
+    {
+        if (transform.GetChild(0).gameObject.activeSelf)
+        {
+            return;
+        }
+        transform.GetChild(0).gameObject.SetActive(true);
+        m_TimeUntilDestory = Time.fixedTime + 1.0f;
+        m_SpriteRenderer.sprite = null;
+
+    }
+    private void DestoryBomb()
+    {
+        //Leave time for explosion
+        if (Time.fixedTime >= m_TimeUntilDestory)
+        {
+            transform.GetChild(0).gameObject.SetActive(false);
+            m_TimeUntilDestory = 0.0f;
+
+            if (GetComponentInParent<Tank>())
+            {
+                GetComponentInParent<Tank>().ExplodeBomb(m_NumberInArray);
+            }
+            else
+            {
+                GetComponentInParent<GlobalVariables>().ExplodeBomb(m_NumberInArray);
+            }
+        }
+        else if (!m_HasCheckedForExternalExplodeCollider && Time.fixedTime >= m_TimeUntilDestory - 0.5f)
+        {
+            GameObject[] objects = GameObject.FindGameObjectsWithTag(GlobalVariables.TagBomb);
+            bool[] isOn = new bool[objects.Length];
+            for (int i = 0; i< objects.Length; i++)
+            {
+                if (objects[i].name == "DistanceCollider")
+                {
+                    isOn[i] = objects[i].GetComponent<CircleCollider2D>().enabled;
+                    objects[i].GetComponent<CircleCollider2D>().enabled = false;
+                }
+            }
+
+            m_HasCheckedForExternalExplodeCollider = true;
+            I_DistanceColliderObject.GetComponent<CircleCollider2D>().enabled = true;
+            Collider2D[] hits = new Collider2D[16];
+            ContactFilter2D contactF = new ContactFilter2D();
+            contactF.useTriggers = true;
+            contactF.SetLayerMask(1 << GlobalVariables.LayerTanks | 1 << GlobalVariables.LayerBullets);
+            int hit = I_DistanceColliderObject.GetComponent<CircleCollider2D>().OverlapCollider(contactF, hits);
+            for (int i = 0; i < hit; i++)
+            {
+                if (hits[i] != null)
+                {
+                    if (hits[i].gameObject.tag == GlobalVariables.TagBullet)
+                    {
+                        hits[i].GetComponent<Bullet>().DestroyBullet();
+                    }
+                    else if (hits[i].gameObject.layer == GlobalVariables.LayerTanks)
+                    {
+                        hits[i].transform.parent.GetComponent<Tank>().DestroyTank();
+                    }
+                    else if (hits[i].gameObject.tag == GlobalVariables.TagBomb)
+                    {
+                        hits[i].transform.parent.GetComponent<Bomb>().Explode();
+                    }
+                }
+            }
+
+            //Correct the colliders for bombs
+            for (int i = 0; i < objects.Length; i++)
+            {
+                if (objects[i].name == "DistanceCollider")
+                {
+                    objects[i].GetComponent<CircleCollider2D>().enabled = true;
+                }
+            }
+        }
+    }
+
+    ///Public Functions
+    public void Initialize(int numberInArray, Vector3 position, float rotation)
+    {
+        Vector3 rot = new Vector3(0.0f, 0.0f, rotation);
+        transform.eulerAngles = rot;
+        transform.position = position;
+        m_SpriteRenderer.sprite = I_NormalSprite;
+        m_NumberInArray = numberInArray;
+        m_Position = position;
+        m_TimeOfCreation = Time.fixedTime;
+        I_DistanceColliderObject.GetComponent<CircleCollider2D>().enabled = false;
+        m_TimeUntilDestory = 0.0f;
+        m_HasCheckedForExternalExplodeCollider = false;
+    }
+    public void HitColliderCall(GameObject go)
+    {
+        if (go.layer == GlobalVariables.LayerBullets)
+        {
+            Explode();
+            go.GetComponent<Bullet>().DestroyBullet();
+        }
+    }
+    public void DistanceColliderCall(int layer)
+    {
+        //Check who collided with
+        if (layer == GlobalVariables.LayerTanks)
+        {
+            if (m_TimeOfCreation > Time.fixedTime - 8.0f + I_TimeDelayForTankNearExposion)
+                m_TimeOfCreation = Time.fixedTime - 8.0f + I_TimeDelayForTankNearExposion;
+        }
+    }
+    public void SetLevelInArray(int level)
+    {
+        m_NumberInArray = level;
+    }
+}

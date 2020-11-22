@@ -6,6 +6,9 @@ public class PlayerMovement : Tank
     [SerializeField] protected BoxCollider2D I_CameraBoundsBox;
     [SerializeField] protected float m_rotateSpeed = 15.0f;
 
+    ///Private Variable
+    private Bomb[] m_Bombs = new Bomb[2];
+
     ///Virtual Functions///
     protected override void InheritedUpdate()
     {
@@ -14,6 +17,11 @@ public class PlayerMovement : Tank
         {
             Shoot();
         }
+        if (Input.GetMouseButtonDown(1)) //Input.GetButtonDown("Shoot") if want space bar
+        {
+            DropBomb();
+        }
+
 
         //Update the Camera
         MoveCamera();
@@ -52,8 +60,11 @@ public class PlayerMovement : Tank
         else if (I_BodyRB2D.rotation < -180)
             I_BodyRB2D.SetRotation(I_BodyRB2D.rotation + 360);*/
     }
-    protected override void InheritedStart() { }
+    protected override void InheritedStart() 
+    {
+    }
 
+    ///Public Variables
     void MoveCamera()
     {
         //Get the left bottom corner and the top right corner of the map
