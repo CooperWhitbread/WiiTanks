@@ -126,11 +126,14 @@ abstract public class Tank : MonoBehaviour
         DelayShoot(false);
 
         //Treds
-        if (Vector2.Distance(m_TredLastTransform, I_BodyRB2D.position) >= I_TredDistanceBetweenTreds)
+        if (!m_SharpRotationOn)
         {
-            Instantiate(I_TredPrefab, I_TredTransform1.position, I_BodyRB2D.transform.rotation, I_TredsParentObject.transform);
-            Instantiate(I_TredPrefab, I_TredTransform2.position, I_BodyRB2D.transform.rotation, I_TredsParentObject.transform);
-            m_TredLastTransform = I_BodyRB2D.position;
+            if (Vector2.Distance(m_TredLastTransform, I_BodyRB2D.position) >= I_TredDistanceBetweenTreds)
+            {
+                Instantiate(I_TredPrefab, I_TredTransform1.position, I_BodyRB2D.transform.rotation, I_TredsParentObject.transform);
+                Instantiate(I_TredPrefab, I_TredTransform2.position, I_BodyRB2D.transform.rotation, I_TredsParentObject.transform);
+                m_TredLastTransform = I_BodyRB2D.position;
+            }
         }
     }
     private void ConstantUpdatePost()
@@ -280,6 +283,10 @@ abstract public class Tank : MonoBehaviour
                 I_BodyRB2D.SetRotation(newRotateDegree);
             }
         }
+    }
+    protected void GradualMoveTankToTarget(Vector2 target, float rotationSpeed, float sharpTurnRot = 90.0f, float sharpRotationSpeed = 3.0f)
+    {
+        GradualMoveTank((target - I_BodyRB2D.position).normalized, rotationSpeed, sharpTurnRot, sharpRotationSpeed);
     }
     protected void RotateTurret(Vector3 lookAt)
     {

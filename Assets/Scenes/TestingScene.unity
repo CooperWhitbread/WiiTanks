@@ -208,7 +208,7 @@ PrefabInstance:
     - target: {fileID: 727429384845553391, guid: e00dcd60e0cc6f94b8ecdc4a480ed6d6,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e00dcd60e0cc6f94b8ecdc4a480ed6d6, type: 3}
@@ -1200,7 +1200,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1094944752}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.48, y: -1.47, z: 0}
+  m_LocalPosition: {x: 8.67, y: 1.07, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 604123502}
@@ -1240,10 +1240,9 @@ MonoBehaviour:
   I_DeathCrossPrefab: {fileID: 6032282327030068313, guid: 4cf548f2d6df9a6469c22dbc0977e231,
     type: 3}
   I_TurretRotationSpeed: 1
-  I_MinTimeToShoot: 6
-  I_MaxTimeToShoot: 12
+  I_MinTimeToShoot: 6000
+  I_MaxTimeToShoot: 12000
   I_PlayerRB2D: {fileID: 1938224870}
-  I_MoveToNextPoinPathFindingDistance: 1
   I_StateManager:
     M_States:
     - M_State: 1
@@ -1278,6 +1277,85 @@ MonoBehaviour:
   tagPenalties: 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
   graphMask:
     value: -1
+--- !u!1 &1097592772
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1097592775}
+  - component: {fileID: 1097592774}
+  - component: {fileID: 1097592773}
+  - component: {fileID: 1097592776}
+  m_Layer: 0
+  m_Name: A* Personal
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1097592773
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1097592772}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d0593b9ebce7594eae13750cb5d2e28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  I_TileMapArray:
+  - {fileID: 1436759495}
+  - {fileID: 1775161021}
+  I_NumberOfGrids: {x: 64, y: 32}
+  I_Position: {x: 0, y: 0}
+  I_NodeSize: 0.5
+  I_DisplayGridGizmos: 1
+  I_PeniltyForWalls: 12
+  I_PeniltyMultiplyerForEndOfWall: 4
+  I_BlurPenaltyScale: 2
+--- !u!114 &1097592774
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1097592772}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d31f56a39980904fab6787e9ed784bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &1097592775
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1097592772}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1097592776
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1097592772}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 806988f0281bcc745aee80769a471b32, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1214321270
 GameObject:
   m_ObjectHideFlags: 0

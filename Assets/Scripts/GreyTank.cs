@@ -1,12 +1,12 @@
 ﻿using UnityEngine;
 using Pathfinding;
+using System.Collections;
 
 public class GreyTank : EnemyTank
 {
 
     ///Inspector Variables
     [SerializeField] Rigidbody2D I_PlayerRB2D;
-    [SerializeField] float I_MoveToNextPoinPathFindingDistance = 1.0f;
     [SerializeField] StateManager I_StateManager;
 
     ///Private Variables
@@ -16,20 +16,25 @@ public class GreyTank : EnemyTank
     private int m_DelayTurretUpdate = 0;
     private int m_MaxTurretUpdateDelay = 20;
 
+    Vector3[] m_Path;
+    private int m_TargetIndex = 0;
+    Vector3 m_CurrentWayPoint;
+
     ///Virtual Functions
     protected override void InheritedStart()
     {
         m_ResetTimeForMove = Time.unscaledTime + m_SecondsForUpdateTargetTracking;
         I_StateManager.Start(Time.unscaledTime);
-        m_Seeker = GetComponent<Seeker>();
-        RecheckMovementTargeting();
+        //m_Seeker = GetComponent<Seeker>();
+        //RecheckMovementTargeting();
+        PathRequestManager.RequestPath(new PathRequest(I_BodyRB2D.position, I_PlayerRB2D.position, OnPathFound));
     }
     protected override void InheritedFixedUpdate()
     {
         //Path Finding
         if (m_ResetTimeForMove <= Time.unscaledTime)
         {
-            RecheckMovementTargeting();
+            PathRequestManager.RequestPath(new PathRequest(I_BodyRB2D.position, I_PlayerRB2D.position, OnPathFound));
             m_ResetTimeForMove = Time.unscaledTime + m_SecondsForUpdateTargetTracking;
         }
 
@@ -40,7 +45,7 @@ public class GreyTank : EnemyTank
     }
 
     ///Private Functions
-    private void SeekerReturn(Path p)
+    /*private void SeekerReturn(Path p)
     {
         if (!p.error)
         {
@@ -53,10 +58,11 @@ public class GreyTank : EnemyTank
         {
             RecheckMovementTargeting();
         }
-    }
+    }*/
     private void UpdateMove()
     {
-        if (m_MovePath != null)
+        FollowPath();
+        /*if (m_MovePath != null)
         {
             if (m_CurrentWayPath >= m_MovePath.vectorPath.Count)
             {
@@ -77,7 +83,7 @@ public class GreyTank : EnemyTank
                     m_SharpRotationOn = false;
                 }
             }
-        }
+        }*/
     }
     private void UpdateTurret()
     {
@@ -141,7 +147,7 @@ public class GreyTank : EnemyTank
     }
     private void RecheckMovementTargeting()
     {
-        m_ReachedEndOfPath = true;
+        /*m_ReachedEndOfPath = true;
         switch (I_StateManager.M_CurrentState)
         {
             case StateManager.State.Stelth:
@@ -156,6 +162,53 @@ public class GreyTank : EnemyTank
                 break;
             default:
                 break;
+        }*/
+    }
+
+    public void OnDrawGizmos()
+    {
+        if (m_Path != null)
+        {
+            for (int i = m_TargetIndex; i < m_Path.Length; i++)
+            {
+                Gizmos.color = Color.black;
+                Gizmos.DrawCube(m_Path[i], Vector3.one / 4);
+
+                if (i == m_TargetIndex)
+                {
+                    Gizmos.DrawLine(I_BodyRB2D.position, m_Path[i]);
+                }
+                else
+                {
+                    Gizmos.DrawLine(m_Path[i-1], m_Path[i]);
+                }
+            }
+        }
+    }
+    public void OnPathFound(Vector3[] newPath, bool pathSucess)
+    {
+        if (pathSucess)
+        {
+            m_Path = newPath;
+            m_CurrentWayPoint = m_Path[0];
+            m_TargetIndex = 0;
+        }
+    }
+    private void FollowPath()
+    {
+        if (m_Path != null)
+        {
+            if (Vector3.Distance(I_BodyRB2D.position, m_CurrentWayPoint) <= 0.40f)
+            {
+                if (m_TargetIndex + 1 >= m_Path.Length)
+                {
+                    return;
+                }
+
+                m_CurrentWayPoint = m_Path[++m_TargetIndex];
+            }
+
+            GradualMoveTankToTarget(m_CurrentWayPoint, m_SpeedForGradualChangeVelocity, 120.0f, m_SpeedForGradualChangeVelocityStationary);
         }
     }
 }
