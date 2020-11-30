@@ -57,8 +57,10 @@ public class PlayerMovement : Tank
         else if (I_BodyRB2D.rotation < -180)
             I_BodyRB2D.SetRotation(I_BodyRB2D.rotation + 360);*/
     }
-    protected override void InheritedStart() 
+    protected override void InheritedStart()
     {
+        m_Bullets = new Bullet[5];
+        m_Bombs = new Bomb[2];
     }
 
     ///Public Variables

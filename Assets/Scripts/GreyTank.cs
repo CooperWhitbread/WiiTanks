@@ -25,6 +25,8 @@ public class GreyTank : EnemyTank
     {
         m_ResetTimeForMove = Time.unscaledTime + m_SecondsForUpdateTargetTracking;
         I_StateManager.Start(Time.unscaledTime);
+        m_Bullets = new Bullet[5];
+        m_Bombs = new Bomb[2];
         //m_Seeker = GetComponent<Seeker>();
         //RecheckMovementTargeting();
         PathRequestManager.RequestPath(new PathRequest(I_BodyRB2D.position, I_PlayerRB2D.position, OnPathFound));

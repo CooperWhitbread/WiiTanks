@@ -6,11 +6,13 @@ public class Bullet : MonoBehaviour
 {
     ///Private Variables
     private SpriteRenderer m_SpriteRenderer;
+    private ParticleSystem m_ParticleSystem;
+    private CapsuleCollider2D m_Collider;
     private Rigidbody2D m_RigidBody2D;
     private float m_Velocity = 0.0f;
     private int m_NumberInArray = -1;
     private bool m_FirstHit = true;
-    private float m_TimeForWeirdBulletWallCheck = 0.0f;
+    //private float m_TimeForWeirdBulletWallCheck = 0.0f;
 
 
     ///Unity Functions
@@ -18,6 +20,8 @@ public class Bullet : MonoBehaviour
     {
         m_SpriteRenderer = GetComponent<SpriteRenderer>();
         m_RigidBody2D = GetComponent<Rigidbody2D>();
+        m_ParticleSystem = GetComponentInChildren<ParticleSystem>();
+        m_Collider = GetComponentInChildren<CapsuleCollider2D>();
     }
     void FixedUpdate()
     { 
@@ -25,13 +29,26 @@ public class Bullet : MonoBehaviour
         //Debug.Log(transform.up);
 
         //Check if bullet is going slowly against the wall
-        if (Time.fixedTime <= m_TimeForWeirdBulletWallCheck)//Haven't tested, if problem doesn't turn up, all good
+        /*if (Time.fixedTime >= m_TimeForWeirdBulletWallCheck)//Haven't tested, if problem doesn't turn up, all good
         {
             m_TimeForWeirdBulletWallCheck = Time.fixedTime + 0.5f;
-            if (new Vector2(Mathf.Cos(Mathf.Deg2Rad * m_RigidBody2D.rotation), Mathf.Sin(Mathf.Deg2Rad * m_RigidBody2D.rotation)) != 
-                new Vector2 (transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y))
+            if (Mathf.Abs(Mathf.Cos(Mathf.Deg2Rad * m_RigidBody2D.rotation) - transform.rotation.eulerAngles.x) >= 0.1f ||
+                Mathf.Abs(Mathf.Sin(Mathf.Deg2Rad * m_RigidBody2D.rotation) - transform.rotation.eulerAngles.y) >= 0.1f)
             {
                 DestroyBullet();
+            }
+        }*/
+
+        //Destory the bullet once particle system is gone
+        if (!m_ParticleSystem.IsAlive())
+        {
+            if (GetComponentInParent<Tank>())
+            {
+                GetComponentInParent<Tank>().DestroyBullet(m_NumberInArray);
+            }
+            else
+            {
+                GetComponentInParent<GlobalVariables>().DestroyBullet(m_NumberInArray);
             }
         }
     }
@@ -63,14 +80,11 @@ public class Bullet : MonoBehaviour
     ///Public Functions
     public void DestroyBullet()
     {
-        if (GetComponentInParent<Tank>())
-        {
-            GetComponentInParent<Tank>().DestroyBullet(m_NumberInArray);
-        }
-        else
-        {
-            GetComponentInParent<GlobalVariables>().DestroyBullet(m_NumberInArray);
-        }
+        //Particle System Cancel 
+        m_ParticleSystem.Stop();
+
+        m_SpriteRenderer.enabled = false;
+        m_Collider.enabled = false;
     }
     public void Initialize(BulletScript objectScript, int numberInArray, Vector3 position, float rotation)
     {
@@ -81,8 +95,12 @@ public class Bullet : MonoBehaviour
         m_Velocity = objectScript.Velocity;
         m_NumberInArray = numberInArray;
         m_FirstHit = true;
-        m_TimeForWeirdBulletWallCheck = 0.0f;
-}
+        //m_TimeForWeirdBulletWallCheck = 0.0f;
+
+        m_ParticleSystem.Play();
+        m_SpriteRenderer.enabled = true;
+        m_Collider.enabled = true;
+    }
 
     public void SetLevelInArray(int level)
     {

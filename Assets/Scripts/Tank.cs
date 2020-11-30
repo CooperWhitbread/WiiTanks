@@ -22,14 +22,17 @@ abstract public class Tank : MonoBehaviour
     ///Protected Variables
     //Objects
     static protected ContactFilter2D s_ContactFilter = new ContactFilter2D();
-    protected Bullet[] m_Bullets = new Bullet[5];
-    private Bomb[] m_Bombs = new Bomb[2];
+    protected Bullet[] m_Bullets = new Bullet[0];
+    protected Bomb[] m_Bombs = new Bomb[0];
+    protected float m_HitTimeForDeath = 0.0f;
     //Treds
     protected Vector2 m_TredLastTransform = Vector2.zero;
     //Shooting variables
     protected int m_NumOfBullets = 0;
     protected bool m_ShootDelayActive = false;
     protected float m_DesiredTimeForShoot = 0.0f;
+    protected ParticleSystem m_ShootParticleSystem;
+    protected ParticleSystem m_BodyExplosionParticleSystem;
     //Body Rotation
     protected bool m_SharpRotationOn = false;
 
@@ -46,12 +49,28 @@ abstract public class Tank : MonoBehaviour
     protected virtual void InheritedOnCollisionStay(Collision2D collision) { }
 
     ///Unity Functions
+    private void Awake()
+    {
+        ParticleSystem[] pts = GetComponentsInChildren<ParticleSystem>();
+        foreach (ParticleSystem p in pts)
+        {
+            if (p.transform.parent.name == GlobalVariables.TurretName)
+                m_ShootParticleSystem = p;
+            else
+                m_BodyExplosionParticleSystem = p;
+        }
+
+        m_ShootParticleSystem.Stop();
+        m_BodyExplosionParticleSystem.Stop();
+    }
     private void Start()
     {
         //Contact filter initializeation
         s_ContactFilter.useTriggers = false;
         s_ContactFilter.SetLayerMask(Physics2D.GetLayerCollisionMask(gameObject.layer));
         s_ContactFilter.useLayerMask = true;
+
+        InheritedStart();
 
         //Initialize all the bullets & bombs
         for (int i = 0; i < m_Bullets.Length; i++)
@@ -66,8 +85,6 @@ abstract public class Tank : MonoBehaviour
             m_Bombs[i].gameObject.SetActive(false);
             m_Bombs[i].gameObject.transform.SetParent(gameObject.transform);
         }
-
-        InheritedStart();
     }
     private void FixedUpdate()
     {
@@ -77,6 +94,11 @@ abstract public class Tank : MonoBehaviour
     }
     private void Update()
     {
+        if (m_BodyExplosionParticleSystem.particleCount == 0 && 
+            !GetComponentInChildren<SpriteRenderer>().enabled && 
+            Time.fixedTime >= m_HitTimeForDeath + 0.1f)
+            Destroy(gameObject);
+
         InheritedUpdate();
     }
 
@@ -115,7 +137,11 @@ abstract public class Tank : MonoBehaviour
         GameObject.Find(GlobalVariables.GlobalVariableObjectName).GetComponent<GlobalVariables>().SetBombs(ref m_Bombs);
         I_TredsParentObject.transform.parent = GameObject.Find(GlobalVariables.GlobalVariableObjectName).transform;
         SpawnDeathCross();
-       Destroy(gameObject);
+        m_BodyExplosionParticleSystem.Play();
+        foreach (SpriteRenderer sr in GetComponentsInChildren<SpriteRenderer>())
+            sr.enabled = false;
+        GetComponentInChildren<BoxCollider2D>().enabled = false;
+        m_HitTimeForDeath = Time.fixedTime;
     }
 
     ///Private Functions
@@ -156,16 +182,19 @@ abstract public class Tank : MonoBehaviour
     ///Protected Functions
     protected void Shoot()
     {
+        //Checks if there are no walls between turret and body
         RaycastHit2D hit = Physics2D.Raycast(I_ShootTransform.position, GetVector2FromAngle(180 + I_TurretRB2D.rotation), 0.5f);
         if(hit.collider != null)
         {
-            if (hit.collider.gameObject.layer == GlobalVariables.LayerTanks || hit.collider.gameObject.layer == GlobalVariables.LayerWallHole)
+            if (hit.collider.gameObject.layer == GlobalVariables.LayerTanks || hit.collider.gameObject.layer == GlobalVariables.LayerWallHole ||
+                hit.collider.gameObject.layer == GlobalVariables.LayerBullets)
             {
                 for (int i = 0; i < m_Bullets.Length; i++)
                 {
-                    if (!m_Bullets[i].gameObject.activeSelf)
+                    if (!m_Bullets[i].GetComponent<SpriteRenderer>().enabled)
                     {
                         //Shoot Bullets
+                        m_ShootParticleSystem.Play();
                         m_Bullets[i].Initialize(I_BulletScript, i, I_ShootTransform.position, I_TurretRB2D.rotation);
                         m_Bullets[i].gameObject.SetActive(true);
 
@@ -184,8 +213,8 @@ abstract public class Tank : MonoBehaviour
             if (!m_Bombs[i].gameObject.activeSelf)
             {
                 //Shoot Bullets
-                m_Bombs[i].Initialize(i, I_BodyRB2D.position, I_TurretRB2D.rotation);
                 m_Bombs[i].gameObject.SetActive(true);
+                m_Bombs[i].Initialize(i, I_BodyRB2D.position, I_TurretRB2D.rotation);
                 break;
             }
         }
@@ -207,6 +236,7 @@ abstract public class Tank : MonoBehaviour
             {
                 m_ShootDelayActive = false;
                 m_DesiredTimeForShoot = 0.0f;
+                m_ShootParticleSystem.Stop();
                 return;
             }
         }
@@ -306,13 +336,14 @@ abstract public class Tank : MonoBehaviour
     {
         //The angle that still needs to be made up
         float diff = GetDiffInRotation(targetDeg, rb.rotation);
+        float rotSpd = rotationSpeed * Time.deltaTime;
 
         if (diff == 180 || diff == -180) //Don't want to be seen to rotate but still rotate it for logic
             rb.SetRotation(targetDeg);
-        else if (diff > rotationSpeed) //Want to rotate anticlockwise if larger than min rotation
-            rb.SetRotation(rb.rotation + rotationSpeed);
-        else if (diff < -rotationSpeed) //Want to rotate clockwise if larger than min rotation
-            rb.SetRotation(rb.rotation - rotationSpeed);
+        else if (diff > rotSpd) //Want to rotate anticlockwise if larger than min rotation
+            rb.SetRotation(rb.rotation + rotSpd);
+        else if (diff < - rotSpd) //Want to rotate clockwise if larger than min rotation
+            rb.SetRotation(rb.rotation - rotSpd);
         else //Value is too small to do min rotation so rotation is done to exact value
             rb.SetRotation(targetDeg);
 
@@ -321,36 +352,6 @@ abstract public class Tank : MonoBehaviour
             rb.SetRotation(rb.rotation - 360);
         else if (rb.rotation < -180)
             rb.SetRotation(rb.rotation + 360);
-    }
-    protected bool CheckForOkShootHit()
-    {
-        RaycastHit2D rayCastHit = Physics2D.Raycast(I_ShootTransform.position, GetVector2FromAngle(I_TurretRB2D.rotation),
-            30.0f, 1 << GlobalVariables.LayerTanks | 1 << GlobalVariables.LayerWalls);
-        if (rayCastHit.collider != null)
-        {
-            if (rayCastHit.collider.gameObject.name == GlobalVariables.PlayerTankBodyName)
-                return true;
-            else if (rayCastHit.collider.gameObject.layer == GlobalVariables.LayerWalls)
-            {
-                Vector2 post = GetVector2FromAngle(I_TurretRB2D.rotation); //Origion Direction
-                Vector2 normal = rayCastHit.normal; //Wall's normal
-                Vector2 ang = post - (2 * Vector2.Dot(post, normal) * normal); //vector of desired direction
-
-                rayCastHit = Physics2D.Raycast(rayCastHit.point, ang,
-                    30.0f, 1 << GlobalVariables.LayerTanks | 1 << GlobalVariables.LayerWalls);
-                if (rayCastHit.collider != null)
-                {
-                    if (rayCastHit.collider.gameObject.name == GlobalVariables.PlayerTankName ||
-                        rayCastHit.collider.gameObject.layer == GlobalVariables.LayerWalls)
-                        return true;
-
-                    return false;
-                }
-                return true;
-            }
-            return false;
-        }
-        return true;
     }
     protected void SpawnDeathCross()
     {

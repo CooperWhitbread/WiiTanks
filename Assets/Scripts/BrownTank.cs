@@ -26,7 +26,13 @@ public class BrownTank : EnemyTank
     }
     protected override void InheritedStart()
     {
+        m_Bullets = new Bullet[5]; 
+        m_Bombs = new Bomb[2];
         m_DesiredTurretRotation = Random.Range(-180.0f, 180.0f);
+    }
+    protected override bool CanShoot()
+    {
+        return true;
     }
 
     ///Private Functions

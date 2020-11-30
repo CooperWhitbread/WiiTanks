@@ -29,6 +29,7 @@ public class GlobalVariables : MonoBehaviour
     //Tank Name
     public const string PlayerTankName = "Player Tank";
     public const string PlayerTankBodyName = "PlayerBody";
+    public const string TurretName = "Turret";
 
     //Layer Names
     public const string TankLayerName = "Tanks";

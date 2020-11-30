@@ -51,9 +51,9 @@ TagManager:
   - name: Walls
     uniqueID: 1809605739
     locked: 0
-  - name: Tanks
+  - name: Bullets
     uniqueID: 713686979
     locked: 0
-  - name: Bullets
+  - name: Tanks
     uniqueID: 3638471001
     locked: 0

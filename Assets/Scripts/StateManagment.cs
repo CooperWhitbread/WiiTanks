@@ -23,6 +23,12 @@ class StateManager
     {
         public State M_State;
         public float M_TimeLength;
+
+        public StateInfo(State state, float timeLength)
+        {
+            M_State = state;
+            M_TimeLength = timeLength;
+        }
     }
 
     /// Variables
@@ -38,7 +44,6 @@ class StateManager
         {
             M_CurrentState = M_States[M_CurrentLevelInState].M_State;
             M_TimeForNextSwitch = currentTime + M_States[M_CurrentLevelInState].M_TimeLength;
-
         }
     }
     public void Update(float currentTime)

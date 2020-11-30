@@ -16,6 +16,9 @@ public class EnemyTank : Tank
     protected bool m_ReachedEndOfPath = false;
     protected Seeker m_Seeker;
 
+    ///Inherited Function
+    protected virtual bool CanShoot() { return BasicCheckForOkShootHit(); }
+
     ///Protected Functions
     protected void SetNextShootTime(float min, float max)
     {
@@ -28,7 +31,7 @@ public class EnemyTank : Tank
         {
             if (Time.unscaledTime >= m_TimeAtNextShoot)
             {
-                if (CheckForOkShootHit())
+                if (CanShoot())
                 {
                     //Time to shoot
                     Shoot();
@@ -37,5 +40,35 @@ public class EnemyTank : Tank
                 }
             }
         }
+    }
+    protected bool BasicCheckForOkShootHit()
+    {
+        RaycastHit2D rayCastHit = Physics2D.Raycast(I_ShootTransform.position, GetVector2FromAngle(I_TurretRB2D.rotation),
+            30.0f, 1 << GlobalVariables.LayerTanks | 1 << GlobalVariables.LayerWalls | 1 << GlobalVariables.LayerBullets);
+        if (rayCastHit.collider != null)
+        {
+            if (rayCastHit.collider.gameObject.name == GlobalVariables.PlayerTankBodyName || rayCastHit.collider.gameObject.layer == GlobalVariables.LayerBullets)
+                return true;
+            else if (rayCastHit.collider.gameObject.layer == GlobalVariables.LayerWalls)
+            {
+                Vector2 post = GetVector2FromAngle(I_TurretRB2D.rotation); //Origion Direction
+                Vector2 normal = rayCastHit.normal; //Wall's normal
+                Vector2 ang = post - (2 * Vector2.Dot(post, normal) * normal); //vector of desired direction
+
+                rayCastHit = Physics2D.Raycast(rayCastHit.point, ang,
+                    30.0f, 1 << GlobalVariables.LayerTanks | 1 << GlobalVariables.LayerWalls);
+                if (rayCastHit.collider != null)
+                {
+                    if (rayCastHit.collider.gameObject.name == GlobalVariables.PlayerTankName ||
+                        rayCastHit.collider.gameObject.layer == GlobalVariables.LayerWalls)
+                        return true;
+
+                    return false;
+                }
+                return true;
+            }
+            return false;
+        }
+        return true;
     }
 }

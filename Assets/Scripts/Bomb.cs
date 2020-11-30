@@ -15,6 +15,7 @@ public class Bomb : MonoBehaviour
 
     ///Private Variables
     private SpriteRenderer m_SpriteRenderer;
+    private ParticleSystem m_ParticleSystem;
     private int m_NumberInArray = -1;
     private float m_TimeUntilDestory = 0.0f;
     private Vector3 m_Position = Vector3.zero;
@@ -25,6 +26,7 @@ public class Bomb : MonoBehaviour
     private void Awake()
     {
         m_SpriteRenderer = GetComponent<SpriteRenderer>();
+        m_ParticleSystem = GetComponentInChildren<ParticleSystem>();
     }
     private void FixedUpdate()
     {
@@ -76,11 +78,11 @@ public class Bomb : MonoBehaviour
     /// Private Functions
     private void Explode()
     {
-        if (transform.GetChild(0).gameObject.activeSelf)
+        if (m_ParticleSystem.IsAlive())
         {
             return;
         }
-        transform.GetChild(0).gameObject.SetActive(true);
+        m_ParticleSystem.Play();
         m_TimeUntilDestory = Time.fixedTime + 1.0f;
         m_SpriteRenderer.sprite = null;
 
@@ -90,7 +92,7 @@ public class Bomb : MonoBehaviour
         //Leave time for explosion
         if (Time.fixedTime >= m_TimeUntilDestory)
         {
-            transform.GetChild(0).gameObject.SetActive(false);
+            m_ParticleSystem.Stop();
             m_TimeUntilDestory = 0.0f;
 
             if (GetComponentInParent<Tank>())
@@ -187,6 +189,7 @@ public class Bomb : MonoBehaviour
         I_DistanceColliderObject.GetComponent<CircleCollider2D>().enabled = false;
         m_TimeUntilDestory = 0.0f;
         m_HasCheckedForExternalExplodeCollider = false;
+        m_ParticleSystem.Stop();
     }
     public void HitColliderCall(GameObject go)
     {
