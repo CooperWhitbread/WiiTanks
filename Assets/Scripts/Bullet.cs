@@ -12,7 +12,7 @@ public class Bullet : MonoBehaviour
     private float m_Velocity = 0.0f;
     private int m_NumberInArray = -1;
     private bool m_FirstHit = true;
-    //private float m_TimeForWeirdBulletWallCheck = 0.0f;
+    private float m_TimeForWeirdBulletWallCheck = 0.0f;
 
 
     ///Unity Functions
@@ -26,18 +26,18 @@ public class Bullet : MonoBehaviour
     void FixedUpdate()
     { 
         m_RigidBody2D.velocity = new Vector2(Mathf.Cos(Mathf.Deg2Rad * m_RigidBody2D.rotation), Mathf.Sin(Mathf.Deg2Rad * m_RigidBody2D.rotation)) *  m_Velocity;
-        //Debug.Log(transform.up);
 
         //Check if bullet is going slowly against the wall
-        /*if (Time.fixedTime >= m_TimeForWeirdBulletWallCheck)//Haven't tested, if problem doesn't turn up, all good
+        if (Time.fixedTime >= m_TimeForWeirdBulletWallCheck)//Haven't tested, if problem doesn't turn up, all good
         {
             m_TimeForWeirdBulletWallCheck = Time.fixedTime + 0.5f;
-            if (Mathf.Abs(Mathf.Cos(Mathf.Deg2Rad * m_RigidBody2D.rotation) - transform.rotation.eulerAngles.x) >= 0.1f ||
-                Mathf.Abs(Mathf.Sin(Mathf.Deg2Rad * m_RigidBody2D.rotation) - transform.rotation.eulerAngles.y) >= 0.1f)
+            //if (Mathf.Abs(Mathf.Cos(Mathf.Deg2Rad * m_RigidBody2D.rotation) - transform.rotation.eulerAngles.x) >= 0.1f ||
+            //    Mathf.Abs(Mathf.Sin(Mathf.Deg2Rad * m_RigidBody2D.rotation) - transform.rotation.eulerAngles.y) >= 0.1f)
+            if (Mathf.Abs(Tank.GetAngleFromVector2(m_RigidBody2D.velocity) - m_RigidBody2D.rotation) >= 1.0f)
             {
                 DestroyBullet();
             }
-        }*/
+        }
 
         //Destory the bullet once particle system is gone
         if (!m_ParticleSystem.IsAlive())
@@ -101,7 +101,6 @@ public class Bullet : MonoBehaviour
         m_SpriteRenderer.enabled = true;
         m_Collider.enabled = true;
     }
-
     public void SetLevelInArray(int level)
     {
         m_NumberInArray = level;

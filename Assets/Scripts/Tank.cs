@@ -25,6 +25,7 @@ abstract public class Tank : MonoBehaviour
     protected Bullet[] m_Bullets = new Bullet[0];
     protected Bomb[] m_Bombs = new Bomb[0];
     protected float m_HitTimeForDeath = 0.0f;
+    private Vector3 m_PositionWhenDead = Vector3.zero;
     //Treds
     protected Vector2 m_TredLastTransform = Vector2.zero;
     //Shooting variables
@@ -62,6 +63,8 @@ abstract public class Tank : MonoBehaviour
 
         m_ShootParticleSystem.Stop();
         m_BodyExplosionParticleSystem.Stop();
+
+        transform.GetChild(0).GetComponent<BoxCollider2D>().enabled = true;
     }
     private void Start()
     {
@@ -142,7 +145,10 @@ abstract public class Tank : MonoBehaviour
             sr.enabled = false;
         GetComponentInChildren<BoxCollider2D>().enabled = false;
         m_HitTimeForDeath = Time.fixedTime;
+        m_PositionWhenDead = transform.GetChild(0).position;
+        transform.GetChild(0).GetComponent<BoxCollider2D>().enabled = false;
     }
+    public bool IsAlive() { return !m_BodyExplosionParticleSystem.IsAlive(); }
 
     ///Private Functions
     private void ConstantUpdatePre()
@@ -164,6 +170,10 @@ abstract public class Tank : MonoBehaviour
     }
     private void ConstantUpdatePost()
     {
+        if (!IsAlive())
+        {
+            transform.GetChild(0).position = m_PositionWhenDead;
+        }
     }
     /*private void WallRotate(Collision2D collision)
     {
@@ -359,7 +369,55 @@ abstract public class Tank : MonoBehaviour
     }
 
     ///Logic protected Functions
-    //Not currently Using
+    protected bool CheckIfGoingToHitSelf(CapsuleCollider2D testCapsule)
+    {
+        Vector2 selfAng = GetVector2FromAngle(I_TurretRB2D.rotation);
+        ContactFilter2D cF2D = new ContactFilter2D();
+        cF2D.SetLayerMask(1 << GlobalVariables.LayerWalls);
+
+        RaycastHit2D[] selfRayCastHit = new RaycastHit2D[16];
+        Physics2D.CapsuleCast(I_ShootTransform.position, testCapsule.size,
+            testCapsule.direction, I_TurretRB2D.rotation, 
+            selfAng, cF2D, selfRayCastHit);
+        if (selfRayCastHit[0].collider != null)
+        {
+            Vector2 selfPost = selfAng; //Origion Direction
+            Vector2 selfNormal = selfRayCastHit[0].normal; //Wall's normal
+            selfAng = selfPost - (2 * Vector2.Dot(selfPost, selfNormal) * selfNormal); //vector of desired direction
+
+            Vector2 point = selfRayCastHit[0].point;
+            cF2D.SetLayerMask(1 << GlobalVariables.LayerWalls | 1 << GlobalVariables.LayerTanks);
+
+            int numHit = Physics2D.CapsuleCast(selfRayCastHit[0].point, testCapsule.size,
+                testCapsule.direction, GetAngleFromVector2(selfAng),
+                selfAng, cF2D, selfRayCastHit);
+            for (int i = 0; i < numHit; i++)
+            {
+                if (selfRayCastHit[i].collider == null)
+                    break;
+                if (selfRayCastHit[i].collider.gameObject.layer == GlobalVariables.LayerTanks)
+                {
+                    if (selfRayCastHit[i].collider.gameObject.transform.parent == transform)
+                        return true; //going to hit itself
+                                     //keep going otherwise, unitl hit wall or self
+                }
+                else //hitting wall
+                    break;
+            }
+            //hitting nothing so return false (uses next line)
+        }
+        return false;
+    }
+    protected int GetNextFreeBulletIndex() //Returns -1 if all are being used
+    {
+        for (int i = 0; i < m_Bullets.Length; i++)
+        {
+            if (!m_Bullets[i].GetComponent<SpriteRenderer>().enabled)
+                return i;
+        }
+        return -1;
+    }
+    //Not currently Using (haven't touched since change of sprite rotation)
     protected bool CheckCollisionForRotation(float rotation, float distance)
     {
         RaycastHit2D[] results = new RaycastHit2D[16];
@@ -386,20 +444,20 @@ abstract public class Tank : MonoBehaviour
     }
 
     ///Logic public Functions
-    public float Dot(Vector2 vec1, Vector2 vec2) => vec1.x * vec2.x + vec1.y * vec2.y;
-    public float GetAngleFromVector2(Vector2 angle)
+    static public float Dot(Vector2 vec1, Vector2 vec2) => vec1.x * vec2.x + vec1.y * vec2.y;
+    static public float GetAngleFromVector2(Vector2 angle)
     {
         return Vector3.SignedAngle(Vector3.right,
                        new Vector3(angle.x, 0.0f, angle.y),
                        Vector3.down);
     }
-    public float GetAngleFromVector3(Vector3 angle)
+    static public float GetAngleFromVector3(Vector3 angle)
     {
         return Vector3.SignedAngle(Vector3.right,
                         new Vector3(angle.x, 0.0f, angle.y),
                         Vector3.down);
     }
-    public float GetDiffInRotation(float target, float current)
+    static public float GetDiffInRotation(float target, float current)
     {
         float diff = target - current;
 
@@ -423,8 +481,12 @@ abstract public class Tank : MonoBehaviour
         return diff;
 
     }
-    public Vector2 GetVector2FromAngle(float angleDeg)
+    static public Vector2 GetVector2FromAngle(float angleDeg)
     {
         return new Vector2(Mathf.Cos(Mathf.Deg2Rad * angleDeg), Mathf.Sin(Mathf.Deg2Rad * angleDeg));
+    }
+    static public Vector3 GetVector3FromAngle(float angleDeg)
+    {
+        return new Vector3(Mathf.Cos(Mathf.Deg2Rad * angleDeg), Mathf.Sin(Mathf.Deg2Rad * angleDeg), 0.0f);
     }
 }

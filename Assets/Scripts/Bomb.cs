@@ -135,7 +135,8 @@ public class Bomb : MonoBehaviour
                     }
                     else if (hits[i].gameObject.layer == GlobalVariables.LayerTanks)
                     {
-                        hits[i].transform.parent.GetComponent<Tank>().DestroyTank();
+                        if (hits[i].transform.parent.GetComponent<Tank>().IsAlive())
+                            hits[i].transform.parent.GetComponent<Tank>().DestroyTank();
                     }
                     else if (hits[i].gameObject.tag == GlobalVariables.TagBomb)
                     {

@@ -130,6 +130,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2130223801}
     m_Modifications:
+    - target: {fileID: 727429383655294030, guid: e00dcd60e0cc6f94b8ecdc4a480ed6d6,
+        type: 3}
+      propertyPath: m_Size.y
+      value: 0.875
+      objectReference: {fileID: 0}
+    - target: {fileID: 727429383655294030, guid: e00dcd60e0cc6f94b8ecdc4a480ed6d6,
+        type: 3}
+      propertyPath: m_Size.x
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 727429383725168505, guid: e00dcd60e0cc6f94b8ecdc4a480ed6d6,
         type: 3}
       propertyPath: m_LocalPosition.y
@@ -144,6 +154,21 @@ PrefabInstance:
         type: 3}
       propertyPath: I_MinTimeToShoot
       value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 727429384845553170, guid: e00dcd60e0cc6f94b8ecdc4a480ed6d6,
+        type: 3}
+      propertyPath: I_PlayerRB
+      value: 
+      objectReference: {fileID: 1938224870}
+    - target: {fileID: 727429384845553170, guid: e00dcd60e0cc6f94b8ecdc4a480ed6d6,
+        type: 3}
+      propertyPath: I_MiniIntervalDelay
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 727429384845553170, guid: e00dcd60e0cc6f94b8ecdc4a480ed6d6,
+        type: 3}
+      propertyPath: I_MaxShootDistanceForPlayerTank
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 727429384845553388, guid: e00dcd60e0cc6f94b8ecdc4a480ed6d6,
         type: 3}
@@ -295,6 +320,11 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 727429384845553170, guid: e00dcd60e0cc6f94b8ecdc4a480ed6d6,
+        type: 3}
+      propertyPath: I_PlayerRB
+      value: 
+      objectReference: {fileID: 1938224870}
     - target: {fileID: 727429384845553388, guid: e00dcd60e0cc6f94b8ecdc4a480ed6d6,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -385,6 +415,11 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 727429384845553170, guid: e00dcd60e0cc6f94b8ecdc4a480ed6d6,
+        type: 3}
+      propertyPath: I_PlayerRB
+      value: 
+      objectReference: {fileID: 1938224870}
     - target: {fileID: 727429384845553388, guid: e00dcd60e0cc6f94b8ecdc4a480ed6d6,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1193,7 +1228,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1094944753
 Transform:
   m_ObjectHideFlags: 0
@@ -1244,6 +1279,7 @@ MonoBehaviour:
   I_TurretRotationSpeed: 36
   I_MinTimeToShoot: 6
   I_MaxTimeToShoot: 12
+  I_MiniIntervalDelay: 1
   I_PlayerRB2D: {fileID: 1938224870}
   I_StateManager:
     M_States:

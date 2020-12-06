@@ -7,9 +7,11 @@ public class EnemyTank : Tank
     [SerializeField] protected float I_TurretRotationSpeed = 1.0f;
     [SerializeField] protected float I_MinTimeToShoot = 1.0f;
     [SerializeField] protected float I_MaxTimeToShoot = 1.0f;
+    [SerializeField] protected float I_MiniIntervalDelay = 1.0f;
 
     ///Protected Variables
     protected float m_TimeAtNextShoot = 0.0f;
+    protected float m_MiniTimeForNextShoot = 0.0f;
     protected bool m_HasShot = true;
     protected Path m_MovePath;
     protected int m_CurrentWayPath = 0;
@@ -31,12 +33,16 @@ public class EnemyTank : Tank
         {
             if (Time.unscaledTime >= m_TimeAtNextShoot)
             {
-                if (CanShoot())
+                if (Time.fixedTime >= m_MiniTimeForNextShoot)
                 {
-                    //Time to shoot
-                    Shoot();
-                    m_HasShot = true;
-                    DelayShoot();
+                    if (CanShoot())
+                    {
+                        //Time to shoot
+                        Shoot();
+                        m_HasShot = true;
+                        DelayShoot();
+                    }
+                    m_MiniTimeForNextShoot = Time.fixedTime + I_MiniIntervalDelay;
                 }
             }
         }
