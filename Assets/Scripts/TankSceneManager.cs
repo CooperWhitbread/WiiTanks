@@ -21,7 +21,7 @@ public class TankSceneManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (GameObject.Find(GlobalVariables.PlayerTankName) == null)
+        if (GameObject.Find(GlobalVariables.PlayerTankBodyName).GetComponent<SpriteRenderer>().enabled == false)
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }

@@ -92,17 +92,24 @@ abstract public class Tank : MonoBehaviour
     private void FixedUpdate()
     {
         ConstantUpdatePre();
-        InheritedFixedUpdate();
+        if (IsAlive())
+            InheritedFixedUpdate();
         ConstantUpdatePost();
     }
     private void Update()
     {
-        if (m_BodyExplosionParticleSystem.particleCount == 0 && 
-            !GetComponentInChildren<SpriteRenderer>().enabled && 
+        if (m_BodyExplosionParticleSystem.particleCount == 0 &&
+            !GetComponentInChildren<SpriteRenderer>().enabled &&
             Time.fixedTime >= m_HitTimeForDeath + 0.1f)
-            Destroy(gameObject);
+            if (gameObject.name != GlobalVariables.PlayerTankName)
+            {
+                Destroy(gameObject);
+            }
 
-        InheritedUpdate();
+        if (IsAlive())
+        {
+            InheritedUpdate();
+        }
     }
 
     ///Public Functions
@@ -136,13 +143,19 @@ abstract public class Tank : MonoBehaviour
     }
     public void DestroyTank()
     {
-        GameObject.Find(GlobalVariables.GlobalVariableObjectName).GetComponent<GlobalVariables>().SetBullets(ref m_Bullets);
-        GameObject.Find(GlobalVariables.GlobalVariableObjectName).GetComponent<GlobalVariables>().SetBombs(ref m_Bombs);
+        if (gameObject.name != GlobalVariables.PlayerTankName)
+        {
+            SpawnDeathCross();
+        }
+
+        GlobalVariables.GetThisInstance().SetBullets(ref m_Bullets);
+        GlobalVariables.GetThisInstance().SetBombs(ref m_Bombs);
         I_TredsParentObject.transform.parent = GameObject.Find(GlobalVariables.GlobalVariableObjectName).transform;
-        SpawnDeathCross();
         m_BodyExplosionParticleSystem.Play();
+
         foreach (SpriteRenderer sr in GetComponentsInChildren<SpriteRenderer>())
             sr.enabled = false;
+
         GetComponentInChildren<BoxCollider2D>().enabled = false;
         m_HitTimeForDeath = Time.fixedTime;
         m_PositionWhenDead = transform.GetChild(0).position;
@@ -193,7 +206,7 @@ abstract public class Tank : MonoBehaviour
     protected void Shoot()
     {
         //Checks if there are no walls between turret and body
-        RaycastHit2D hit = Physics2D.Raycast(I_ShootTransform.position, GetVector2FromAngle(180 + I_TurretRB2D.rotation), 0.5f);
+        RaycastHit2D hit = Physics2D.Raycast(I_ShootTransform.position, GetVector2FromAngle(180 + I_TurretRB2D.rotation), 0.8f);
         if(hit.collider != null)
         {
             if (hit.collider.gameObject.layer == GlobalVariables.LayerTanks || hit.collider.gameObject.layer == GlobalVariables.LayerWallHole ||

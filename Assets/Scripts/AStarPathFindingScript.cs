@@ -140,6 +140,7 @@ public class AStarPathFindingScript : MonoBehaviour
     [SerializeField] private bool I_DisplayGridGizmos = false;
     [SerializeField] private int I_PeniltyForWalls = 1;
     [SerializeField] private int I_PeniltyMultiplyerForEndOfWall = 4;
+    [SerializeField] private int I_PeniltyMultiplyerForBomb = 4;
     [SerializeField] private int I_BlurPenaltyScale = 2;
 
     ///Private Variables
@@ -194,6 +195,24 @@ public class AStarPathFindingScript : MonoBehaviour
                 if (m_Nodes[x, y] == null)
                 {
                     m_Nodes[x, y] = new AStarNodes(true, WorldSpaceFromGrid(pos), pos, 0);
+                }
+            }
+        }
+
+        //Mark bombs as a bad place to go
+        foreach (Bomb b in GameObject.FindObjectsOfType<Bomb>())
+        {
+            AStarNodes on = GetNodeFromWorldPos(b.transform.position);
+
+            int radius = (int) (2.0f / I_NodeSize);
+            
+            for (int y = -radius; y <= radius; y++)
+            {
+                for (int x = -radius; x <= radius; x++)
+                {
+                    Vector2Int pos = on.GridPosition + new Vector2Int(x, y);
+                    if (pos.x >= 0 && pos.x < I_NumberOfGrids.x && pos.y >= 0 && pos.y < I_NumberOfGrids.y)
+                        m_Nodes[pos.x, pos.y] = new AStarNodes(false, WorldSpaceFromGrid(pos), pos, I_PeniltyMultiplyerForBomb);
                 }
             }
         }

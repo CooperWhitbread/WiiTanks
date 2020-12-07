@@ -22,12 +22,14 @@ class StateManager
     public struct StateInfo
     {
         public State M_State;
-        public float M_TimeLength;
+        public float M_TimeLengthMin;
+        public float M_TimeLengthMax;
 
-        public StateInfo(State state, float timeLength)
+        public StateInfo(State state, float timeLengthMin, float timeLengthMax)
         {
             M_State = state;
-            M_TimeLength = timeLength;
+            M_TimeLengthMax = timeLengthMax;
+            M_TimeLengthMin = timeLengthMin;
         }
     }
 
@@ -43,7 +45,7 @@ class StateManager
         if (M_States.Count != 0)
         {
             M_CurrentState = M_States[M_CurrentLevelInState].M_State;
-            M_TimeForNextSwitch = currentTime + M_States[M_CurrentLevelInState].M_TimeLength;
+            M_TimeForNextSwitch = currentTime + Random.Range(M_States[M_CurrentLevelInState].M_TimeLengthMin, M_States[M_CurrentLevelInState].M_TimeLengthMax);
         }
     }
     public void Update(float currentTime)
@@ -57,13 +59,13 @@ class StateManager
                 if (M_States.Count > M_CurrentLevelInState)
                 {
                     M_CurrentState = M_States[M_CurrentLevelInState].M_State;
-                    M_TimeForNextSwitch = currentTime + M_States[M_CurrentLevelInState].M_TimeLength;
+                    M_TimeForNextSwitch = currentTime + Random.Range(M_States[M_CurrentLevelInState].M_TimeLengthMin, M_States[M_CurrentLevelInState].M_TimeLengthMax);
                 }
                 else
                 {
                     M_CurrentLevelInState = 0;
                     M_CurrentState = M_States[M_CurrentLevelInState].M_State;
-                    M_TimeForNextSwitch = currentTime + M_States[M_CurrentLevelInState].M_TimeLength;
+                    M_TimeForNextSwitch = currentTime + Random.Range(M_States[M_CurrentLevelInState].M_TimeLengthMin, M_States[M_CurrentLevelInState].M_TimeLengthMax);
                 }
             }
         }

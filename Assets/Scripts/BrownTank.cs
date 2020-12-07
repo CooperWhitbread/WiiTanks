@@ -21,16 +21,14 @@ public class BrownTank : EnemyTank
         //Shooting
         AutomaticShoot();
         if (m_HasShot)
-        {
             SetNextShootTime(I_MinTimeToShoot, I_MaxTimeToShoot);
-        }
     }
     protected override void InheritedStart()
     {
-        m_Bullets = new Bullet[5]; 
-        m_Bombs = new Bomb[2];
+        m_Bullets = new Bullet[1]; 
+        m_Bombs = new Bomb[0];
         m_DesiredTurretRotation = Random.Range(-180.0f, 180.0f);
-        m_PlayerRB = GameObject.Find(GlobalVariables.PlayerTankBodyName).GetComponent<Rigidbody2D>();
+        m_PlayerRB = GlobalVariables.GetPlayerTankBody();
     }
     protected override bool CanShoot()
     {

@@ -8,6 +8,7 @@ TagManager:
   - DeathCross
   - Bomb
   - Bullet
+  - Wall
   layers:
   - Default
   - TransparentFX

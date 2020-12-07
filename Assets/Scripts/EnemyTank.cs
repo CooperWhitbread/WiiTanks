@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using Pathfinding;
 
 public class EnemyTank : Tank
 {
@@ -13,10 +12,8 @@ public class EnemyTank : Tank
     protected float m_TimeAtNextShoot = 0.0f;
     protected float m_MiniTimeForNextShoot = 0.0f;
     protected bool m_HasShot = true;
-    protected Path m_MovePath;
     protected int m_CurrentWayPath = 0;
     protected bool m_ReachedEndOfPath = false;
-    protected Seeker m_Seeker;
 
     ///Inherited Function
     protected virtual bool CanShoot() { return BasicCheckForOkShootHit(); }

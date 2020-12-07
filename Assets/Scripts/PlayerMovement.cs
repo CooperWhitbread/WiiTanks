@@ -67,9 +67,9 @@ public class PlayerMovement : Tank
     void MoveCamera()
     {
         //Get the left bottom corner and the top right corner of the map
-        Vector3 p0 = I_CameraBoundsBox.bounds.center - I_CameraBoundsBox.bounds.size / 2;
-        Vector3 p1 = I_CameraBoundsBox.bounds.center + I_CameraBoundsBox.bounds.size / 2;
-        
+        Vector3 p0 = GlobalVariables.GetThisInstance().GetCamerBoundsBottomLeft();
+        Vector3 p1 = GlobalVariables.GetThisInstance().GetCamerBoundsTopRight();
+
         //Get Width and height of camera screen in units
         float height = 2 * Camera.main.orthographicSize;
         float width = height * Camera.main.aspect;

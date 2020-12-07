@@ -9,6 +9,7 @@ public class GlobalVariables : MonoBehaviour
     [SerializeField] protected GameObject I_PlayerTankPrefab;
     [SerializeField] protected GameObject I_BrownTankPrefab;
     [SerializeField] protected GameObject I_GreyTankPrefab;
+    [SerializeField] protected BoxCollider2D I_CameraBounds;
 
     //Variables
     public static int CurrentLevel = 0;
@@ -50,6 +51,7 @@ public class GlobalVariables : MonoBehaviour
     //Weapon Names
     public const string TagBomb = "Bomb";
     public const string TagBullet = "Bullet";
+    public const string TagWalls = "Wall";
 
     //Private Variables
     static bool m_HasStarted = false;
@@ -194,4 +196,13 @@ public class GlobalVariables : MonoBehaviour
         }
         m_CurrentBombIndex--;
     }
+
+    //Getters
+    static public Rigidbody2D GetPlayerTankBody()
+    {
+        return GameObject.Find(GlobalVariables.PlayerTankBodyName).GetComponent<Rigidbody2D>();
+    }
+    static public GlobalVariables GetThisInstance() { return GameObject.Find(GlobalVariables.GlobalVariableObjectName).GetComponent<GlobalVariables>(); }
+    public Vector2 GetCamerBoundsBottomLeft() { return I_CameraBounds.bounds.center - I_CameraBounds.bounds.size / 2; }
+    public Vector2 GetCamerBoundsTopRight() { return I_CameraBounds.bounds.center + I_CameraBounds.bounds.size / 2; }
 }
