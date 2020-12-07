@@ -4,7 +4,7 @@ public class PlayerMovement : Tank
 {
     /// Inspector Variables
     [SerializeField] protected BoxCollider2D I_CameraBoundsBox;
-    [SerializeField] protected float m_rotateSpeed = 15.0f;
+    [SerializeField] protected float I_RotateSpeed = 6.0f;
     
     ///Virtual Functions///
     protected override void InheritedUpdate()
@@ -48,7 +48,7 @@ public class PlayerMovement : Tank
 
         //Move and rotate the tank
         RotateTurret(Camera.main.ScreenToWorldPoint(Input.mousePosition));
-        GradualMoveTank(moveDirection, m_rotateSpeed, 180.0f);
+        GradualMoveTank(moveDirection, I_RotateSpeed, 180.0f);
 
         /*
         //Fix the rotation to -180 <= r <= 180
@@ -75,7 +75,7 @@ public class PlayerMovement : Tank
         float width = height * Camera.main.aspect;
 
         //Set the camera's position 
-        Vector3 pos = new Vector3(I_BodyRB2D.position.x, I_BodyRB2D.position.y, Camera.main.transform.position.z);
+        Vector3 pos = new Vector3(m_BodyRB2D.position.x, m_BodyRB2D.position.y, Camera.main.transform.position.z);
         pos.x = Mathf.Clamp(pos.x, p0.x + width / 2, p1.x - width / 2);
         pos.y = Mathf.Clamp(pos.y, p0.y + height / 2, p1.y - height / 2);
 

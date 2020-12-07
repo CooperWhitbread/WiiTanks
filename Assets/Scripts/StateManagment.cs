@@ -70,4 +70,18 @@ class StateManager
             }
         }
     }
+
+    public void SwitchStateTo(State state, float currentTime)
+    {
+        for (int i = 0; i < M_States.Count; i++)
+        {
+            if (M_States[i].M_State == state)
+            {
+                M_CurrentLevelInState = i;
+                M_CurrentState = M_States[M_CurrentLevelInState].M_State;
+                M_TimeForNextSwitch = currentTime + Random.Range(M_States[M_CurrentLevelInState].M_TimeLengthMin, M_States[M_CurrentLevelInState].M_TimeLengthMax);
+                return;
+            }
+        }
+    }
 }

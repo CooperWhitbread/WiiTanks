@@ -6,9 +6,13 @@ using UnityEngine.SceneManagement;
 public class GlobalVariables : MonoBehaviour
 {
     ///Inspector Variables
-    [SerializeField] protected GameObject I_PlayerTankPrefab;
-    [SerializeField] protected GameObject I_BrownTankPrefab;
-    [SerializeField] protected GameObject I_GreyTankPrefab;
+    [SerializeField] public Tank I_PlayerTankPrefab;
+    [SerializeField] public Tank I_BrownTankPrefab;
+    [SerializeField] public Tank I_GreyTankPrefab;
+    [SerializeField] public Bullet I_BulletPrefab;
+    [SerializeField] public Bomb I_BombPrefab;
+    [SerializeField] public GameObject I_TredPrefab;
+    [SerializeField] public GameObject I_DeathCrossPrefab;
     [SerializeField] protected BoxCollider2D I_CameraBounds;
 
     //Variables

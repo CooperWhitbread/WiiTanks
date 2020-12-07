@@ -179,7 +179,7 @@ public class AStarPathFindingScript : MonoBehaviour
                         if (t.GetTile(tilePos + Vector3Int.down))
                             neighbours++;
 
-                        if (neighbours <= 1)
+                        if (neighbours <= 2)
                             penalty *= I_PeniltyMultiplyerForEndOfWall;
 
                         //Corner multiply

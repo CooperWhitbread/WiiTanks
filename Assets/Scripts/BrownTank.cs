@@ -37,7 +37,7 @@ public class BrownTank : EnemyTank
             return false;
 
         //Check if it is in a position that it wants to shoot
-        RaycastHit2D rayCastHit = Physics2D.Raycast(I_ShootTransform.position, GetVector2FromAngle(I_TurretRB2D.rotation),
+        RaycastHit2D rayCastHit = Physics2D.Raycast(I_ShootTransform.position, GetVector2FromAngle(m_TurretRB2D.rotation),
                100.0f, 1 << GlobalVariables.LayerTanks | 1 << GlobalVariables.LayerWalls | 1 << GlobalVariables.LayerBullets);
         if (rayCastHit.collider != null)
         {
@@ -46,7 +46,7 @@ public class BrownTank : EnemyTank
                 case GlobalVariables.LayerBullets:
                     if (rayCastHit.collider.gameObject.name.Contains("Bomb"))
                         return false; //Is a bomb
-                    if (Vector2.Distance(rayCastHit.point, I_BodyRB2D.position) <= 1.0f)
+                    if (Vector2.Distance(rayCastHit.point, m_BodyRB2D.position) <= 1.0f)
                         return true; //Is a bullet
                     break;
 
@@ -57,16 +57,16 @@ public class BrownTank : EnemyTank
 
                 case GlobalVariables.LayerWalls:
                     //Check Near Player
-                    if (GetAngleFromVector2(m_PlayerRB.position - I_BodyRB2D.position) - I_TurretRB2D.rotation <= I_MaxShootDistanceForPlayerTank &&
-                        GetAngleFromVector2(m_PlayerRB.position - I_BodyRB2D.position) - I_TurretRB2D.rotation >= -I_MaxShootDistanceForPlayerTank)
+                    if (GetAngleFromVector2(m_PlayerRB.position - m_BodyRB2D.position) - m_TurretRB2D.rotation <= I_MaxShootDistanceForPlayerTank &&
+                        GetAngleFromVector2(m_PlayerRB.position - m_BodyRB2D.position) - m_TurretRB2D.rotation >= -I_MaxShootDistanceForPlayerTank)
                     {
-                        RaycastHit2D rch = Physics2D.Raycast(I_ShootTransform.position, m_PlayerRB.position - I_BodyRB2D.position);
+                        RaycastHit2D rch = Physics2D.Raycast(I_ShootTransform.position, m_PlayerRB.position - m_BodyRB2D.position);
                         if (rch.collider.gameObject.name == GlobalVariables.PlayerTankBodyName)
                             return true;
                     }
 
                     //Check for the rebound hit
-                    Vector2 post = GetVector2FromAngle(I_TurretRB2D.rotation); //Origion Direction
+                    Vector2 post = GetVector2FromAngle(m_TurretRB2D.rotation); //Origion Direction
                     Vector2 normal = rayCastHit.normal; //Wall's normal
                     Vector2 ang = post - (2 * Vector2.Dot(post, normal) * normal); //vector of desired direction
                     Vector2 hit = rayCastHit.point; // the point of contact
@@ -104,9 +104,9 @@ public class BrownTank : EnemyTank
     ///Private Functions
     private void UpdateTurret()
     {
-        GradualRotation(ref I_TurretRB2D, m_DesiredTurretRotation, I_TurretRotationSpeed);
+        GradualRotation(ref m_TurretRB2D, m_DesiredTurretRotation, I_TurretRotationSpeed);
 
-        if (Mathf.Abs(I_TurretRB2D.rotation - m_DesiredTurretRotation) < 0.5f)
+        if (Mathf.Abs(m_TurretRB2D.rotation - m_DesiredTurretRotation) < 0.5f)
         {
             m_DelayTurretUpdate++;
             if (m_DelayTurretUpdate >= m_MaxTurretUpdateDelay)

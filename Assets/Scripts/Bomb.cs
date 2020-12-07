@@ -11,7 +11,6 @@ public class Bomb : MonoBehaviour
     [SerializeField] protected float I_FlashingSpeed = 0.4f;
     [SerializeField] protected float I_TimeDelayForTankNearExposion = 0.4f;
     [SerializeField] protected GameObject I_DistanceColliderObject;
-    [SerializeField] protected DoodaRuleTile I_DestructableTile;
 
     ///Private Variables
     private SpriteRenderer m_SpriteRenderer;
