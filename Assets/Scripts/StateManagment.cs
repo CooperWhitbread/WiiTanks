@@ -37,7 +37,7 @@ class StateManager
     public State M_CurrentState { get; set; } = State.Empty;
     public float M_TimeForNextSwitch { get; set; } = 0.0f;
     public int M_CurrentLevelInState { get; set; } = 0;
-    [SerializeField] List<StateInfo> M_States;
+    [SerializeField] List<StateInfo> M_States = new List<StateInfo>();
 
     /// Functions
     public void Start(float currentTime)

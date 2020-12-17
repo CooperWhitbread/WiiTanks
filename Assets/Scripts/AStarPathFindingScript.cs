@@ -133,9 +133,9 @@ public class AStarNodes : IHeapItem<AStarNodes>
 public class AStarPathFindingScript : MonoBehaviour
 {
     /// Inspector Variables
-    [SerializeField] private Tilemap[] I_TileMapArray;
+    [SerializeField] private Tilemap[] I_TileMapArray = null;
     [SerializeField] private Vector2Int I_NumberOfGrids;
-    [SerializeField] private Vector2 I_Position;
+    [SerializeField] private Vector2 I_Position = Vector2.zero;
     [SerializeField] private float I_NodeSize = 1;
     [SerializeField] private bool I_DisplayGridGizmos = false;
     [SerializeField] private int I_PeniltyForWalls = 1;

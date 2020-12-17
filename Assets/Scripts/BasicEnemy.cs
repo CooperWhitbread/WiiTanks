@@ -6,7 +6,6 @@ public class BasicEnemy : EnemyTank
 {
     ///Inspector Variables
     [SerializeField] Rigidbody2D I_PlayerRB;
-    [SerializeField] float I_MoveToNextPointDistance = 1.0f;
     [SerializeField] StateManager I_StateManager;
     [SerializeField] protected float m_rotateSpeed = 15.0f;
 

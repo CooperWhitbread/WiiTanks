@@ -6,7 +6,7 @@ public class GreyTank : EnemyTank
 {
     
     ///Inspector Variables
-    [SerializeField] StateManager I_StateManager;
+    [SerializeField] StateManager I_StateManager = new StateManager();
     [SerializeField] float I_MaxShootDistanceForPlayerTank = 30.0f;
     [SerializeField] float I_TurretTargetVariationMax = 20.0f;
     [SerializeField] float I_MaxDistanceForSeeingBullet = 5.0f;

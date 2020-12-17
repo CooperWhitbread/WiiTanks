@@ -453,7 +453,7 @@ MonoBehaviour:
   I_MiniIntervalDelay: 0.3
   I_MaxDistanceForSeeingBullet: 5
   I_VisualRangeAngle: 90
-  I_MovementDistanceFromBulletScalarValue: 15
+  I_MovementDistanceFromBulletScalarValue: 20
   I_MovementCurrentDirectionScalar: 1
   I_BombDetectionRadius: 3
   I_MinDistBeforeMoveOnForRetreatingTank: 2

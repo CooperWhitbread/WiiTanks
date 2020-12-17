@@ -75,7 +75,6 @@ public class TealTank : EnemyTank
             if (Vector2.Distance(m_BodyRB2D.position, m_PreviousPosition) <= 0.2f)
             {
                 m_WantToCheckAllCornersAgain = true;
-                Debug.Log("Not Moving");
                 UpdatePath();
             }
 
