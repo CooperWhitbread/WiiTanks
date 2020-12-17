@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 780738e5e5f4bee498c196dff8344f84, type: 3}
-  m_Name: NormalBullet
+  m_Name: FastBullet
   m_EditorClassIdentifier: 
   Sprite: {fileID: 874343242196921964, guid: a3a81bf52e28dbb4ea4f74cb40ac0b9d, type: 3}
-  Velocity: 3.5
-  BulletPrefab: {fileID: 7987344426181233700, guid: b7a704c743a05b84dadc8223e9e0d7c7,
+  Velocity: 7
+  BulletPrefab: {fileID: 1467660314448169593, guid: 8165b96d2a061454a91d978278f252aa,
     type: 3}
-  NumberOfBounces: 1
+  NumberOfBounces: 0

@@ -179,7 +179,7 @@ public class AStarPathFindingScript : MonoBehaviour
                         if (t.GetTile(tilePos + Vector3Int.down))
                             neighbours++;
 
-                        if (neighbours <= 2)
+                        if (neighbours <= 1)
                             penalty *= I_PeniltyMultiplyerForEndOfWall;
 
                         //Corner multiply
@@ -187,7 +187,7 @@ public class AStarPathFindingScript : MonoBehaviour
                             !t.GetTile(tilePos + Vector3Int.right) && !t.GetTile(tilePos + Vector3Int.down) ||
                             !t.GetTile(tilePos + Vector3Int.left) && !t.GetTile(tilePos + Vector3Int.up)||
                             !t.GetTile(tilePos + Vector3Int.left) && !t.GetTile(tilePos + Vector3Int.down))
-                            penalty *= I_PeniltyMultiplyerForEndOfWall / 2;
+                            penalty *= I_PeniltyMultiplyerForEndOfWall;
 
                         m_Nodes[x, y] = new AStarNodes(false, WorldSpaceFromGrid(pos), pos, penalty);
                     }
@@ -215,6 +215,13 @@ public class AStarPathFindingScript : MonoBehaviour
                         m_Nodes[pos.x, pos.y] = new AStarNodes(false, WorldSpaceFromGrid(pos), pos, I_PeniltyMultiplyerForBomb);
                 }
             }
+        }
+
+        //Avoid the Tanks
+        foreach (Tank b in GameObject.FindObjectsOfType<Tank>())
+        {
+            AStarNodes on = GetNodeFromWorldPos(b.GetComponentInChildren<Rigidbody2D>().position); 
+            m_Nodes[on.GridPosition.x, on.GridPosition.y] = new AStarNodes(true, on.Position, on.GridPosition, I_PeniltyForWalls);
         }
 
         BlurPenaltyMap(I_BlurPenaltyScale);

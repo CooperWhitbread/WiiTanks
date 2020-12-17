@@ -11,8 +11,10 @@ public class Bullet : MonoBehaviour
     private Rigidbody2D m_RigidBody2D;
     private float m_Velocity = 0.0f;
     private int m_NumberInArray = -1;
-    private bool m_FirstHit = true;
+    private int m_NumberOfHit = 0;
+    private int m_MaxNumberOfHits = 0;
     private float m_TimeForWeirdBulletWallCheck = 0.0f;
+    private Vector2 m_PreviousPos = Vector2.zero;
 
 
     ///Unity Functions
@@ -30,10 +32,10 @@ public class Bullet : MonoBehaviour
         //Check if bullet is going slowly against the wall
         if (Time.fixedTime >= m_TimeForWeirdBulletWallCheck)//Haven't tested, if problem doesn't turn up, all good
         {
-            m_TimeForWeirdBulletWallCheck = Time.fixedTime + 0.5f;
+            m_TimeForWeirdBulletWallCheck = Time.fixedTime + 0.1f;
             //if (Mathf.Abs(Mathf.Cos(Mathf.Deg2Rad * m_RigidBody2D.rotation) - transform.rotation.eulerAngles.x) >= 0.1f ||
             //    Mathf.Abs(Mathf.Sin(Mathf.Deg2Rad * m_RigidBody2D.rotation) - transform.rotation.eulerAngles.y) >= 0.1f)
-            if (Mathf.Abs(Tank.GetAngleFromVector2(m_RigidBody2D.velocity) - m_RigidBody2D.rotation) >= 1.0f)
+            if (Mathf.Abs(Tank.GetAngleFromVector2(m_RigidBody2D.position - m_PreviousPos) - m_RigidBody2D.rotation) >= 5.0f)
             {
                 DestroyBullet();
             }
@@ -51,6 +53,8 @@ public class Bullet : MonoBehaviour
                 GetComponentInParent<GlobalVariables>().DestroyBullet(m_NumberInArray);
             }
         }
+
+        m_PreviousPos = m_RigidBody2D.position;
     }
     void OnCollisionEnter2D(Collision2D col)
     {
@@ -62,13 +66,13 @@ public class Bullet : MonoBehaviour
         }
         else if (col.gameObject.layer == LayerMask.NameToLayer("Walls"))
         {
-            if (m_FirstHit)
+            if (m_NumberOfHit < m_MaxNumberOfHits)
             {
                 Vector2 post = transform.right; //Origion Direction
                 Vector2 normal = col.contacts[0].normal; //Wall's normal
                 Vector2 ang = post - (2 * Vector3.Dot(post, normal) * normal); //vector of desired direction
                 m_RigidBody2D.SetRotation(Vector2.SignedAngle(Vector2.right, ang));
-                m_FirstHit = false;
+                m_NumberOfHit++;
             }
             else
             {
@@ -81,12 +85,22 @@ public class Bullet : MonoBehaviour
     public void DestroyBullet()
     {
         //Particle System Cancel 
-        m_ParticleSystem.Stop();
+        foreach (ParticleSystem p in GetComponentsInChildren<ParticleSystem>())
+        {
+            if (p == m_ParticleSystem)
+                m_ParticleSystem.Stop();
+            else
+            {
+                p.Clear();
+                p.Stop();
+            }
+
+        }
 
         m_SpriteRenderer.enabled = false;
         m_Collider.enabled = false;
     }
-    public void Initialize(BulletScript objectScript, int numberInArray, Vector3 position, float rotation)
+    public void Initialize(BulletScript objectScript, int numberInArray, Vector3 position, float rotation, int maxNumberOfHits)
     {
         Vector3 rot = new Vector3(0.0f, 0.0f, rotation);
         transform.eulerAngles = rot;
@@ -94,12 +108,14 @@ public class Bullet : MonoBehaviour
         m_SpriteRenderer.sprite = objectScript.Sprite;
         m_Velocity = objectScript.Velocity;
         m_NumberInArray = numberInArray;
-        m_FirstHit = true;
+        m_MaxNumberOfHits = maxNumberOfHits;
+        m_NumberOfHit = 0;
         //m_TimeForWeirdBulletWallCheck = 0.0f;
-
-        m_ParticleSystem.Play();
+        foreach (ParticleSystem p in GetComponentsInChildren<ParticleSystem>())
+            p.Play();
         m_SpriteRenderer.enabled = true;
-        m_Collider.enabled = true;
+        m_Collider.enabled = true; 
+        m_TimeForWeirdBulletWallCheck = Time.fixedTime + 0.3f;
     }
     public void SetLevelInArray(int level)
     {

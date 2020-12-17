@@ -16,7 +16,6 @@ abstract public class Tank : MonoBehaviour
     //Objects
     protected Rigidbody2D m_BodyRB2D;
     protected Rigidbody2D m_TurretRB2D;
-    protected Bullet m_BulletPrefab;
     protected GameObject m_TredPrefab;
     protected Bomb m_BombPrefab;
     protected GameObject m_DeathCrossPrefab;
@@ -59,7 +58,6 @@ abstract public class Tank : MonoBehaviour
         m_TredsParentObject = transform.GetChild(2).gameObject;
 
         GlobalVariables gv = GlobalVariables.GetThisInstance();
-        m_BulletPrefab = gv.I_BulletPrefab;
         m_BombPrefab = gv.I_BombPrefab;
         m_DeathCrossPrefab = gv.I_DeathCrossPrefab;
         m_TredPrefab = gv.I_TredPrefab;
@@ -93,7 +91,7 @@ abstract public class Tank : MonoBehaviour
         //Initialize all the bullets & bombs
         for (int i = 0; i < m_Bullets.Length; i++)
         {
-            m_Bullets[i] = Instantiate(m_BulletPrefab, I_ShootTransform.position, I_ShootTransform.rotation);
+            m_Bullets[i] = Instantiate(I_BulletScript.BulletPrefab, I_ShootTransform.position, I_ShootTransform.rotation);
             m_Bullets[i].gameObject.SetActive(false);
             m_Bullets[i].gameObject.transform.SetParent(gameObject.transform);
         }
@@ -203,19 +201,6 @@ abstract public class Tank : MonoBehaviour
             transform.GetChild(0).position = m_PositionWhenDead;
         }
     }
-    /*private void WallRotate(Collision2D collision)
-    {
-
-        float rotateDegree1 = GetAngleFromVector2(new Vector2(-collision.contacts[0].normal.y, collision.contacts[0].normal.x));
-        float rotateDegree2 = GetAngleFromVector2(new Vector2(collision.contacts[0].normal.y, -collision.contacts[0].normal.x));
-
-        //Want the smallest change
-        //if (Mathf.Abs(m_BodyRB2D.rotation - rotateDegree1) < Mathf.Abs(m_BodyRB2D.rotation - rotateDegree2))
-            //m_targetRotation = rotateDegree1;
-        //else
-            //m_targetRotation = rotateDegree2;
-
-    } */ //Not using
 
     ///Protected Functions
     protected void Shoot()
@@ -233,7 +218,7 @@ abstract public class Tank : MonoBehaviour
                     {
                         //Shoot Bullets
                         m_ShootParticleSystem.Play();
-                        m_Bullets[i].Initialize(I_BulletScript, i, I_ShootTransform.position, m_TurretRB2D.rotation);
+                        m_Bullets[i].Initialize(I_BulletScript, i, I_ShootTransform.position, m_TurretRB2D.rotation, I_BulletScript.NumberOfBounces);
                         m_Bullets[i].gameObject.SetActive(true);
 
                         //Stop Tank Temperarily
@@ -279,26 +264,6 @@ abstract public class Tank : MonoBehaviour
             }
         }
     }
-    /*protected void MoveTank(Vector2 moveDirection)
-    {
-        if (moveDirection != Vector2.zero)
-        {
-            //Only want to move if it can move
-            if (!m_ShootDelayActive)
-            {
-                //Normalise the move direction
-                moveDirection = moveDirection.normalized;
-
-                //Calculate rotation in degrees
-                float rotateDegree = GetAngleFromVector2(moveDirection);
-
-                //Check Rotation Fine
-                //if (CheckCollisionForRotation(rotateDegree, moveDirection, I_MoveSpeed * Time.deltaTime + m_collissionBuffer))
-                
-                m_BodyRB2D.velocity = moveDirection.normalized * I_MoveSpeed;
-            }
-        }
-    } */ //Not Using
     protected void GradualMoveTank(Vector2 moveDirection, float rotationSpeed, float sharpTurnRot = 90.0f, float sharpRotationSpeed = 3.0f)
     {
         if (moveDirection != Vector2.zero)

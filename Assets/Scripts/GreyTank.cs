@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class GreyTank : EnemyTank
 {
-
+    
     ///Inspector Variables
     [SerializeField] StateManager I_StateManager;
     [SerializeField] float I_MaxShootDistanceForPlayerTank = 30.0f;

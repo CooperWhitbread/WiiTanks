@@ -7,4 +7,6 @@ public class BulletScript : ScriptableObject
 {
     public Sprite Sprite;
     public float Velocity;
+    public Bullet BulletPrefab;
+    public int NumberOfBounces;
 }

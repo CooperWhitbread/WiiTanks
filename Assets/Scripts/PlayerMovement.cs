@@ -5,7 +5,8 @@ public class PlayerMovement : Tank
     /// Inspector Variables
     [SerializeField] protected BoxCollider2D I_CameraBoundsBox;
     [SerializeField] protected float I_RotateSpeed = 6.0f;
-    
+    [SerializeField] protected bool I_IsFullGameInView = true;
+
     ///Virtual Functions///
     protected override void InheritedUpdate()
     {
@@ -66,21 +67,36 @@ public class PlayerMovement : Tank
     ///Public Variables
     void MoveCamera()
     {
-        //Get the left bottom corner and the top right corner of the map
-        Vector3 p0 = GlobalVariables.GetThisInstance().GetCamerBoundsBottomLeft();
-        Vector3 p1 = GlobalVariables.GetThisInstance().GetCamerBoundsTopRight();
+        if (I_IsFullGameInView)
+        {
+            float screenRatio = (float)Screen.width / (float)Screen.height;
+            float targetRatio = I_CameraBoundsBox.bounds.size.x / I_CameraBoundsBox.bounds.size.y;
 
-        //Get Width and height of camera screen in units
-        float height = 2 * Camera.main.orthographicSize;
-        float width = height * Camera.main.aspect;
+            if (screenRatio >= targetRatio)
+                Camera.main.orthographicSize = I_CameraBoundsBox.bounds.size.y / 2;
+            else
+                Camera.main.orthographicSize = I_CameraBoundsBox.bounds.size.y / 2 * targetRatio / screenRatio;
 
-        //Set the camera's position 
-        Vector3 pos = new Vector3(m_BodyRB2D.position.x, m_BodyRB2D.position.y, Camera.main.transform.position.z);
-        pos.x = Mathf.Clamp(pos.x, p0.x + width / 2, p1.x - width / 2);
-        pos.y = Mathf.Clamp(pos.y, p0.y + height / 2, p1.y - height / 2);
+            Camera.main.transform.SetPositionAndRotation(Vector3.forward * -10, Camera.main.transform.rotation);
+        }
+        else
+        {
+            //Get the left bottom corner and the top right corner of the map
+            Vector3 p0 = GlobalVariables.GetThisInstance().GetCamerBoundsBottomLeft();
+            Vector3 p1 = GlobalVariables.GetThisInstance().GetCamerBoundsTopRight();
 
-        //Update the camera
-        Camera.main.transform.SetPositionAndRotation(pos, Camera.main.transform.rotation);
+            //Get Width and height of camera screen in units
+            float height = 2 * Camera.main.orthographicSize;
+            float width = height * Camera.main.aspect;
+
+            //Set the camera's position 
+            Vector3 pos = new Vector3(m_BodyRB2D.position.x, m_BodyRB2D.position.y, Camera.main.transform.position.z);
+            pos.x = Mathf.Clamp(pos.x, p0.x + width / 2, p1.x - width / 2);
+            pos.y = Mathf.Clamp(pos.y, p0.y + height / 2, p1.y - height / 2);
+
+            //Update the camera
+            Camera.main.transform.SetPositionAndRotation(pos, Camera.main.transform.rotation);
+        }
     }
 
 }
