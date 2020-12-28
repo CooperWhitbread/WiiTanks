@@ -133,7 +133,6 @@ public class AStarNodes : IHeapItem<AStarNodes>
 public class AStarPathFindingScript : MonoBehaviour
 {
     /// Inspector Variables
-    [SerializeField] private Tilemap[] I_TileMapArray = null;
     [SerializeField] private Vector2Int I_NumberOfGrids;
     [SerializeField] private Vector2 I_Position = Vector2.zero;
     [SerializeField] private float I_NodeSize = 1;
@@ -146,12 +145,25 @@ public class AStarPathFindingScript : MonoBehaviour
     ///Private Variables
     private AStarNodes[,] m_Nodes;
 
+    private Tilemap[] m_TileMapArray = new Tilemap[0];
     int m_BlurredMin = int.MaxValue;
     int m_BlurredMax = int.MinValue;
 
-    private void Awake()
+    private void Update()
     {
-        //SetNodes();
+        if (GlobalVariables.HasJustStartedAMission)
+        {
+            m_TileMapArray = new Tilemap[2];
+            int interval = 0;
+            foreach (Tilemap tm in GameObject.FindObjectsOfType<Tilemap>())
+            {
+                if (tm.name == GlobalVariables.TilemapWallName || tm.name == GlobalVariables.TilemapHoleName)
+                {
+                    if (interval < 2)
+                        m_TileMapArray[interval++] = tm;
+                }
+            }
+        }
     }
     public void SetNodes()
     { 
@@ -162,34 +174,40 @@ public class AStarPathFindingScript : MonoBehaviour
             {
                 Vector2Int pos = new Vector2Int(x, y);
 
-                foreach (Tilemap t in I_TileMapArray)
+                if (m_TileMapArray.Length != 0)
                 {
-                    Vector3Int tilePos = t.LocalToCell(WorldSpaceFromGrid3(pos));
-                    if (t.GetTile(tilePos) != null)
+                    if (m_TileMapArray[0] != null)
                     {
-                        //End multiply
-                        int penalty = I_PeniltyForWalls;
-                        int neighbours = 0;
-                        if (t.GetTile(tilePos + Vector3Int.right))
-                            neighbours++;
-                        if (t.GetTile(tilePos + Vector3Int.left))
-                            neighbours++;
-                        if (t.GetTile(tilePos + Vector3Int.up))
-                            neighbours++;
-                        if (t.GetTile(tilePos + Vector3Int.down))
-                            neighbours++;
+                        foreach (Tilemap t in m_TileMapArray)
+                        {
+                            Vector3Int tilePos = t.LocalToCell(WorldSpaceFromGrid3(pos));
+                            if (t.GetTile(tilePos) != null)
+                            {
+                                //End multiply
+                                int penalty = I_PeniltyForWalls;
+                                int neighbours = 0;
+                                if (t.GetTile(tilePos + Vector3Int.right))
+                                    neighbours++;
+                                if (t.GetTile(tilePos + Vector3Int.left))
+                                    neighbours++;
+                                if (t.GetTile(tilePos + Vector3Int.up))
+                                    neighbours++;
+                                if (t.GetTile(tilePos + Vector3Int.down))
+                                    neighbours++;
 
-                        if (neighbours <= 1)
-                            penalty *= I_PeniltyMultiplyerForEndOfWall;
+                                if (neighbours <= 1)
+                                    penalty *= I_PeniltyMultiplyerForEndOfWall;
 
-                        //Corner multiply
-                        if (!t.GetTile(tilePos + Vector3Int.right) && !t.GetTile(tilePos + Vector3Int.up) ||
-                            !t.GetTile(tilePos + Vector3Int.right) && !t.GetTile(tilePos + Vector3Int.down) ||
-                            !t.GetTile(tilePos + Vector3Int.left) && !t.GetTile(tilePos + Vector3Int.up)||
-                            !t.GetTile(tilePos + Vector3Int.left) && !t.GetTile(tilePos + Vector3Int.down))
-                            penalty *= I_PeniltyMultiplyerForEndOfWall;
+                                //Corner multiply
+                                if (!t.GetTile(tilePos + Vector3Int.right) && !t.GetTile(tilePos + Vector3Int.up) ||
+                                    !t.GetTile(tilePos + Vector3Int.right) && !t.GetTile(tilePos + Vector3Int.down) ||
+                                    !t.GetTile(tilePos + Vector3Int.left) && !t.GetTile(tilePos + Vector3Int.up) ||
+                                    !t.GetTile(tilePos + Vector3Int.left) && !t.GetTile(tilePos + Vector3Int.down))
+                                    penalty *= I_PeniltyMultiplyerForEndOfWall;
 
-                        m_Nodes[x, y] = new AStarNodes(false, WorldSpaceFromGrid(pos), pos, penalty);
+                                m_Nodes[x, y] = new AStarNodes(false, WorldSpaceFromGrid(pos), pos, penalty);
+                            }
+                        }
                     }
                 }
                 if (m_Nodes[x, y] == null)

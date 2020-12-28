@@ -3,7 +3,6 @@
 public class PlayerMovement : Tank
 {
     /// Inspector Variables
-    [SerializeField] protected BoxCollider2D I_CameraBoundsBox;
     [SerializeField] protected float I_RotateSpeed = 6.0f;
     [SerializeField] protected bool I_IsFullGameInView = true;
 
@@ -69,15 +68,16 @@ public class PlayerMovement : Tank
     {
         if (I_IsFullGameInView)
         {
+            Bounds cB = GlobalVariables.GetThisInstance().GetCameraBounds();
             float screenRatio = (float)Screen.width / (float)Screen.height;
-            float targetRatio = I_CameraBoundsBox.bounds.size.x / I_CameraBoundsBox.bounds.size.y;
+            float targetRatio = cB.size.x / cB.size.y;
 
             if (screenRatio >= targetRatio)
-                Camera.main.orthographicSize = I_CameraBoundsBox.bounds.size.y / 2;
+                Camera.main.orthographicSize = cB.size.y / 2;
             else
-                Camera.main.orthographicSize = I_CameraBoundsBox.bounds.size.y / 2 * targetRatio / screenRatio;
+                Camera.main.orthographicSize = cB.size.y / 2 * targetRatio / screenRatio;
 
-            Camera.main.transform.SetPositionAndRotation(Vector3.forward * -10, Camera.main.transform.rotation);
+            Camera.main.transform.SetPositionAndRotation(Vector3.forward * -10 + (Vector3) GlobalVariables.GetThisInstance().GetCameraCenter(), Camera.main.transform.rotation);
         }
         else
         {
@@ -90,9 +90,9 @@ public class PlayerMovement : Tank
             float width = height * Camera.main.aspect;
 
             //Set the camera's position 
-            Vector3 pos = new Vector3(m_BodyRB2D.position.x, m_BodyRB2D.position.y, Camera.main.transform.position.z);
-            pos.x = Mathf.Clamp(pos.x, p0.x + width / 2, p1.x - width / 2);
-            pos.y = Mathf.Clamp(pos.y, p0.y + height / 2, p1.y - height / 2);
+            Vector3 pos = new Vector3(Mathf.Clamp(m_BodyRB2D.position.x, p0.x + width / 2, p1.x - width / 2), 
+                Mathf.Clamp(m_BodyRB2D.position.y, p0.y + height / 2, p1.y - height / 2), 
+                Camera.main.transform.position.z);
 
             //Update the camera
             Camera.main.transform.SetPositionAndRotation(pos, Camera.main.transform.rotation);

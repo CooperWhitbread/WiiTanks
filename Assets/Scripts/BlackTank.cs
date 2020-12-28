@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TealTank : EnemyTank
+public class BlackTank : EnemyTank
 {
 
     ///Inspector Variables

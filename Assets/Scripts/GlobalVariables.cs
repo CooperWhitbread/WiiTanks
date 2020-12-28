@@ -9,14 +9,18 @@ public class GlobalVariables : MonoBehaviour
     [SerializeField] public Tank I_PlayerTankPrefab;
     [SerializeField] public Tank I_BrownTankPrefab;
     [SerializeField] public Tank I_GreyTankPrefab;
+    [SerializeField] public Tank I_TealTankPrefab;
+    [SerializeField] public Tank I_YellowTankPrefab;
+    [SerializeField] public Tank I_GreenTankPrefab;
+    [SerializeField] public Tank I_PinkTankPrefab;
+    [SerializeField] public Tank I_PurlpeTankPrefab;
+    [SerializeField] public Tank I_WhiteTankPrefab;
+    [SerializeField] public Tank I_BlackTankPrefab;
     [SerializeField] public Bullet I_BulletPrefab;
     [SerializeField] public Bomb I_BombPrefab;
     [SerializeField] public GameObject I_TredPrefab;
     [SerializeField] public GameObject I_DeathCrossPrefab;
     [SerializeField] protected BoxCollider2D I_CameraBounds;
-
-    //Variables
-    public static int CurrentLevel = 0;
 
     ///Protected Variables
     protected static Bullet[] m_Bullets = new Bullet[0];
@@ -43,13 +47,25 @@ public class GlobalVariables : MonoBehaviour
     public const string FloorLayerName = "FloorBoards";
 
     public const string GlobalVariableObjectName = "Global";
+    static public bool HasJustStartedAMission = false;
+
+    //Tilemaps
+    public const string TilemapWallName = "Walls";
+    public const string TilemapHoleName = "Holes";
+    public const string TilemapFloorName = "Floor";
 
     //Spawn Point Names
     public const string SpawnPointsName = "SpawnPoints";
     public const string PlayerTankSpawnPoint = "PlayerTankSpawnPoint";
     public const string BrownTankSpawnPoint = "BrownTankSpawnPoint";
     public const string GreyTankSpawnPoint = "GreyTankSpawnPoint";
-    public const string NavyTankSpawnPoint = "NavyTankSpawnPoint";
+    public const string TealTankSpawnPoint = "TealTankSpawnPoint";
+    public const string YellowTankSpawnPoint = "YellowTankSpawnPoint";
+    public const string GreenTankSpawnPoint = "GreenTankSpawnPoint";
+    public const string PinkTankSpawnPoint = "PinkTankSpawnPoint";
+    public const string PurpleTankSpawnPoint = "PurpleTankSpawnPoint";
+    public const string WhiteTankSpawnPoint = "WhiteTankSpawnPoint";
+    public const string BlackTankSpawnPoint = "BlackTankSpawnPoint";
     public const string EnemyTankObjectName = "Enemy Tanks";
 
     //Weapon Names
@@ -58,73 +74,94 @@ public class GlobalVariables : MonoBehaviour
     public const string TagWalls = "Wall";
 
     //Private Variables
-    static bool m_HasStarted = false;
+    static int m_SceneIndexNumber = -1;
+    static bool m_HasBeenInitialized = false;
+    private Vector3[] m_NonSpawingPositions = new Vector3[0];
 
     private void Start()
     {
-        if (!m_HasStarted)
+        if (!m_HasBeenInitialized)
         {
             DontDestroyOnLoad(this);
-            m_HasStarted = true;
+            m_SceneIndexNumber = SceneManager.GetActiveScene().handle;
+            m_HasBeenInitialized = true;
         }
-        for (int i = 0; i < m_Bullets.Length; i++)
-        {
-            if (m_Bullets[i] != null)
-                Destroy(m_Bullets[i].gameObject);
-        }
-        for (int i = 0; i < m_Bombs.Length; i++)
-        {
-            Destroy(m_Bombs[i].gameObject);
-        }
-        //Treds
-        GameObject[] go = GameObject.FindGameObjectsWithTag("Tred");
-        for (int i = 0; i < go.Length; i++)
-        {
-            if (go[i].transform.parent.name == gameObject.transform.name)
-            {
-                Destroy(go[i]);
-            }
-        }
-        //DeathCross
-        GameObject[] DethCrosses = GameObject.FindGameObjectsWithTag("DeathCross");
-        for (int i = 0; i < DethCrosses.Length; i++)
-        {
-            if (DethCrosses[i].transform.parent.name == gameObject.transform.name)
-            {
-                Destroy(DethCrosses[i]);
-            }
-        }
+    }
 
-
-        //Bullets
-        m_Bullets = new Bullet[0];
-        m_CurrentBulletIndex = -1;
-        m_Bombs = new Bomb[0];
-        m_CurrentBombIndex = -1;
-
-        //Initialisizing Tanks
-        int numTanks = GameObject.Find(SpawnPointsName).transform.childCount;
-        if (numTanks != 0)
+    private void Update()
+    {
+        if (m_SceneIndexNumber != SceneManager.GetActiveScene().handle && SceneManager.GetActiveScene().name != "Dead")
         {
-            for (int i = 0; i < numTanks; i++)
+            HasJustStartedAMission = true;
+            ResetFunctionsEvenIfDead();
+
+            //Initialisizing Tanks
+            for (int i = 0; i < GameObject.Find(SpawnPointsName).transform.childCount; i++)
             {
                 Transform tank = GameObject.Find(SpawnPointsName).transform.GetChild(i);
-                switch (tank.name)
+                tank.gameObject.SetActive(false);
+                bool remove = false;
+                for (int j = 0; j < m_NonSpawingPositions.Length; j++)
                 {
-                    case PlayerTankSpawnPoint:
-                        Instantiate(I_PlayerTankPrefab, tank.position, tank.rotation, transform.parent);
-                        tank.gameObject.SetActive(false);
+                    if (tank.position == m_NonSpawingPositions[j])
+                    {
+                        remove = true;
                         break;
-                    case BrownTankSpawnPoint:
-                        Instantiate(I_BrownTankPrefab, tank.position, tank.rotation, GameObject.Find(EnemyTankObjectName).transform);
-                        tank.gameObject.SetActive(false);
-                        break;
-                    case GreyTankSpawnPoint:
-                        Instantiate(I_GreyTankPrefab, tank.position, tank.rotation, GameObject.Find(EnemyTankObjectName).transform);
-                        tank.gameObject.SetActive(false);
-                        break;
+                    }
+                }
+                if (!remove)
+                {
+                    Tank temp = null;
+                    //Initiate the desired tank
+                    switch (tank.gameObject.name)
+                    {
+                        case PlayerTankSpawnPoint:
+                            temp = Instantiate(I_PlayerTankPrefab, tank.position, tank.rotation, transform.parent);
+                            break;
+                        case BrownTankSpawnPoint:
+                            temp = Instantiate(I_BrownTankPrefab, tank.position, tank.rotation, GameObject.Find(EnemyTankObjectName).transform);
+                            break;
+                        case GreyTankSpawnPoint:
+                            temp = Instantiate(I_GreyTankPrefab, tank.position, tank.rotation, GameObject.Find(EnemyTankObjectName).transform);
+                            break;
+                        case TealTankSpawnPoint:
+                            temp = Instantiate(I_TealTankPrefab, tank.position, tank.rotation, GameObject.Find(EnemyTankObjectName).transform);
+                            break;
+                        case YellowTankSpawnPoint:
+                            temp = Instantiate(I_YellowTankPrefab, tank.position, tank.rotation, GameObject.Find(EnemyTankObjectName).transform);
+                            break;
+                        case GreenTankSpawnPoint:
+                            temp = Instantiate(I_GreenTankPrefab, tank.position, tank.rotation, GameObject.Find(EnemyTankObjectName).transform);
+                            break;
+                        case PinkTankSpawnPoint:
+                            temp = Instantiate(I_PinkTankPrefab, tank.position, tank.rotation, GameObject.Find(EnemyTankObjectName).transform);
+                            break;
+                        case PurpleTankSpawnPoint:
+                            temp = Instantiate(I_PurlpeTankPrefab, tank.position, tank.rotation, GameObject.Find(EnemyTankObjectName).transform);
+                            break;
+                        case WhiteTankSpawnPoint:
+                            temp = Instantiate(I_WhiteTankPrefab, tank.position, tank.rotation, GameObject.Find(EnemyTankObjectName).transform);
+                            break;
+                        case BlackTankSpawnPoint:
+                            temp = Instantiate(I_BlackTankPrefab, tank.position, tank.rotation, GameObject.Find(EnemyTankObjectName).transform);
+                            break;
+                    }
+
+                    if (temp != null)
+                    {
+                        temp.name = temp.name.Remove(temp.name.Length - 7);
+                    }
                 }
             }
+
+            m_NonSpawingPositions = new Vector3[0];
+        }
+        else
+            HasJustStartedAMission = false;
+
+        if (SceneManager.GetActiveScene().name == "Dead" && m_SceneIndexNumber != SceneManager.GetActiveScene().handle)
+        {
+            ResetFunctionsEvenIfDead();
         }
     }
 
@@ -178,6 +215,17 @@ public class GlobalVariables : MonoBehaviour
             }
         }
     }
+    public void SetNonSpawingTankPos(Vector3 pos)
+    {
+        Vector3[] temp = m_NonSpawingPositions;
+        m_NonSpawingPositions = new Vector3[temp.Length + 1];
+        for (int i = 0; i < m_NonSpawingPositions.Length - 1; i++)
+        {
+            m_NonSpawingPositions[i] = temp[i];
+        }
+
+        m_NonSpawingPositions[m_NonSpawingPositions.Length - 1] = pos;
+    }
     public void DestroyBullet(int numberInArray)
     {
         if (m_Bullets[numberInArray])
@@ -204,9 +252,53 @@ public class GlobalVariables : MonoBehaviour
     //Getters
     static public Rigidbody2D GetPlayerTankBody()
     {
-        return GameObject.Find(GlobalVariables.PlayerTankBodyName).GetComponent<Rigidbody2D>();
+        if (GameObject.Find(GlobalVariables.PlayerTankBodyName))
+            return GameObject.Find(GlobalVariables.PlayerTankBodyName).GetComponent<Rigidbody2D>();
+        return null;
     }
     static public GlobalVariables GetThisInstance() { return GameObject.Find(GlobalVariables.GlobalVariableObjectName).GetComponent<GlobalVariables>(); }
     public Vector2 GetCamerBoundsBottomLeft() { return I_CameraBounds.bounds.center - I_CameraBounds.bounds.size / 2; }
     public Vector2 GetCamerBoundsTopRight() { return I_CameraBounds.bounds.center + I_CameraBounds.bounds.size / 2; }
+    public Vector2 GetCameraCenter() { return I_CameraBounds.bounds.center; }
+    public Bounds GetCameraBounds() { return I_CameraBounds.bounds; }
+
+    private void ResetFunctionsEvenIfDead()
+    {
+        GetComponentInChildren<TankSceneManager>().I_IsLoading = false;
+        m_SceneIndexNumber = SceneManager.GetActiveScene().handle;
+
+        for (int i = 0; i < m_Bullets.Length; i++)
+        {
+            if (m_Bullets[i] != null)
+                Destroy(m_Bullets[i].gameObject);
+        }
+        for (int i = 0; i < m_Bombs.Length; i++)
+        {
+            Destroy(m_Bombs[i].gameObject);
+        }
+        //Treds
+        GameObject[] go = GameObject.FindGameObjectsWithTag("Tred");
+        for (int i = 0; i < go.Length; i++)
+        {
+            if (go[i].transform.parent.name == gameObject.transform.name)
+            {
+                Destroy(go[i]);
+            }
+        }
+        //DeathCross
+        GameObject[] DethCrosses = GameObject.FindGameObjectsWithTag("DeathCross");
+        for (int i = 0; i < DethCrosses.Length; i++)
+        {
+            if (DethCrosses[i].transform.parent.name == gameObject.transform.name)
+            {
+                Destroy(DethCrosses[i]);
+            }
+        }
+
+        //Bullets
+        m_Bullets = new Bullet[0];
+        m_CurrentBulletIndex = -1;
+        m_Bombs = new Bomb[0];
+        m_CurrentBombIndex = -1;
+    }
 }

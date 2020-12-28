@@ -4,42 +4,86 @@ using UnityEngine.SceneManagement;
 public class TankSceneManager : MonoBehaviour
 {
     public bool I_Testing = false;
+    public int I_NumberOfLevels = 1;
+    public int I_StartingLevel = 1;
+    public bool I_IsLoading = false;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        if (!I_Testing)
-        {
-            if (GlobalVariables.CurrentLevel == 0)
-            {
-                SceneManager.LoadScene("Level-" + (GlobalVariables.CurrentLevel + 1));
-                GlobalVariables.CurrentLevel++;
-            }
-        }
-    }
+    private int m_CurrentLevel = 0;
+    private bool m_IsOnFirstLoad = true;
 
-    // Update is called once per frame
     void Update()
     {
-        if (GameObject.Find(GlobalVariables.PlayerTankBodyName).GetComponent<SpriteRenderer>().enabled == false)
+        if (I_Testing)
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-        }
-        /*if (!I_Testing)
-        {
-            //Check if Player is dead
-            if (GameObject.Find(GlobalVariables.PlayerTankName) == null)
+            //In testing screne
+            if (!I_IsLoading)
             {
-                SceneManager.LoadScene("Level-" + GlobalVariables.CurrentLevel);
+                //Reset testing screne when player dies
+                if (GlobalVariables.GetPlayerTankBody() != null)
+                {
+                    if (GlobalVariables.GetPlayerTankBody().GetComponent<SpriteRenderer>().enabled == false)
+                    {
+                        SceneManager.LoadSceneAsync("Dead");
+                        I_IsLoading = true;
+                    }
+                }
             }
         }
         else
         {
-            //Check if Player is dead
-            if (GameObject.Find(GlobalVariables.PlayerTankName) == null)
+            //Switch back to game screen if the screen is dead
+            if (SceneManager.GetActiveScene().name == "Dead")
             {
-                SceneManager.LoadScene("TestingScene");
+                if (!I_IsLoading)
+                {
+                    if (I_Testing)
+                        SceneManager.LoadSceneAsync("TestingScene");
+                    else
+                        SceneManager.LoadSceneAsync("Mission-" + (m_CurrentLevel));
+                    I_IsLoading = true;
+                }
             }
-        }*/
+            else if (m_IsOnFirstLoad) //Starting screen
+            {
+                m_CurrentLevel = I_StartingLevel;
+                SceneManager.LoadSceneAsync("Mission-" + (m_CurrentLevel));
+                I_IsLoading = true;
+                m_IsOnFirstLoad = false;
+            }
+            else if (!I_IsLoading) //Skip if it is loading at the moment
+            {
+                //Check if player is alive
+                if (m_CurrentLevel != 0 && GlobalVariables.GetPlayerTankBody() != null)
+                {
+                    if (GlobalVariables.GetPlayerTankBody().GetComponent<SpriteRenderer>().enabled == false)
+                    {
+                        SceneManager.LoadSceneAsync("Dead");
+                        I_IsLoading = true;
+                    }
+                }
+                //Check there are tanks alive or not
+                Transform go = GameObject.Find(GlobalVariables.EnemyTankObjectName).transform;
+                bool tanksLeft = false;
+                for (int i = 0; i < go.childCount; i++)
+                {
+                    if (go.GetChild(i).GetComponent<Tank>().IsAlive())
+                    {
+                        tanksLeft = true;
+                        break;
+                    }
+                }
+
+                if (!tanksLeft)
+                {
+                    //Check if still a level to go on to
+                    if (I_NumberOfLevels > m_CurrentLevel)
+                    {
+                        m_CurrentLevel++;
+                        SceneManager.LoadSceneAsync("Mission-" + (m_CurrentLevel));
+                        I_IsLoading = true;
+                    }
+                }
+            }
+        }
     }
 }

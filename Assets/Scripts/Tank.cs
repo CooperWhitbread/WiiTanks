@@ -27,6 +27,7 @@ abstract public class Tank : MonoBehaviour
 
     protected float m_HitTimeForDeath = 0.0f;
     private Vector3 m_PositionWhenDead = Vector3.zero;
+    private Vector3 m_StartingPos = Vector3.zero;
     //Treds
     protected Vector2 m_TredLastTransform = Vector2.zero;
     //Shooting variables
@@ -101,6 +102,8 @@ abstract public class Tank : MonoBehaviour
             m_Bombs[i].gameObject.SetActive(false);
             m_Bombs[i].gameObject.transform.SetParent(gameObject.transform);
         }
+
+        m_StartingPos = m_BodyRB2D.transform.position;
     }
     private void FixedUpdate()
     {
@@ -156,9 +159,10 @@ abstract public class Tank : MonoBehaviour
     }
     public void DestroyTank()
     {
-        if (gameObject.name != GlobalVariables.PlayerTankName)
+        if (!gameObject.name.Contains(GlobalVariables.PlayerTankName))
         {
             SpawnDeathCross();
+            GlobalVariables.GetThisInstance().SetNonSpawingTankPos(m_StartingPos);
         }
 
         GlobalVariables.GetThisInstance().SetBullets(ref m_Bullets);
