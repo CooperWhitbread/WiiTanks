@@ -180,9 +180,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d0593b9ebce7594eae13750cb5d2e28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  I_TileMapArray:
-  - {fileID: 0}
-  - {fileID: 0}
   I_NumberOfGrids: {x: 48, y: 36}
   I_Position: {x: 0, y: 0}
   I_NodeSize: 0.5
@@ -330,7 +327,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   I_Testing: 0
-  I_NumberOfLevels: 2
+  I_NumberOfLevels: 5
   I_StartingLevel: 1
   I_IsLoading: 0
 --- !u!1 &1746797118

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class GreyTank : EnemyTank
 {
-    
+
     ///Inspector Variables
     [SerializeField] StateManager I_StateManager = new StateManager();
     [SerializeField] float I_MaxShootDistanceForPlayerTank = 30.0f;
@@ -26,8 +26,6 @@ public class GreyTank : EnemyTank
     private Vector2 m_CurrentRetreatPos = Vector2.zero;
     private Vector2[] m_Corners = new Vector2[4];
     private bool m_IsCheckingPath = false;
-
-    Vector2 debugDirectionPos = Vector2.zero;
 
     Vector3[] m_Path;
     private int m_TargetIndex = 0;
@@ -103,7 +101,8 @@ public class GreyTank : EnemyTank
             return false;
 
         //Check if it is in a position that it wants to shoot
-        RaycastHit2D rayCastHit = Physics2D.Raycast(I_ShootTransform.position, GetVector2FromAngle(m_TurretRB2D.rotation),
+        CapsuleCollider2D cc = m_Bullets[0].GetComponent<CapsuleCollider2D>();
+        RaycastHit2D rayCastHit = Physics2D.CapsuleCast(I_ShootTransform.position, cc.size, cc.direction, m_TurretRB2D.rotation, GetVector2FromAngle(m_TurretRB2D.rotation),
                100.0f, 1 << GlobalVariables.LayerTanks | 1 << GlobalVariables.LayerWalls | 1 << GlobalVariables.LayerBullets);
         if (rayCastHit.collider != null)
         {
@@ -136,7 +135,7 @@ public class GreyTank : EnemyTank
                     Vector2 normal = rayCastHit.normal; //Wall's normal
                     Vector2 ang = post - (2 * Vector2.Dot(post, normal) * normal); //vector of desired direction
                     Vector2 hit = rayCastHit.point; // the point of contact
-                    rayCastHit = Physics2D.Raycast(hit, ang,
+                    rayCastHit = Physics2D.CapsuleCast(hit, cc.size, cc.direction, m_TurretRB2D.rotation, ang,
                         100.0f, 1 << GlobalVariables.LayerTanks | 1 << GlobalVariables.LayerWalls);//Don't do bullets since they will have moved by then
 
                     if (rayCastHit.collider.gameObject.layer == GlobalVariables.LayerTanks)
@@ -169,6 +168,7 @@ public class GreyTank : EnemyTank
     public void OnDrawGizmos()
     {
         //Gizmos.DrawLine(m_BodyRB2D.position, GetVector2FromAngle(m_DesiredTurretRotation) * 100);
+
         if (m_Path != null)
         {
             for (int i = m_TargetIndex; i < m_Path.Length; i++)
@@ -203,7 +203,7 @@ public class GreyTank : EnemyTank
     {
         if (m_Path != null)
         {
-            if (Vector3.Distance(m_BodyRB2D.position, m_CurrentWayPoint) <= 0.40f)
+            if (Vector3.Distance(m_BodyRB2D.position, m_CurrentWayPoint) <= 0.70f)
             {
                 if (m_TargetIndex + 1 >= m_Path.Length)
                 {
@@ -234,13 +234,12 @@ public class GreyTank : EnemyTank
                         normal = new Vector2(-rb.velocity.normalized.y, rb.velocity.normalized.x);
 
                     direction += normal / distance * I_MovementDistanceFromBulletScalarValue;
-                    debugDirectionPos = normal;
                 }
             }
             direction = direction.normalized;
 
             //Bomb
-            Bomb[] bombs = GameObject.FindObjectsOfType<Bomb>();
+            Bomb[] bombs = FindObjectsOfType<Bomb>();
             bool tempNeedsMovement = true;
             foreach (Bomb b in bombs)
             {
@@ -257,7 +256,7 @@ public class GreyTank : EnemyTank
                 }
             }
             if (tempNeedsMovement)
-                GradualMoveTank(direction, m_SpeedForGradualChangeVelocity, 120.0f, m_SpeedForGradualChangeVelocityStationary);
+                GradualMoveTankAutoIfStationary(direction, m_SpeedForGradualChangeVelocity, 120.0f, m_SpeedForGradualChangeVelocityStationary);
         }
         else
             UpdatePath();

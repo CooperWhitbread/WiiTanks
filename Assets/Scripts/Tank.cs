@@ -1,8 +1,12 @@
 ﻿using UnityEngine;
+using UnityEngine.Tilemaps;
 
 ///Abstract Tank Class
 abstract public class Tank : MonoBehaviour
 {
+    ///Help
+    //https://stackoverflow.com/questions/3838329/how-can-i-check-if-two-segments-intersect
+
     ///Inspector Variables
     [SerializeField] protected BulletScript I_BulletScript;
     [SerializeField] protected Transform I_ShootTransform;
@@ -21,13 +25,17 @@ abstract public class Tank : MonoBehaviour
     protected GameObject m_DeathCrossPrefab;
 
     protected GameObject m_TredsParentObject;
-    static protected ContactFilter2D s_ContactFilter = new ContactFilter2D();
+    static protected ContactFilter2D s_ContactFilterWalls = new ContactFilter2D();
     protected Bullet[] m_Bullets = new Bullet[0];
     protected Bomb[] m_Bombs = new Bomb[0];
 
     protected float m_HitTimeForDeath = 0.0f;
     private Vector3 m_PositionWhenDead = Vector3.zero;
     private Vector3 m_StartingPos = Vector3.zero;
+    protected Vector2 m_PreviousPos = Vector3.zero;
+    private float m_moveBackRotateDistance = 0.12f;
+    private int m_isCorrectingStationary = 0;
+    private float m_TimeStationary = 0.0f;
     //Treds
     protected Vector2 m_TredLastTransform = Vector2.zero;
     //Shooting variables
@@ -83,9 +91,8 @@ abstract public class Tank : MonoBehaviour
         m_TurretRB2D = transform.GetChild(1).GetComponent<Rigidbody2D>();
 
         //Contact filter initializeation
-        s_ContactFilter.useTriggers = false;
-        s_ContactFilter.SetLayerMask(Physics2D.GetLayerCollisionMask(gameObject.layer));
-        s_ContactFilter.useLayerMask = true;
+        s_ContactFilterWalls.useTriggers = false;
+        s_ContactFilterWalls.SetLayerMask((1 << GlobalVariables.LayerWalls) | (1 << GlobalVariables.LayerWallHole));
 
         InheritedStart();
 
@@ -186,6 +193,7 @@ abstract public class Tank : MonoBehaviour
         //Set Up and reset
         m_BodyRB2D.velocity = Vector2.zero;
         DelayShoot(false);
+        m_TurretRB2D.position = m_BodyRB2D.position;
 
         //Treds
         if (!m_SharpRotationOn)
@@ -210,7 +218,7 @@ abstract public class Tank : MonoBehaviour
     protected void Shoot()
     {
         //Checks if there are no walls between turret and body
-        RaycastHit2D hit = Physics2D.Raycast(I_ShootTransform.position, GetVector2FromAngle(180 + m_TurretRB2D.rotation), 0.8f);
+        RaycastHit2D hit = Physics2D.Raycast(I_ShootTransform.position, GetVector2FromAngle(180 + m_TurretRB2D.rotation), 2.0f);
         if(hit.collider != null)
         {
             if (hit.collider.gameObject.layer == GlobalVariables.LayerTanks || hit.collider.gameObject.layer == GlobalVariables.LayerWallHole ||
@@ -268,6 +276,48 @@ abstract public class Tank : MonoBehaviour
             }
         }
     }
+    protected void GradualMoveTankAutoIfStationary(Vector2 moveDirection, float rotationSpeed, float sharpTurnRot = 90.0f, float sharpRotationSpeed = 3.0f)
+    {
+        if (m_PreviousPos == m_BodyRB2D.position)
+            m_TimeStationary += Time.deltaTime;
+        else
+            m_TimeStationary = 0;
+
+        if (m_TimeStationary >= 1.0f)
+        {
+            Vector2 dir = Vector2.zero;
+            foreach (Tilemap tm in FindObjectsOfType<Tilemap>())
+            {
+                Vector3Int pos = tm.WorldToCell(m_BodyRB2D.position);
+                if (tm.GetTile(pos + Vector3Int.right))
+                    dir = Vector2.left;
+                else if (tm.GetTile(pos + Vector3Int.left))
+                    dir = Vector2.right;
+                else if (tm.GetTile(pos + Vector3Int.up))
+                    dir = Vector2.down;
+                else if (tm.GetTile(pos + Vector3Int.down))
+                    dir = Vector2.up;
+
+                
+            }
+            GradualMoveTank(dir, rotationSpeed, sharpTurnRot, sharpRotationSpeed);
+
+            m_isCorrectingStationary = 1;
+        }
+        else if (m_isCorrectingStationary > 0)
+        {
+            Vector2 dir = m_BodyRB2D.position - m_PreviousPos;
+            Vector2 tarDir = dir - moveDirection;
+            GradualMoveTank(dir + tarDir, rotationSpeed, sharpTurnRot, sharpRotationSpeed);
+            m_isCorrectingStationary++;
+            if (m_isCorrectingStationary == 20)
+                m_isCorrectingStationary = 0;
+        }
+        else
+            GradualMoveTank(moveDirection, rotationSpeed, sharpTurnRot, sharpRotationSpeed);
+
+        m_PreviousPos = m_BodyRB2D.position;
+    }
     protected void GradualMoveTank(Vector2 moveDirection, float rotationSpeed, float sharpTurnRot = 90.0f, float sharpRotationSpeed = 3.0f)
     {
         if (moveDirection != Vector2.zero)
@@ -283,8 +333,12 @@ abstract public class Tank : MonoBehaviour
                 float diff = GetDiffInRotation(fullRotateDegree, m_BodyRB2D.rotation);
                 float newRotateDegree = m_BodyRB2D.rotation;
 
-                if (diff == 180 || diff == -180)
-                    newRotateDegree = fullRotateDegree;
+                if (Mathf.Abs(Mathf.Abs(diff) - 180.0f) < 20.0f)
+                {
+                    newRotateDegree += 180.0f;
+                    diff = 0;
+                    m_BodyRB2D.SetRotation(m_BodyRB2D.rotation + 180.0f);
+                }
                 else if (diff > rotationSpeed) //Want to rotate anticlockwise if larger than min rotation
                     newRotateDegree += rotationSpeed;
                 else if (diff < -rotationSpeed) //Want to rotate clockwise if larger than min rotation
@@ -297,11 +351,17 @@ abstract public class Tank : MonoBehaviour
 
                 //Fix the rotation to -180 <= r <= 180
                 if (newRotateDegree > 180)
+                {
                     newRotateDegree -= 360;
+                    m_BodyRB2D.SetRotation(m_BodyRB2D.rotation - 360);
+                }
                 else if (newRotateDegree < -180)
+                {
                     newRotateDegree += 360;
+                    m_BodyRB2D.SetRotation(m_BodyRB2D.rotation + 360);
+                }
 
-                //do a stationary rotation if distance is too great
+                    //do a stationary rotation if distance is too great
                 if (diff > sharpTurnRot ||
                     m_SharpRotationOn && diff > sharpRotationSpeed)
                 {
@@ -317,7 +377,33 @@ abstract public class Tank : MonoBehaviour
                 else
                     m_BodyRB2D.velocity = GetVector2FromAngle(newRotateDegree) * I_MoveSpeed;
 
-                m_BodyRB2D.SetRotation(newRotateDegree);
+                //Correct rotation for wall collision
+                Collider2D[] cc1 = new Collider2D[8];
+                int numOfHits1 = Physics2D.OverlapBox(m_BodyRB2D.position, GetComponentInChildren<BoxCollider2D>().size, newRotateDegree, s_ContactFilterWalls, cc1);
+
+                for (int i = 0; i < numOfHits1; i++)
+                {
+                    if (cc1[i].gameObject.layer != GlobalVariables.LayerTanks)
+                    {
+                        Vector2 dir = cc1[i].ClosestPoint(m_BodyRB2D.position) - m_BodyRB2D.position;
+                        if (IsWithinCertainValue(GetAngleFromVector2(dir), m_BodyRB2D.rotation, 8.0f) &&
+                            !IsWithinCertainValue(fullRotateDegree, m_BodyRB2D.rotation, 89.0f)) //check if is hard against the wall
+                        {
+                            //Change the tank to face the other direction and rotate it relative to that direction
+                            m_BodyRB2D.SetRotation(GetAngleBetween(m_BodyRB2D.rotation + 180.0f, -180.0f, 180.0f));
+                            newRotateDegree = m_BodyRB2D.rotation;
+                        }
+
+                        Collider2D[] cc2 = new Collider2D[8];
+                        Vector2 dir1 = m_BodyRB2D.position - cc1[0].ClosestPoint(m_BodyRB2D.position);
+                        int numOfHits2 = Physics2D.OverlapBox(m_BodyRB2D.position + dir1.normalized * m_moveBackRotateDistance, GetComponentInChildren<BoxCollider2D>().size, newRotateDegree, s_ContactFilterWalls, cc2);
+                        if (numOfHits2 == 0 && diff >= rotationSpeed)
+                            m_BodyRB2D.position += dir1.normalized * m_moveBackRotateDistance;
+
+                    }
+                }
+
+                m_BodyRB2D.MoveRotation(newRotateDegree);
             }
         }
     }
@@ -382,7 +468,6 @@ abstract public class Tank : MonoBehaviour
             Vector2 selfNormal = selfRayCastHit[0].normal; //Wall's normal
             selfAng = selfPost - (2 * Vector2.Dot(selfPost, selfNormal) * selfNormal); //vector of desired direction
 
-            Vector2 point = selfRayCastHit[0].point;
             cF2D.SetLayerMask(1 << GlobalVariables.LayerWalls | 1 << GlobalVariables.LayerTanks);
 
             int numHit = Physics2D.CapsuleCast(selfRayCastHit[0].point, testCapsule.size,
@@ -433,7 +518,7 @@ abstract public class Tank : MonoBehaviour
         m_BodyRB2D.MoveRotation(rotation);
 
         //Do the check
-        int numResults = m_BodyRB2D.Cast(moveDirection, s_ContactFilter, rayCastHit, distance);
+        int numResults = m_BodyRB2D.Cast(moveDirection, s_ContactFilterWalls, rayCastHit, distance);
 
         //Rotate Back
         m_BodyRB2D.MoveRotation(oldRotAng);
@@ -485,5 +570,66 @@ abstract public class Tank : MonoBehaviour
     static public Vector3 GetVector3FromAngle(float angleDeg)
     {
         return new Vector3(Mathf.Cos(Mathf.Deg2Rad * angleDeg), Mathf.Sin(Mathf.Deg2Rad * angleDeg), 0.0f);
+    }
+    static public bool IsWithinCertainValue(float ang1, float ang2, float desiredDiff)
+    {
+        if (ang1 > 180)
+            ang1 -= 360;
+        else if (ang1 < -180)
+            ang1 += 360;
+
+        if (ang2 > 180)
+            ang2 -= 360;
+        else if (ang2 < -180)
+            ang2 += 360;
+
+        //normal
+        if (Mathf.Abs(ang1 - ang2) <= desiredDiff)
+            return true;
+
+        //check if angle is at high extreme
+        ang1 -= 360;
+        if (Mathf.Abs(ang1 - ang2) <= desiredDiff)
+            return true;
+
+        //check if angle is at low extreme
+        ang1 += 720;
+        if (Mathf.Abs(ang1 - ang2) <= desiredDiff)
+            return true;
+
+        //not close ever
+        return false;
+    }
+    static public float GetAngleBetween(float angle, float min, float max)
+    {
+        if (angle < min)
+            angle += (max - min);
+        else if (angle > max)
+            angle -= (max - min);
+
+        return angle;
+    }
+    static public bool TwoLinesColliding(Vector2 A1, Vector2 A2, Vector2 B1, Vector2 B2)
+    {
+        if (Mathf.Max(A1.x, A2.x) < Mathf.Min(B1.x, B2.x))
+            return false;
+
+        float mA = (A1.y - A2.y) / (A1.x - A2.x);
+        float mB = (B1.y - B2.y) / (B1.x - B2.x);
+        float cA = A1.y - mA * A1.x;
+        float cB = B1.y - mB * B1.x;
+
+        if (mA == mB)
+            return false;
+
+        Vector2 intersect = Vector2.zero;
+        intersect.x = (cB - cA) / (mA - mB);
+        intersect.y = mA * intersect.x + cA;
+
+        if (intersect.x < Mathf.Max(Mathf.Min(A1.x, A2.x), Mathf.Min(B1.x, B2.x))
+            || intersect.x > Mathf.Min(Mathf.Max(A1.x, A2.x), Mathf.Max(B1.x, B2.x)))
+            return false;
+
+        return true;
     }
 }
