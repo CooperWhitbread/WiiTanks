@@ -15,7 +15,7 @@ public class Bullet : MonoBehaviour
     private int m_MaxNumberOfHits = 0;
     private float m_TimeForWeirdBulletWallCheck = 0.0f;
     private Vector2 m_PreviousPos = Vector2.zero;
-
+    private float m_CensecutiveWeirdBulletWallCheck = 0;
 
     ///Unity Functions
     void Awake()
@@ -30,14 +30,15 @@ public class Bullet : MonoBehaviour
         m_RigidBody2D.velocity = new Vector2(Mathf.Cos(Mathf.Deg2Rad * m_RigidBody2D.rotation), Mathf.Sin(Mathf.Deg2Rad * m_RigidBody2D.rotation)) *  m_Velocity;
 
         //Check if bullet is going slowly against the wall
-        if (Time.fixedTime >= m_TimeForWeirdBulletWallCheck)//Haven't tested, if problem doesn't turn up, all good
+        if (Time.fixedTime >= m_TimeForWeirdBulletWallCheck)
         {
             m_TimeForWeirdBulletWallCheck = Time.fixedTime + 0.1f;
-            //if (Mathf.Abs(Mathf.Cos(Mathf.Deg2Rad * m_RigidBody2D.rotation) - transform.rotation.eulerAngles.x) >= 0.1f ||
-            //    Mathf.Abs(Mathf.Sin(Mathf.Deg2Rad * m_RigidBody2D.rotation) - transform.rotation.eulerAngles.y) >= 0.1f)
             if (Mathf.Abs(Tank.GetAngleFromVector2(m_RigidBody2D.position - m_PreviousPos) - m_RigidBody2D.rotation) >= 5.0f)
             {
-                DestroyBullet();
+                m_CensecutiveWeirdBulletWallCheck++;
+
+                if (m_CensecutiveWeirdBulletWallCheck == 2)
+                    DestroyBullet();
             }
         }
 
@@ -45,13 +46,9 @@ public class Bullet : MonoBehaviour
         if (!m_ParticleSystem.IsAlive())
         {
             if (GetComponentInParent<Tank>())
-            {
                 GetComponentInParent<Tank>().DestroyBullet(m_NumberInArray);
-            }
             else
-            {
                 GetComponentInParent<GlobalVariables>().DestroyBullet(m_NumberInArray);
-            }
         }
 
         m_PreviousPos = m_RigidBody2D.position;
@@ -61,9 +58,7 @@ public class Bullet : MonoBehaviour
         //Check Collision Type
         if (col.gameObject.layer == LayerMask.NameToLayer("Tanks") ||
             col.gameObject.layer == LayerMask.NameToLayer("Bullets"))
-        {
             DestroyBullet();
-        }
         else if (col.gameObject.layer == LayerMask.NameToLayer("Walls"))
         {
             if (m_NumberOfHit < m_MaxNumberOfHits)
@@ -74,10 +69,8 @@ public class Bullet : MonoBehaviour
                 m_RigidBody2D.SetRotation(Vector2.SignedAngle(Vector2.right, ang));
                 m_NumberOfHit++;
             }
-            else
-            {
+            else 
                 DestroyBullet();
-            }
         }
     }
 
@@ -110,12 +103,12 @@ public class Bullet : MonoBehaviour
         m_NumberInArray = numberInArray;
         m_MaxNumberOfHits = maxNumberOfHits;
         m_NumberOfHit = 0;
-        //m_TimeForWeirdBulletWallCheck = 0.0f;
         foreach (ParticleSystem p in GetComponentsInChildren<ParticleSystem>())
             p.Play();
         m_SpriteRenderer.enabled = true;
         m_Collider.enabled = true; 
         m_TimeForWeirdBulletWallCheck = Time.fixedTime + 0.3f;
+        m_CensecutiveWeirdBulletWallCheck = 0;
     }
     public void SetLevelInArray(int level)
     {

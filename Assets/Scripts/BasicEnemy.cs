@@ -6,13 +6,12 @@ public class BasicEnemy : EnemyTank
 {
     ///Inspector Variables
     [SerializeField] Rigidbody2D I_PlayerRB;
-    [SerializeField] StateManager I_StateManager;
     [SerializeField] protected float m_rotateSpeed = 15.0f;
 
     ///Private Variables
     private float m_ResetTimeForMove = 0.0f;
-    private float m_SecondsForUpdateTargetTracking = 1.0f;
-    private float m_SecondsForUpdateAllTracking = 2.0f;
+    private const float m_SecondsForUpdateTargetTracking = 1.0f;
+    private const float m_SecondsForUpdateAllTracking = 2.0f;
     private int m_TimesBetweenTracking = 0;
 
     ///Virtual Functions
@@ -65,15 +64,15 @@ public class BasicEnemy : EnemyTank
     private void RecheckMovementTargeting(bool targetingOnly = false)
     {
         m_ReachedEndOfPath = true;
-        switch (I_StateManager.M_CurrentState)
+        switch (I_StateManager.CurrentState)
         {
             case StateManager.State.Chase:
                 break;
             case StateManager.State.Attack:
                 if (!targetingOnly)
                 {
-                    Vector2 target = new Vector2(Random.Range(-1.0f, 1.0f), Random.Range(-1.0f, 1.0f)).normalized *
-                        4 + m_BodyRB2D.position;
+                    //Vector2 target = new Vector2(Random.Range(-1.0f, 1.0f), Random.Range(-1.0f, 1.0f)).normalized *
+                        //4 + m_BodyRB2D.position;
                 }
                 break;
             default:

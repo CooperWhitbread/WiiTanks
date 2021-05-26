@@ -89,6 +89,9 @@ TextureImporter:
   - first:
       213: -2262306876434379329
     second: WallBasic_13
+  - first:
+      213: -1983644994234022143
+    second: WallBasic_15
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -446,8 +449,8 @@ TextureImporter:
       name: WallBasic_11
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
+        x: 210
+        y: 70
         width: 70
         height: 70
       alignment: 0
@@ -467,7 +470,7 @@ TextureImporter:
       name: WallBasic_12
       rect:
         serializedVersion: 2
-        x: 70
+        x: 0
         y: 0
         width: 70
         height: 70
@@ -488,7 +491,7 @@ TextureImporter:
       name: WallBasic_13
       rect:
         serializedVersion: 2
-        x: 140
+        x: 70
         y: 0
         width: 70
         height: 70
@@ -501,6 +504,27 @@ TextureImporter:
       bones: []
       spriteID: fbd8431d1ebaa90e0800000000000000
       internalID: -2262306876434379329
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WallBasic_14
+      rect:
+        serializedVersion: 2
+        x: 140
+        y: 0
+        width: 70
+        height: 70
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a90f11a35c955ab30800000000000000
+      internalID: 4297940123012690074
       vertices: []
       indices: 
       edges: []

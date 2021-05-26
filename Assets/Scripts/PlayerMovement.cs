@@ -9,16 +9,13 @@ public class PlayerMovement : Tank
     ///Virtual Functions///
     protected override void InheritedUpdate()
     {
-        //Shoot check per frame
-        if (Input.GetMouseButtonDown(0)) //Input.GetButtonDown("Shoot") if want space bar
-        {
-            Shoot();
-        }
-        if (Input.GetMouseButtonDown(1)) //Input.GetButtonDown("Shoot") if want space bar
-        {
-            DropBomb();
-        }
+        //Input.GetButtonDown("Shoot") if want space bar
 
+        //Shoot check per frame
+        if (Input.GetMouseButtonDown(0)) 
+            Shoot();
+        if (Input.GetMouseButtonDown(1))
+            DropBomb();
 
         //Update the Camera
         MoveCamera();
@@ -30,32 +27,17 @@ public class PlayerMovement : Tank
 
         //Get the direction of movement from the player
         if (Input.GetButton("MoveLeft"))
-        {
             moveDirection.x -= 1;
-        }
         if (Input.GetButton("MoveRight"))
-        {
             moveDirection.x += 1;
-        }
         if (Input.GetButton("MoveDown"))
-        {
             moveDirection.y -= 1;
-        }
         if (Input.GetButton("MoveUp"))
-        {
             moveDirection.y += 1;
-        }
 
         //Move and rotate the tank
         RotateTurret(Camera.main.ScreenToWorldPoint(Input.mousePosition));
         GradualMoveTank(moveDirection, I_RotateSpeed, 180.0f);
-
-        /*
-        //Fix the rotation to -180 <= r <= 180
-        if (I_BodyRB2D.rotation > 180)
-            I_BodyRB2D.SetRotation(I_BodyRB2D.rotation - 360);
-        else if (I_BodyRB2D.rotation < -180)
-            I_BodyRB2D.SetRotation(I_BodyRB2D.rotation + 360);*/
     }
     protected override void InheritedStart()
     {

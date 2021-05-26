@@ -6,8 +6,6 @@ public class WhiteTank : EnemyTank
 {
 
     ///Inspector Variables
-    [SerializeField] float I_MaxDistanceForSeeingBullet = 5.0f;
-    [SerializeField] float I_VisualRangeAngle = 30.0f;
     [SerializeField] float I_MovementDistanceFromBulletScalarValue = 3.0f;
     [SerializeField] float I_MovementCurrentDirectionScalar = 1.0f;
     [SerializeField] float I_BombDetectionRadius = 2.5f;
@@ -20,20 +18,12 @@ public class WhiteTank : EnemyTank
     ///Private Variables
     private float m_ResetTimeForMove = 0.0f;
     private float m_SecondsForUpdateTargetTracking = 3.0f;
-    private Rigidbody2D m_PlayerRB2D;
     private Vector2 m_CurrentRetreatPos = Vector2.zero;
     private Vector2 m_PreviousPosition = Vector2.zero;
     private Vector2[] m_Corners = new Vector2[4];
-    private bool m_IsCheckingPath = false;
     private Vector2 m_PreviousTargetPos = Vector2.zero;
     private bool m_WantToCheckAllCornersAgain = true;
     private float m_TimeForNextDistanceCheck = 0.0f;
-
-    Vector2 debugDirectionPos = Vector2.zero;
-
-    Vector3[] m_Path;
-    private int m_TargetIndex = 0;
-    Vector3 m_CurrentWayPoint;
 
     ///Virtual Functions
     protected override void InheritedStart()
@@ -150,16 +140,6 @@ public class WhiteTank : EnemyTank
 
         //Gizmos.DrawLine(debugDirectionPos * 5 + m_BodyRB2D.position, m_BodyRB2D.position);
     }
-    public void OnPathFound(Vector3[] newPath, bool pathSucess)
-    {
-        m_IsCheckingPath = false;
-        if (pathSucess)
-        {
-            m_Path = newPath;
-            m_CurrentWayPoint = m_BodyRB2D.position;
-            m_TargetIndex = 0;
-        }
-    }
     private void FollowPath()
     {
         if (m_Path != null)
@@ -214,7 +194,6 @@ public class WhiteTank : EnemyTank
                         normal = new Vector2(-rb.velocity.normalized.y, rb.velocity.normalized.x);
 
                     direction += normal / distance * I_MovementDistanceFromBulletScalarValue;
-                    debugDirectionPos = normal;
                 }
             }
             foreach (Tank i in GameObject.FindObjectsOfType<Tank>())
@@ -251,31 +230,6 @@ public class WhiteTank : EnemyTank
         }
         else
             UpdatePath();
-    }
-    private Bullet[] GetBulletsThatAreVisable()
-    {
-        List<Bullet> bulletsCanSee = new List<Bullet>();
-        foreach (GameObject gob in GameObject.FindGameObjectsWithTag(GlobalVariables.TagBullet))
-        {
-            Rigidbody2D bulletRB2D = gob.GetComponent<Rigidbody2D>();
-            if (Vector2.Distance(m_BodyRB2D.position, bulletRB2D.position) <= I_MaxDistanceForSeeingBullet)
-            {
-                RaycastHit2D hit = Physics2D.Raycast(I_ShootTransform.position, bulletRB2D.position - (Vector2)I_ShootTransform.position, I_MaxDistanceForSeeingBullet + 1,
-                    1 << GlobalVariables.LayerTanks | 1 << GlobalVariables.LayerWalls | 1 << GlobalVariables.LayerBullets);
-                if (hit.collider != null)
-                {
-                    if (hit.collider.gameObject == gob)
-                    {
-                        if (Mathf.Abs(GetAngleFromVector2(bulletRB2D.position - m_BodyRB2D.position) - m_TurretRB2D.rotation) <= I_VisualRangeAngle)
-                        {
-                            bulletsCanSee.Add(gob.GetComponent<Bullet>());
-                        }
-                    }
-                }
-            }
-        }
-
-        return bulletsCanSee.ToArray();
     }
     private void UpdatePath()
     {

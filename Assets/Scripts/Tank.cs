@@ -4,16 +4,16 @@ using UnityEngine.Tilemaps;
 ///Abstract Tank Class
 abstract public class Tank : MonoBehaviour
 {
-    ///Help
-    //https://stackoverflow.com/questions/3838329/how-can-i-check-if-two-segments-intersect
+    static protected ContactFilter2D s_ContactFilterWalls = new ContactFilter2D();
 
     ///Inspector Variables
+    [Header("Generic Tank Variables")]
     [SerializeField] protected BulletScript I_BulletScript;
     [SerializeField] protected Transform I_ShootTransform;
-    [SerializeField] protected float I_MoveSpeed = 1.0f;
-    [SerializeField] protected float I_StopDelayForShoot = 0.1f;
     [SerializeField] protected Transform I_TredTransform1;
     [SerializeField] protected Transform I_TredTransform2;
+    [SerializeField] protected float I_MoveSpeed = 1.5f;
+    [SerializeField] protected float I_StopDelayForShoot = 0.4f;
     [SerializeField] protected float I_TredDistanceBetweenTreds = 0.2f;
 
     ///Protected Variables
@@ -23,34 +23,32 @@ abstract public class Tank : MonoBehaviour
     protected GameObject m_TredPrefab;
     protected Bomb m_BombPrefab;
     protected GameObject m_DeathCrossPrefab;
-
     protected GameObject m_TredsParentObject;
-    static protected ContactFilter2D s_ContactFilterWalls = new ContactFilter2D();
     protected Bullet[] m_Bullets = new Bullet[0];
     protected Bomb[] m_Bombs = new Bomb[0];
-
-    protected float m_HitTimeForDeath = 0.0f;
-    private Vector3 m_PositionWhenDead = Vector3.zero;
-    private Vector3 m_StartingPos = Vector3.zero;
-    protected Vector2 m_PreviousPos = Vector3.zero;
-    private float m_moveBackRotateDistance = 0.12f;
-    private int m_isCorrectingStationary = 0;
-    private float m_TimeStationary = 0.0f;
-    //Treds
-    protected Vector2 m_TredLastTransform = Vector2.zero;
-    //Shooting variables
-    protected int m_NumOfBullets = 0;
-    protected bool m_ShootDelayActive = false;
-    protected float m_DesiredTimeForShoot = 0.0f;
     protected ParticleSystem m_ShootParticleSystem;
     protected ParticleSystem m_BodyExplosionParticleSystem;
+
+    //Position Logic
+    protected Vector2 m_PreviousPos = Vector3.zero;
+    protected Vector2[] m_BattleGroundCorners = new Vector2[4];
+    private Vector3 m_PositionWhenDead = Vector3.zero;
+    private Vector3 m_StartingPos = Vector3.zero;
+
+    //Treds
+    protected Vector2 m_TredLastTransform = Vector2.zero;
+
+    //Shooting variables
+    protected bool m_ShootDelayActive = false;
+    protected float m_DesiredTimeForShoot = 0.0f;
+
     //Body Rotation
     protected bool m_SharpRotationOn = false;
 
-    ///Constant Variables
-    protected const float m_collissionBuffer = 0.1f;
-    protected const float m_SpeedForGradualChangeVelocity = 2.0f;
-    protected const float m_SpeedForGradualChangeVelocityStationary = 3.0f;
+    private float m_HitTimeForDeath = 0.0f;
+    private const float m_moveBackRotateDistance = 0.12f;
+    private int m_isCorrectingStationary = 0;
+    private float m_TimeStationary = 0.0f;
 
     ///Inherited Function
     protected virtual void InheritedStart() { }
@@ -90,10 +88,7 @@ abstract public class Tank : MonoBehaviour
         m_BodyRB2D = transform.GetChild(0).GetComponent<Rigidbody2D>();
         m_TurretRB2D = transform.GetChild(1).GetComponent<Rigidbody2D>();
 
-        //Contact filter initializeation
-        s_ContactFilterWalls.useTriggers = false;
-        s_ContactFilterWalls.SetLayerMask((1 << GlobalVariables.LayerWalls) | (1 << GlobalVariables.LayerWallHole));
-
+        SetUpVariables();
         InheritedStart();
 
         //Initialize all the bullets & bombs
@@ -150,11 +145,8 @@ abstract public class Tank : MonoBehaviour
         switch (collision.gameObject.layer)
         {
             case GlobalVariables.LayerBullets:
-                if (collision.gameObject.tag != GlobalVariables.TagBomb)
+                if (!collision.gameObject.tag.Equals(GlobalVariables.TagBomb))
                     DestroyTank();
-                break;
-            case GlobalVariables.LayerWalls:
-                //WallRotate(collision);
                 break;
         }
 
@@ -212,6 +204,22 @@ abstract public class Tank : MonoBehaviour
         {
             transform.GetChild(0).position = m_PositionWhenDead;
         }
+
+        m_PreviousPos = m_BodyRB2D.position;
+    }
+    private void SetUpVariables()
+    {
+        //Contact filter initializeation
+        s_ContactFilterWalls.useTriggers = false;
+        s_ContactFilterWalls.SetLayerMask((1 << GlobalVariables.LayerWalls) | (1 << GlobalVariables.LayerWallHole));
+
+        //Set Up logic for bounds of 
+        Vector2 p0 = GlobalVariables.GetThisInstance().GetCamerBoundsBottomLeft();
+        Vector2 p1 = GlobalVariables.GetThisInstance().GetCamerBoundsTopRight();
+        m_BattleGroundCorners[0] = new Vector2(p0.x + 2.5f, p1.y - 2.5f); //Top left
+        m_BattleGroundCorners[1] = p1 + new Vector2(-2.5f, -2.5f); // Top right
+        m_BattleGroundCorners[2] = new Vector2(p1.x - 2.5f, p0.y + 2.5f); // Bottom Right
+        m_BattleGroundCorners[3] = p0 + new Vector2(2.5f, 2.5f);// Bottom Left
     }
 
     ///Protected Functions
@@ -224,19 +232,17 @@ abstract public class Tank : MonoBehaviour
             if (hit.collider.gameObject.layer == GlobalVariables.LayerTanks || hit.collider.gameObject.layer == GlobalVariables.LayerWallHole ||
                 hit.collider.gameObject.layer == GlobalVariables.LayerBullets)
             {
-                for (int i = 0; i < m_Bullets.Length; i++)
-                {
-                    if (!m_Bullets[i].GetComponent<SpriteRenderer>().enabled)
-                    {
-                        //Shoot Bullets
-                        m_ShootParticleSystem.Play();
-                        m_Bullets[i].Initialize(I_BulletScript, i, I_ShootTransform.position, m_TurretRB2D.rotation, I_BulletScript.NumberOfBounces);
-                        m_Bullets[i].gameObject.SetActive(true);
+                int nextFreeBulletIndex = GetNextFreeBulletIndex();
 
-                        //Stop Tank Temperarily
-                        DelayShoot();
-                        break;
-                    }
+                if (nextFreeBulletIndex != -1)
+                {
+                    //Shoot Bullets
+                    m_ShootParticleSystem.Play();
+                    m_Bullets[nextFreeBulletIndex].Initialize(I_BulletScript, nextFreeBulletIndex, I_ShootTransform.position, m_TurretRB2D.rotation, I_BulletScript.NumberOfBounces);
+                    m_Bullets[nextFreeBulletIndex].gameObject.SetActive(true);
+
+                    //Stop Tank Temperarily
+                    DelayShoot();
                 }
             }
         }
@@ -256,9 +262,9 @@ abstract public class Tank : MonoBehaviour
     }
     protected void DelayShoot(bool TurnOn = true)
     {
+        //Initiate shoot delay
         if (TurnOn)
         {
-            //Initiate shoot delay
             m_ShootDelayActive = true;
             m_DesiredTimeForShoot = Time.time + I_StopDelayForShoot;
             return;
@@ -275,6 +281,45 @@ abstract public class Tank : MonoBehaviour
                 return;
             }
         }
+    }
+    protected void RotateTurret(Vector3 lookAt)
+    {
+        Vector3 screenPoint = m_BodyRB2D.position;
+        Vector2 offset = new Vector2(lookAt.x - screenPoint.x, lookAt.y - screenPoint.y);
+        float angle = Mathf.Atan2(offset.y, offset.x) * Mathf.Rad2Deg;
+        m_TurretRB2D.SetRotation(angle);
+    }
+    protected void RotateTurret(Vector2 lookAt)
+    {
+        Vector2 screenPoint = m_BodyRB2D.position;
+        Vector2 offset = lookAt - screenPoint;
+        float angle = Mathf.Atan2(offset.y, offset.x) * Mathf.Rad2Deg;
+        m_TurretRB2D.SetRotation(angle);
+    }
+    protected void SpawnDeathCross()
+    {
+        Instantiate(m_DeathCrossPrefab, m_BodyRB2D.position, Quaternion.identity, GameObject.Find(GlobalVariables.GlobalVariableObjectName).transform);
+    }
+    protected void GradualRotation(ref Rigidbody2D rb, float targetDeg, float rotationSpeed)
+    {
+        //The angle that still needs to be made up
+        float diff = GetDiffInRotation(targetDeg, rb.rotation);
+        float rotSpd = rotationSpeed * Time.deltaTime;
+
+        if (diff == 180 || diff == -180) //Don't want to be seen to rotate but still rotate it for logic
+            rb.SetRotation(targetDeg);
+        else if (diff > rotSpd) //Want to rotate anticlockwise if larger than min rotation
+            rb.SetRotation(rb.rotation + rotSpd);
+        else if (diff < - rotSpd) //Want to rotate clockwise if larger than min rotation
+            rb.SetRotation(rb.rotation - rotSpd);
+        else //Value is too small to do min rotation so rotation is done to exact value
+            rb.SetRotation(targetDeg);
+
+        //Fix the rotation to -180 <= r <= 180
+        if (rb.rotation > 180)
+            rb.SetRotation(rb.rotation - 360);
+        else if (rb.rotation < -180)
+            rb.SetRotation(rb.rotation + 360);
     }
     protected void GradualMoveTankAutoIfStationary(Vector2 moveDirection, float rotationSpeed, float sharpTurnRot = 90.0f, float sharpRotationSpeed = 3.0f)
     {
@@ -315,8 +360,6 @@ abstract public class Tank : MonoBehaviour
         }
         else
             GradualMoveTank(moveDirection, rotationSpeed, sharpTurnRot, sharpRotationSpeed);
-
-        m_PreviousPos = m_BodyRB2D.position;
     }
     protected void GradualMoveTank(Vector2 moveDirection, float rotationSpeed, float sharpTurnRot = 90.0f, float sharpRotationSpeed = 3.0f)
     {
@@ -361,7 +404,7 @@ abstract public class Tank : MonoBehaviour
                     m_BodyRB2D.SetRotation(m_BodyRB2D.rotation + 360);
                 }
 
-                    //do a stationary rotation if distance is too great
+                //do a stationary rotation if distance is too great
                 if (diff > sharpTurnRot ||
                     m_SharpRotationOn && diff > sharpRotationSpeed)
                 {
@@ -410,45 +453,6 @@ abstract public class Tank : MonoBehaviour
     protected void GradualMoveTankToTarget(Vector2 target, float rotationSpeed, float sharpTurnRot = 90.0f, float sharpRotationSpeed = 3.0f)
     {
         GradualMoveTank((target - m_BodyRB2D.position).normalized, rotationSpeed, sharpTurnRot, sharpRotationSpeed);
-    }
-    protected void RotateTurret(Vector3 lookAt)
-    {
-        Vector3 screenPoint = m_BodyRB2D.position;
-        Vector2 offset = new Vector2(lookAt.x - screenPoint.x, lookAt.y - screenPoint.y);
-        float angle = Mathf.Atan2(offset.y, offset.x) * Mathf.Rad2Deg;
-        m_TurretRB2D.SetRotation(angle);
-    }
-    protected void RotateTurret(Vector2 lookAt)
-    {
-        Vector2 screenPoint = m_BodyRB2D.position;
-        Vector2 offset = lookAt - screenPoint;
-        float angle = Mathf.Atan2(offset.y, offset.x) * Mathf.Rad2Deg;
-        m_TurretRB2D.SetRotation(angle);
-    }
-    protected void GradualRotation(ref Rigidbody2D rb, float targetDeg, float rotationSpeed)
-    {
-        //The angle that still needs to be made up
-        float diff = GetDiffInRotation(targetDeg, rb.rotation);
-        float rotSpd = rotationSpeed * Time.deltaTime;
-
-        if (diff == 180 || diff == -180) //Don't want to be seen to rotate but still rotate it for logic
-            rb.SetRotation(targetDeg);
-        else if (diff > rotSpd) //Want to rotate anticlockwise if larger than min rotation
-            rb.SetRotation(rb.rotation + rotSpd);
-        else if (diff < - rotSpd) //Want to rotate clockwise if larger than min rotation
-            rb.SetRotation(rb.rotation - rotSpd);
-        else //Value is too small to do min rotation so rotation is done to exact value
-            rb.SetRotation(targetDeg);
-
-        //Fix the rotation to -180 <= r <= 180
-        if (rb.rotation > 180)
-            rb.SetRotation(rb.rotation - 360);
-        else if (rb.rotation < -180)
-            rb.SetRotation(rb.rotation + 360);
-    }
-    protected void SpawnDeathCross()
-    {
-        Instantiate(m_DeathCrossPrefab, m_BodyRB2D.position, Quaternion.identity, GameObject.Find(GlobalVariables.GlobalVariableObjectName).transform);
     }
 
     ///Logic protected Functions
@@ -499,31 +503,6 @@ abstract public class Tank : MonoBehaviour
         }
         return -1;
     }
-    //Not currently Using (haven't touched since change of sprite rotation)
-    protected bool CheckCollisionForRotation(float rotation, float distance)
-    {
-        RaycastHit2D[] results = new RaycastHit2D[16];
-        Vector2 moveDirection = Vector2.right * rotation;
-        return CheckCollisionForRotation(rotation, moveDirection, distance, ref results) == 0 ? true : false;
-    }
-    protected bool CheckCollisionForRotation(float rotation, Vector2 moveDirection, float distance)
-    {
-        RaycastHit2D[] results = new RaycastHit2D[16];
-        return CheckCollisionForRotation(rotation, moveDirection, distance, ref results) == 0 ? true : false;
-    }
-    protected int CheckCollisionForRotation(float rotation, Vector2 moveDirection, float distance, ref RaycastHit2D[] rayCastHit)
-    {
-        //Rotate it first
-        float oldRotAng = m_BodyRB2D.rotation;
-        m_BodyRB2D.MoveRotation(rotation);
-
-        //Do the check
-        int numResults = m_BodyRB2D.Cast(moveDirection, s_ContactFilterWalls, rayCastHit, distance);
-
-        //Rotate Back
-        m_BodyRB2D.MoveRotation(oldRotAng);
-        return numResults;
-    }
 
     ///Logic public Functions
     static public float Dot(Vector2 vec1, Vector2 vec2) => vec1.x * vec2.x + vec1.y * vec2.y;
@@ -546,7 +525,7 @@ abstract public class Tank : MonoBehaviour
         if (diff > 180)
         {
             //The difference is greater that 180 so needs to be changed to rotate the shorter distance
-            target = target - 360;
+            target -= 360;
 
             //Recalculate the diff
             diff = target - current;
@@ -554,7 +533,7 @@ abstract public class Tank : MonoBehaviour
         else if (diff < -180)
         {
             //The difference is greater that 180 so needs to be changed to rotate the shorter distance
-            target = target + 360;
+            target += 360;
 
             //Recalculate the diff
             diff = target - current;

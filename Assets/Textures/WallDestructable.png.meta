@@ -56,6 +56,39 @@ TextureImporter:
   - first:
       213: 5026233297405963050
     second: WallDestructable_3
+  - first:
+      213: -8332688731072668082
+    second: WallDestructable_4
+  - first:
+      213: 7451048069663525682
+    second: WallDestructable_5
+  - first:
+      213: 3691585292805209655
+    second: WallDestructable_6
+  - first:
+      213: 518016893692956770
+    second: WallDestructable_7
+  - first:
+      213: -9187451237954794088
+    second: WallDestructable_8
+  - first:
+      213: -3705056141264191544
+    second: WallDestructable_9
+  - first:
+      213: 6083078755325516889
+    second: WallDestructable_10
+  - first:
+      213: -4283848139790408933
+    second: WallDestructable_11
+  - first:
+      213: 6105681602319067001
+    second: WallDestructable_12
+  - first:
+      213: -2186586286381603892
+    second: WallDestructable_13
+  - first:
+      213: 7525542032196245836
+    second: WallDestructable_14
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -253,8 +286,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9e656de1158eec530800000000000000
-      internalID: 3877291764319934185
+      spriteID: e4e53806fb75c5c80800000000000000
+      internalID: -8332688731072668082
       vertices: []
       indices: 
       edges: []
@@ -274,8 +307,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5516d85b208867100800000000000000
-      internalID: 105421186507039061
+      spriteID: 23b87a4fdb0776760800000000000000
+      internalID: 7451048069663525682
       vertices: []
       indices: 
       edges: []
@@ -295,8 +328,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 163b6edbffb0b26f0800000000000000
-      internalID: -708459323350142111
+      spriteID: 73ef5b3d3452b3330800000000000000
+      internalID: 3691585292805209655
       vertices: []
       indices: 
       edges: []
@@ -316,8 +349,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c9aeb63cae0db2ce0800000000000000
-      internalID: -1428818750040446308
+      spriteID: 2605838ce9d503700800000000000000
+      internalID: 518016893692956770
       vertices: []
       indices: 
       edges: []
@@ -337,8 +370,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a25fd30ce9b3a47d0800000000000000
-      internalID: -2933466654262299350
+      spriteID: 89d4b7ab6cd9f7080800000000000000
+      internalID: -9187451237954794088
       vertices: []
       indices: 
       edges: []
@@ -358,8 +391,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: afb5b3a872cd5f7a0800000000000000
-      internalID: -6343922437700494342
+      spriteID: 8cf711bd11ff49cc0800000000000000
+      internalID: -3705056141264191544
       vertices: []
       indices: 
       edges: []
@@ -379,14 +412,35 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: aefd5f7856459cc20800000000000000
-      internalID: 3227203403037138922
+      spriteID: 95c17eff5ef6b6450800000000000000
+      internalID: 6083078755325516889
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
       name: WallDestructable_11
+      rect:
+        serializedVersion: 2
+        x: 210
+        y: 70
+        width: 70
+        height: 70
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b13231c40d6bc84c0800000000000000
+      internalID: -4283848139790408933
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WallDestructable_12
       rect:
         serializedVersion: 2
         x: 0
@@ -400,14 +454,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 59fbf7385905cc7b0800000000000000
-      internalID: -5202694866433228907
+      spriteID: 977add9611dbbb450800000000000000
+      internalID: 6105681602319067001
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: WallDestructable_12
+      name: WallDestructable_13
       rect:
         serializedVersion: 2
         x: 70
@@ -421,14 +475,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 765bc0c20d0eff6a0800000000000000
-      internalID: -6413160159655447193
+      spriteID: cc3eb798b5fa7a1e0800000000000000
+      internalID: -2186586286381603892
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: WallDestructable_13
+      name: WallDestructable_14
       rect:
         serializedVersion: 2
         x: 140
@@ -442,8 +496,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0f8d88b4954aba530800000000000000
-      internalID: 3867365408454007024
+      spriteID: c4914533b98107860800000000000000
+      internalID: 7525542032196245836
       vertices: []
       indices: 
       edges: []

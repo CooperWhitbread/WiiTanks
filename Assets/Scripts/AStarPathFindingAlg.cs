@@ -145,13 +145,15 @@ public class AStarPathFindingAlg : MonoBehaviour
                             {
                                 //Right to Left
                                 Vector2 waypoint = center + Vector2.left * j / 3;
-                                wayPoints2.Add(waypoint);
+                                if (CheckIfWayPointsAreBehind(waypoint))
+                                    wayPoints2.Add(waypoint);
                             }
                             else
                             {
                                 //Left to right
                                 Vector2 waypoint = center + Vector2.right * j / 3;
-                                wayPoints2.Add(waypoint);
+                                if (CheckIfWayPointsAreBehind(waypoint))
+                                    wayPoints2.Add(waypoint);
                             }
                         }
                     }
@@ -169,13 +171,15 @@ public class AStarPathFindingAlg : MonoBehaviour
                             {
                                 //up to down
                                 Vector2 waypoint = center + Vector2.down * j / 3;
-                                wayPoints2.Add(waypoint);
+                                if (CheckIfWayPointsAreBehind(waypoint))
+                                    wayPoints2.Add(waypoint);
                             }
                             else
                             {
                                 //down to up
                                 Vector2 waypoint = center + Vector2.up * j / 3;
-                                wayPoints2.Add(waypoint);
+                                if (CheckIfWayPointsAreBehind(waypoint))
+                                    wayPoints2.Add(waypoint);
                             }
                         }
                     }
@@ -191,6 +195,16 @@ public class AStarPathFindingAlg : MonoBehaviour
         }
 
         return wayPoints2.ToArray();
+    }
+    private bool CheckIfWayPointsAreBehind(Vector2 waypoint)
+    {
+        Vector2 pos = GlobalVariables.GetPlayerTankBody().position;
+        Vector2 vel = GlobalVariables.GetPlayerTankBody().velocity;
+        if (Vector2.Distance(pos, waypoint) < 2.0f
+            && (Tank.Dot(vel, waypoint - pos) < 0
+            || vel.normalized == pos - waypoint))
+            return false;
+        return true;
     }
     private int GetDistance(AStarNodes nodeA, AStarNodes nodeB)
     {
