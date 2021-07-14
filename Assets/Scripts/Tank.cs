@@ -8,6 +8,7 @@ abstract public class Tank : MonoBehaviour
 
     ///Inspector Variables
     [Header("Generic Tank Variables")]
+    [SerializeField] protected bool I_ShowGizmos = false;
     [SerializeField] protected BulletScript I_BulletScript;
     [SerializeField] protected Transform I_ShootTransform;
     [SerializeField] protected Transform I_TredTransform1;
@@ -56,6 +57,7 @@ abstract public class Tank : MonoBehaviour
     protected virtual void InheritedUpdate() { }
     protected virtual void InheritedOnCollisionEnter(Collision2D collision) { }
     protected virtual void InheritedOnCollisionStay(Collision2D collision) { }
+    protected virtual void InheritedOnDrawGizmos() { }
 
     ///Unity Functions
     private void Awake()
@@ -81,7 +83,7 @@ abstract public class Tank : MonoBehaviour
         m_ShootParticleSystem.Stop();
         m_BodyExplosionParticleSystem.Stop();
 
-        transform.GetChild(0).GetComponent<BoxCollider2D>().enabled = true;
+        transform.GetChild(0).GetComponent<CapsuleCollider2D>().enabled = true;
     }
     private void Start()
     {
@@ -129,6 +131,11 @@ abstract public class Tank : MonoBehaviour
             InheritedUpdate();
         }
     }
+    private void OnDrawGizmos()
+    {
+        if (I_ShowGizmos)
+            InheritedOnDrawGizmos();
+    }
 
     ///Public Functions
     public void DestroyBullet(int numberInArray)
@@ -172,10 +179,10 @@ abstract public class Tank : MonoBehaviour
         foreach (SpriteRenderer sr in GetComponentsInChildren<SpriteRenderer>())
             sr.enabled = false;
 
-        GetComponentInChildren<BoxCollider2D>().enabled = false;
+        GetComponentInChildren<CapsuleCollider2D>().enabled = false;
         m_HitTimeForDeath = Time.fixedTime;
         m_PositionWhenDead = transform.GetChild(0).position;
-        transform.GetChild(0).GetComponent<BoxCollider2D>().enabled = false;
+        transform.GetChild(0).GetComponent<CapsuleCollider2D>().enabled = false;
     }
     public bool IsAlive() { return !m_BodyExplosionParticleSystem.IsAlive(); }
 
@@ -225,26 +232,17 @@ abstract public class Tank : MonoBehaviour
     ///Protected Functions
     protected void Shoot()
     {
-        //Checks if there are no walls between turret and body
-        RaycastHit2D hit = Physics2D.Raycast(I_ShootTransform.position, GetVector2FromAngle(180 + m_TurretRB2D.rotation), 2.0f);
-        if(hit.collider != null)
+        int nextFreeBulletIndex = GetNextFreeBulletIndex();
+
+        if (nextFreeBulletIndex != -1)
         {
-            if (hit.collider.gameObject.layer == GlobalVariables.LayerTanks || hit.collider.gameObject.layer == GlobalVariables.LayerWallHole ||
-                hit.collider.gameObject.layer == GlobalVariables.LayerBullets)
-            {
-                int nextFreeBulletIndex = GetNextFreeBulletIndex();
+            //Shoot Bullets
+            m_ShootParticleSystem.Play();
+            m_Bullets[nextFreeBulletIndex].Initialize(I_BulletScript, nextFreeBulletIndex, I_ShootTransform.position, m_TurretRB2D.rotation, I_BulletScript.NumberOfBounces);
+            m_Bullets[nextFreeBulletIndex].gameObject.SetActive(true);
 
-                if (nextFreeBulletIndex != -1)
-                {
-                    //Shoot Bullets
-                    m_ShootParticleSystem.Play();
-                    m_Bullets[nextFreeBulletIndex].Initialize(I_BulletScript, nextFreeBulletIndex, I_ShootTransform.position, m_TurretRB2D.rotation, I_BulletScript.NumberOfBounces);
-                    m_Bullets[nextFreeBulletIndex].gameObject.SetActive(true);
-
-                    //Stop Tank Temperarily
-                    DelayShoot();
-                }
-            }
+            //Stop Tank Temperarily
+            DelayShoot();
         }
     }
     protected void DropBomb()
@@ -376,7 +374,7 @@ abstract public class Tank : MonoBehaviour
                 float diff = GetDiffInRotation(fullRotateDegree, m_BodyRB2D.rotation);
                 float newRotateDegree = m_BodyRB2D.rotation;
 
-                if (Mathf.Abs(Mathf.Abs(diff) - 180.0f) < 20.0f)
+                if (Mathf.Abs(Mathf.Abs(diff) - 180.0f) < rotationSpeed)
                 {
                     newRotateDegree += 180.0f;
                     diff = 0;
@@ -420,33 +418,7 @@ abstract public class Tank : MonoBehaviour
                 else
                     m_BodyRB2D.velocity = GetVector2FromAngle(newRotateDegree) * I_MoveSpeed;
 
-                //Correct rotation for wall collision
-                Collider2D[] cc1 = new Collider2D[8];
-                int numOfHits1 = Physics2D.OverlapBox(m_BodyRB2D.position, GetComponentInChildren<BoxCollider2D>().size, newRotateDegree, s_ContactFilterWalls, cc1);
-
-                for (int i = 0; i < numOfHits1; i++)
-                {
-                    if (cc1[i].gameObject.layer != GlobalVariables.LayerTanks)
-                    {
-                        Vector2 dir = cc1[i].ClosestPoint(m_BodyRB2D.position) - m_BodyRB2D.position;
-                        if (IsWithinCertainValue(GetAngleFromVector2(dir), m_BodyRB2D.rotation, 8.0f) &&
-                            !IsWithinCertainValue(fullRotateDegree, m_BodyRB2D.rotation, 89.0f)) //check if is hard against the wall
-                        {
-                            //Change the tank to face the other direction and rotate it relative to that direction
-                            m_BodyRB2D.SetRotation(GetAngleBetween(m_BodyRB2D.rotation + 180.0f, -180.0f, 180.0f));
-                            newRotateDegree = m_BodyRB2D.rotation;
-                        }
-
-                        Collider2D[] cc2 = new Collider2D[8];
-                        Vector2 dir1 = m_BodyRB2D.position - cc1[0].ClosestPoint(m_BodyRB2D.position);
-                        int numOfHits2 = Physics2D.OverlapBox(m_BodyRB2D.position + dir1.normalized * m_moveBackRotateDistance, GetComponentInChildren<BoxCollider2D>().size, newRotateDegree, s_ContactFilterWalls, cc2);
-                        if (numOfHits2 == 0 && diff >= rotationSpeed)
-                            m_BodyRB2D.position += dir1.normalized * m_moveBackRotateDistance;
-
-                    }
-                }
-
-                m_BodyRB2D.MoveRotation(newRotateDegree);
+                m_BodyRB2D.SetRotation(newRotateDegree);
             }
         }
     }
@@ -454,7 +426,7 @@ abstract public class Tank : MonoBehaviour
     {
         GradualMoveTank((target - m_BodyRB2D.position).normalized, rotationSpeed, sharpTurnRot, sharpRotationSpeed);
     }
-
+ 
     ///Logic protected Functions
     protected bool CheckIfGoingToHitSelf(CapsuleCollider2D testCapsule)
     {

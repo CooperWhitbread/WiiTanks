@@ -177,9 +177,7 @@ public class GlobalVariables : MonoBehaviour
                     Bullet[] bullet = m_Bullets;
                     m_Bullets = new Bullet[m_CurrentBulletIndex + 2];
                     for (int i = 0; i < bullet.Length; i++)
-                    {
                         m_Bullets[i] = bullet[i];
-                    }
                 }
 
                 m_Bullets[m_CurrentBulletIndex + 1] = b;
@@ -220,9 +218,7 @@ public class GlobalVariables : MonoBehaviour
         Vector3[] temp = m_NonSpawingPositions;
         m_NonSpawingPositions = new Vector3[temp.Length + 1];
         for (int i = 0; i < m_NonSpawingPositions.Length - 1; i++)
-        {
             m_NonSpawingPositions[i] = temp[i];
-        }
 
         m_NonSpawingPositions[m_NonSpawingPositions.Length - 1] = pos;
     }
@@ -234,6 +230,7 @@ public class GlobalVariables : MonoBehaviour
         for (int i = numberInArray; i < m_Bullets.Length -1; i++)
         {
             m_Bullets[i] = m_Bullets[i + 1];
+            m_Bullets[i].SetLevelInArray(i);
         }
         m_CurrentBulletIndex--;
     }
@@ -245,6 +242,7 @@ public class GlobalVariables : MonoBehaviour
         for (int i = numberInArray; i < m_Bombs.Length - 1; i++)
         {
             m_Bombs[i] = m_Bombs[i + 1];
+            m_Bombs[i].SetLevelInArray(i);
         }
         m_CurrentBombIndex--;
     }

@@ -17,7 +17,8 @@ public class AStarPathFindingScript : MonoBehaviour
     [SerializeField] private int I_BlurPenaltyScale = 2;
 
     ///Private Variables
-    private AStarNodes[,] m_Nodes;
+    private AStarNodes[,] m_NodesStatic;
+    private AStarNodes[,] m_NodeDynamic;
 
     private Tilemap[] m_TileMapArray = new Tilemap[0];
     int m_BlurredMin = int.MaxValue;
@@ -39,9 +40,38 @@ public class AStarPathFindingScript : MonoBehaviour
             }
         }
     }
-    public void SetNodes()
-    { 
-        m_Nodes = new AStarNodes[I_NumberOfGrids.x, I_NumberOfGrids.y];
+    public void SetNodeDynamic()
+    {
+        m_NodeDynamic = m_NodesStatic;
+
+        //Mark bombs as a bad place to go
+        foreach (Bomb b in FindObjectsOfType<Bomb>())
+        {
+            AStarNodes on = GetNodeFromWorldPos(b.transform.position);
+
+            int radius = (int)(2.0f / I_NodeSize);
+
+            for (int y = -radius; y <= radius; y++)
+            {
+                for (int x = -radius; x <= radius; x++)
+                {
+                    Vector2Int pos = on.GridPosition + new Vector2Int(x, y);
+                    if (pos.x >= 0 && pos.x < I_NumberOfGrids.x && pos.y >= 0 && pos.y < I_NumberOfGrids.y)
+                        m_NodeDynamic[pos.x, pos.y] = new AStarNodes(false, WorldSpaceFromGrid(pos), pos, I_PeniltyMultiplyerForBomb);
+                }
+            }
+        }
+
+        //Avoid the Tanks
+        foreach (Tank b in FindObjectsOfType<Tank>())
+        {
+            AStarNodes on = GetNodeFromWorldPos(b.GetComponentInChildren<Rigidbody2D>().position);
+            m_NodeDynamic[on.GridPosition.x, on.GridPosition.y] = new AStarNodes(true, on.Position, on.GridPosition, I_PeniltyForWalls);
+        }
+    }
+    public void SetNodesStatic()
+    {
+        m_NodesStatic = new AStarNodes[I_NumberOfGrids.x, I_NumberOfGrids.y];
         for (int y = 0; y < I_NumberOfGrids.y; y++)
         {
             for (int x = 0; x < I_NumberOfGrids.x; x++)
@@ -79,44 +109,19 @@ public class AStarPathFindingScript : MonoBehaviour
                                     !t.GetTile(tilePos + Vector3Int.left) && !t.GetTile(tilePos + Vector3Int.down))
                                     penalty *= I_PeniltyMultiplyerForEndOfWall;
 
-                                m_Nodes[x, y] = new AStarNodes(false, WorldSpaceFromGrid(pos), pos, penalty);
+                                m_NodesStatic[x, y] = new AStarNodes(false, WorldSpaceFromGrid(pos), pos, penalty);
                             }
                         }
                     }
                 }
-                if (m_Nodes[x, y] == null)
+                if (m_NodesStatic[x, y] == null)
                 {
-                    m_Nodes[x, y] = new AStarNodes(true, WorldSpaceFromGrid(pos), pos, 0);
+                    m_NodesStatic[x, y] = new AStarNodes(true, WorldSpaceFromGrid(pos), pos, 0);
                 }
             }
         }
 
-        //Mark bombs as a bad place to go
-        foreach (Bomb b in GameObject.FindObjectsOfType<Bomb>())
-        {
-            AStarNodes on = GetNodeFromWorldPos(b.transform.position);
-
-            int radius = (int) (2.0f / I_NodeSize);
-            
-            for (int y = -radius; y <= radius; y++)
-            {
-                for (int x = -radius; x <= radius; x++)
-                {
-                    Vector2Int pos = on.GridPosition + new Vector2Int(x, y);
-                    if (pos.x >= 0 && pos.x < I_NumberOfGrids.x && pos.y >= 0 && pos.y < I_NumberOfGrids.y)
-                        m_Nodes[pos.x, pos.y] = new AStarNodes(false, WorldSpaceFromGrid(pos), pos, I_PeniltyMultiplyerForBomb);
-                }
-            }
-        }
-
-        //Avoid the Tanks
-        foreach (Tank b in GameObject.FindObjectsOfType<Tank>())
-        {
-            AStarNodes on = GetNodeFromWorldPos(b.GetComponentInChildren<Rigidbody2D>().position); 
-            m_Nodes[on.GridPosition.x, on.GridPosition.y] = new AStarNodes(true, on.Position, on.GridPosition, I_PeniltyForWalls);
-        }
-
-        BlurPenaltyMap(I_BlurPenaltyScale);
+        BlurPenaltyMap(I_BlurPenaltyScale, ref m_NodesStatic);
 
         //Correct to avoid corners
         {
@@ -154,31 +159,31 @@ public class AStarPathFindingScript : MonoBehaviour
                                             //Get the two nodes on the end
                                             if (t.GetTile(tilePos + Vector3Int.right))
                                             {
-                                                if (m_Nodes[x - 1, y].Passable && m_Nodes[x, y - 1].Passable)
-                                                    m_Nodes[x - 1, y - 1].Penilty *= penaltyMultiplyer;
-                                                if (m_Nodes[x - 1, y].Passable && m_Nodes[x, y + 1].Passable)
-                                                    m_Nodes[x - 1, y + 1].Penilty *= penaltyMultiplyer;
+                                                if (m_NodesStatic[x - 1, y].Passable && m_NodesStatic[x, y - 1].Passable)
+                                                    m_NodesStatic[x - 1, y - 1].Penilty *= penaltyMultiplyer;
+                                                if (m_NodesStatic[x - 1, y].Passable && m_NodesStatic[x, y + 1].Passable)
+                                                    m_NodesStatic[x - 1, y + 1].Penilty *= penaltyMultiplyer;
                                             }
                                             if (t.GetTile(tilePos + Vector3Int.left))
                                             {
-                                                if (m_Nodes[x + 1, y].Passable && m_Nodes[x, y - 1].Passable)
-                                                    m_Nodes[x + 1, y - 1].Penilty *= penaltyMultiplyer;
-                                                if (m_Nodes[x + 1, y].Passable && m_Nodes[x, y + 1].Passable)
-                                                    m_Nodes[x + 1, y + 1].Penilty *= penaltyMultiplyer;
+                                                if (m_NodesStatic[x + 1, y].Passable && m_NodesStatic[x, y - 1].Passable)
+                                                    m_NodesStatic[x + 1, y - 1].Penilty *= penaltyMultiplyer;
+                                                if (m_NodesStatic[x + 1, y].Passable && m_NodesStatic[x, y + 1].Passable)
+                                                    m_NodesStatic[x + 1, y + 1].Penilty *= penaltyMultiplyer;
                                             }
                                             if (t.GetTile(tilePos + Vector3Int.up))
                                             {
-                                                if (m_Nodes[x - 1, y].Passable && m_Nodes[x, y - 1].Passable)
-                                                    m_Nodes[x - 1, y - 1].Penilty *= penaltyMultiplyer;
-                                                if (m_Nodes[x + 1, y].Passable && m_Nodes[x, y - 1].Passable)
-                                                    m_Nodes[x + 1, y - 1].Penilty *= penaltyMultiplyer;
+                                                if (m_NodesStatic[x - 1, y].Passable && m_NodesStatic[x, y - 1].Passable)
+                                                    m_NodesStatic[x - 1, y - 1].Penilty *= penaltyMultiplyer;
+                                                if (m_NodesStatic[x + 1, y].Passable && m_NodesStatic[x, y - 1].Passable)
+                                                    m_NodesStatic[x + 1, y - 1].Penilty *= penaltyMultiplyer;
                                             }
                                             if (t.GetTile(tilePos + Vector3Int.down))
                                             {
-                                                if (m_Nodes[x - 1, y].Passable && m_Nodes[x, y + 1].Passable)
-                                                    m_Nodes[x - 1, y + 1].Penilty *= penaltyMultiplyer;
-                                                if (m_Nodes[x + 1, y].Passable && m_Nodes[x, y + 1].Passable)
-                                                    m_Nodes[x + 1, y + 1].Penilty *= penaltyMultiplyer;
+                                                if (m_NodesStatic[x - 1, y].Passable && m_NodesStatic[x, y + 1].Passable)
+                                                    m_NodesStatic[x - 1, y + 1].Penilty *= penaltyMultiplyer;
+                                                if (m_NodesStatic[x + 1, y].Passable && m_NodesStatic[x, y + 1].Passable)
+                                                    m_NodesStatic[x + 1, y + 1].Penilty *= penaltyMultiplyer;
                                             }
                                         }
 
@@ -186,36 +191,36 @@ public class AStarPathFindingScript : MonoBehaviour
                                         if (!t.GetTile(tilePos + Vector3Int.right) && t.GetTile(tilePos + Vector3Int.right * 2))
                                         {
                                             int penaltyMultiplyer = 10;
-                                            if (m_Nodes[x + 1, y].Passable)
+                                            if (m_NodesStatic[x + 1, y].Passable)
                                             {
-                                                m_Nodes[x + 1, y].Penilty /= penaltyMultiplyer;
-                                                if (m_Nodes[x + 2, y + 2].Passable)
+                                                m_NodesStatic[x + 1, y].Penilty /= penaltyMultiplyer;
+                                                if (m_NodesStatic[x + 2, y + 2].Passable)
                                                 {
-                                                    m_Nodes[x + 2, y + 1].Penilty /= penaltyMultiplyer;
-                                                    m_Nodes[x + 2, y + 2].Penilty /= penaltyMultiplyer;
+                                                    m_NodesStatic[x + 2, y + 1].Penilty /= penaltyMultiplyer;
+                                                    m_NodesStatic[x + 2, y + 2].Penilty /= penaltyMultiplyer;
                                                 }
-                                                if (m_Nodes[x + 2, y - 2].Passable)
+                                                if (m_NodesStatic[x + 2, y - 2].Passable)
                                                 {
-                                                    m_Nodes[x + 2, y - 1].Penilty /= penaltyMultiplyer;
-                                                    m_Nodes[x + 2, y - 2].Penilty /= penaltyMultiplyer;
+                                                    m_NodesStatic[x + 2, y - 1].Penilty /= penaltyMultiplyer;
+                                                    m_NodesStatic[x + 2, y - 2].Penilty /= penaltyMultiplyer;
                                                 }
                                             }
                                         }
                                         if (!t.GetTile(tilePos + Vector3Int.up) && t.GetTile(tilePos + Vector3Int.up * 2))
                                         {
                                             int penaltyMultiplyer = 10;
-                                            if (m_Nodes[x, y + 1].Passable)
+                                            if (m_NodesStatic[x, y + 1].Passable)
                                             {
-                                                m_Nodes[x, y + 2].Penilty /= penaltyMultiplyer;
-                                                if (m_Nodes[x + 2, y + 2].Passable)
+                                                m_NodesStatic[x, y + 2].Penilty /= penaltyMultiplyer;
+                                                if (m_NodesStatic[x + 2, y + 2].Passable)
                                                 {
-                                                    m_Nodes[x + 1, y + 2].Penilty /= penaltyMultiplyer;
-                                                    m_Nodes[x + 2, y + 2].Penilty /= penaltyMultiplyer;
+                                                    m_NodesStatic[x + 1, y + 2].Penilty /= penaltyMultiplyer;
+                                                    m_NodesStatic[x + 2, y + 2].Penilty /= penaltyMultiplyer;
                                                 }
-                                                if (m_Nodes[x - 2, y + 2].Passable)
+                                                if (m_NodesStatic[x - 2, y + 2].Passable)
                                                 {
-                                                    m_Nodes[x - 1, y + 2].Penilty /= penaltyMultiplyer;
-                                                    m_Nodes[x - 2, y + 2].Penilty /= penaltyMultiplyer;
+                                                    m_NodesStatic[x - 1, y + 2].Penilty /= penaltyMultiplyer;
+                                                    m_NodesStatic[x - 2, y + 2].Penilty /= penaltyMultiplyer;
                                                 }
                                             }
                                         }
@@ -228,26 +233,26 @@ public class AStarPathFindingScript : MonoBehaviour
                                             {
                                                 if (t.GetTile(tilePos + Vector3Int.up))
                                                 {
-                                                    if (m_Nodes[x - 1, y - 1].Passable)
-                                                        m_Nodes[x - 1, y - 1].Penilty *= penaltyMultiplyer;
+                                                    if (m_NodesStatic[x - 1, y - 1].Passable)
+                                                        m_NodesStatic[x - 1, y - 1].Penilty *= penaltyMultiplyer;
                                                 }
                                                 if (t.GetTile(tilePos + Vector3Int.down))
                                                 {
-                                                    if (m_Nodes[x - 1, y + 1].Passable)
-                                                        m_Nodes[x - 1, y + 1].Penilty *= penaltyMultiplyer;
+                                                    if (m_NodesStatic[x - 1, y + 1].Passable)
+                                                        m_NodesStatic[x - 1, y + 1].Penilty *= penaltyMultiplyer;
                                                 }
                                             }
                                             if (t.GetTile(tilePos + Vector3Int.left))
                                             {
                                                 if (t.GetTile(tilePos + Vector3Int.up))
                                                 {
-                                                    if (m_Nodes[x + 1, y - 1].Passable)
-                                                        m_Nodes[x + 1, y - 1].Penilty *= penaltyMultiplyer;
+                                                    if (m_NodesStatic[x + 1, y - 1].Passable)
+                                                        m_NodesStatic[x + 1, y - 1].Penilty *= penaltyMultiplyer;
                                                 }
                                                 if (t.GetTile(tilePos + Vector3Int.down))
                                                 {
-                                                    if (m_Nodes[x + 1, y + 1].Passable)
-                                                        m_Nodes[x + 1, y + 1].Penilty *= penaltyMultiplyer;
+                                                    if (m_NodesStatic[x + 1, y + 1].Passable)
+                                                        m_NodesStatic[x + 1, y + 1].Penilty *= penaltyMultiplyer;
                                                 }
                                             }
                                         }
@@ -267,7 +272,7 @@ public class AStarPathFindingScript : MonoBehaviour
 
                                         if (neighbours >= 1)
                                         {
-                                            m_Nodes[x, y] = new AStarNodes(false, WorldSpaceFromGrid(pos), pos, m_Nodes[x, y].Penilty);
+                                            m_NodesStatic[x, y] = new AStarNodes(false, WorldSpaceFromGrid(pos), pos, m_NodesStatic[x, y].Penilty);
                                         }
                                     }
                                 }
@@ -283,9 +288,9 @@ public class AStarPathFindingScript : MonoBehaviour
     {
         Gizmos.DrawWireCube(I_Position, new Vector3 (I_NumberOfGrids.x * I_NodeSize, I_NumberOfGrids.y * I_NodeSize, 1));
 
-        if (m_Nodes != null && I_DisplayGridGizmos)
+        if (m_NodesStatic != null && I_DisplayGridGizmos)
         {
-            foreach (AStarNodes n in m_Nodes)
+            foreach (AStarNodes n in m_NodesStatic)
             {
                 Gizmos.color = Color.Lerp(Color.white, Color.black, Mathf.InverseLerp(m_BlurredMin, m_BlurredMax, n.Penilty));
 
@@ -310,7 +315,7 @@ public class AStarPathFindingScript : MonoBehaviour
     }
     public AStarNodes GetNodeFromWorldPos(Vector2 position)
     {
-        return m_Nodes[(int)((position.x + I_NumberOfGrids.x * I_NodeSize / 2) / I_NodeSize),
+        return m_NodeDynamic[(int)((position.x + I_NumberOfGrids.x * I_NodeSize / 2) / I_NodeSize),
             (int)((position.y + I_NumberOfGrids.y * I_NodeSize / 2) / I_NodeSize)];
     }
     public List<AStarNodes> GetNeighbours(AStarNodes node)
@@ -329,14 +334,14 @@ public class AStarPathFindingScript : MonoBehaviour
 
                 if (checkX >= 0 && checkX < I_NumberOfGrids.x && checkY >= 0 && checkY < I_NumberOfGrids.y)
                 {
-                    neighbours.Add(m_Nodes[checkX, checkY]);
+                    neighbours.Add(m_NodeDynamic[checkX, checkY]);
                 }
             }
         }
 
         return neighbours;
     }
-    private void BlurPenaltyMap(int blurSize)
+    private void BlurPenaltyMap(int blurSize, ref AStarNodes[,] nodes)
     {
         int kernalSize = blurSize * 2 + 1;
         int kernelExtents = blurSize;
@@ -350,7 +355,7 @@ public class AStarPathFindingScript : MonoBehaviour
             for (int x = -kernelExtents; x <= kernelExtents; x++)
             {
                 int sampleX = Mathf.Clamp(x, 0, kernelExtents);
-                penaltiesHorezontalPass[0, y] += m_Nodes[sampleX, y].Penilty;
+                penaltiesHorezontalPass[0, y] += nodes[sampleX, y].Penilty;
             }
 
             for (int x = 1; x < I_NumberOfGrids.x; x++)
@@ -358,7 +363,7 @@ public class AStarPathFindingScript : MonoBehaviour
                 int removeIndex = Mathf.Clamp(x - kernelExtents - 1, 0, I_NumberOfGrids.x);
                 int addIndex = Mathf.Clamp(x + kernelExtents, 0, I_NumberOfGrids.x - 1);
 
-                penaltiesHorezontalPass[x, y] = penaltiesHorezontalPass[x - 1, y] - m_Nodes[removeIndex, y].Penilty + m_Nodes[addIndex, y].Penilty;
+                penaltiesHorezontalPass[x, y] = penaltiesHorezontalPass[x - 1, y] - nodes[removeIndex, y].Penilty + nodes[addIndex, y].Penilty;
 
             }
         }
@@ -373,7 +378,7 @@ public class AStarPathFindingScript : MonoBehaviour
 
 
             int blurredPenalty = Mathf.RoundToInt((float)penaltiesVerticalPass[x, 0] / (kernalSize * kernalSize));
-            m_Nodes[x, 0].Penilty = blurredPenalty;
+            nodes[x, 0].Penilty = blurredPenalty;
 
             for (int y = 1; y < I_NumberOfGrids.y; y++)
             {
@@ -382,7 +387,7 @@ public class AStarPathFindingScript : MonoBehaviour
 
                 penaltiesVerticalPass[x, y] = penaltiesVerticalPass[x, y-1] - penaltiesHorezontalPass[x, removeIndex] + penaltiesHorezontalPass[x, addIndex];
                 blurredPenalty = Mathf.RoundToInt((float)penaltiesVerticalPass[x, y] / (kernalSize * kernalSize));
-                m_Nodes[x, y].Penilty = blurredPenalty;
+                nodes[x, y].Penilty = blurredPenalty;
 
                 if (blurredPenalty > m_BlurredMax)
                     m_BlurredMax = blurredPenalty;

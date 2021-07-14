@@ -13,7 +13,6 @@ public class WhiteTank : EnemyTank
     [SerializeField] float I_MaxDistancebeforeCanReturnMovement = 7.0f;
     [SerializeField] float I_DistanceBetweenTankScalar = 1.0f;
     [SerializeField] float I_RandomDistanceAddedValue = 3.0f;
-    [SerializeField] float I_AngleForHardTurn = 120.0f;
 
     ///Private Variables
     private float m_ResetTimeForMove = 0.0f;
@@ -226,7 +225,7 @@ public class WhiteTank : EnemyTank
                 }
             }
             if (tempNeedsMovement)
-                GradualMoveTank(direction, m_SpeedForGradualChangeVelocity, I_AngleForHardTurn, m_SpeedForGradualChangeVelocityStationary);
+                GradualMoveTank(direction, I_SpeedForGradualChangeVelocity, I_AngleForHardTurn, I_SpeedForGradualChangeVelocityStationary);
         }
         else
             UpdatePath();

@@ -12,29 +12,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22d67c869be47994289d33e9e0b43fe2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  I_ShowGizmos: 0
   I_BulletScript: {fileID: 11400000, guid: 7c5e625a6bda620428ef06bcaaff08e0, type: 2}
   I_ShootTransform: {fileID: 8198327953634752367}
-  I_MoveSpeed: 1.5
-  I_StopDelayForShoot: 0.4
   I_TredTransform1: {fileID: 8198327952842796299}
   I_TredTransform2: {fileID: 8198327953134604891}
+  I_MoveSpeed: 1.5
+  I_StopDelayForShoot: 0.4
   I_TredDistanceBetweenTreds: 0.2
+  I_StateManager:
+    States:
+    - State: 1
+      TimeLengthMin: 8
+      TimeLengthMax: 21
+    - State: 5
+      TimeLengthMin: 10
+      TimeLengthMax: 20
   I_TurretRotationSpeed: 36
   I_MinTimeToShoot: 6
   I_MaxTimeToShoot: 8
   I_MiniIntervalDelay: 0.3
-  I_StateManager:
-    M_States:
-    - M_State: 1
-      M_TimeLengthMin: 5
-      M_TimeLengthMax: 8
-    - M_State: 5
-      M_TimeLengthMin: 7
-      M_TimeLengthMax: 10
-  I_MaxShootDistanceForPlayerTank: 20
   I_TurretTargetVariationMax: 20
   I_MaxDistanceForSeeingBullet: 5
+  I_MaxShootDistanceForPlayerTank: 20
   I_VisualRangeAngle: 30
+  I_SpeedForGradualChangeVelocity: 2
+  I_SpeedForGradualChangeVelocityStationary: 4
+  I_AngleForHardTurn: 15
   I_MovementDistanceFromBulletScalarValue: 8
   I_MovementCurrentDirectionScalar: 1
   I_BombDetectionRadius: 3
@@ -46,6 +50,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3193708379867378978, guid: 9db668d741a54c145aa8360d758b3bee,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3193708379867378978, guid: 9db668d741a54c145aa8360d758b3bee,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -63,6 +72,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3193708379867378978, guid: 9db668d741a54c145aa8360d758b3bee,
         type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3193708379867378978, guid: 9db668d741a54c145aa8360d758b3bee,
+        type: 3}
       propertyPath: m_LocalRotation.x
       value: 0
       objectReference: {fileID: 0}
@@ -74,16 +88,6 @@ PrefabInstance:
     - target: {fileID: 3193708379867378978, guid: 9db668d741a54c145aa8360d758b3bee,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3193708379867378978, guid: 9db668d741a54c145aa8360d758b3bee,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3193708379867378978, guid: 9db668d741a54c145aa8360d758b3bee,
-        type: 3}
-      propertyPath: m_RootOrder
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3193708379867378978, guid: 9db668d741a54c145aa8360d758b3bee,

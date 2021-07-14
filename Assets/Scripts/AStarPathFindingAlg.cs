@@ -15,10 +15,11 @@ public class AStarPathFindingAlg : MonoBehaviour
     {
         m_Script = GetComponent<AStarPathFindingScript>();
         m_Script.Update();
+        m_Script.SetNodesStatic();
     }
     public void FindPath(PathRequest request, Action<PathResult> callback)
     {
-        m_Script.SetNodes();
+        m_Script.SetNodeDynamic();
 
         Vector3[] wayPoints = new Vector3[0];
         bool pathSuccess = false;

@@ -12,8 +12,9 @@ public class PlayerMovement : Tank
         //Input.GetButtonDown("Shoot") if want space bar
 
         //Shoot check per frame
-        if (Input.GetMouseButtonDown(0)) 
-            Shoot();
+        if (Input.GetMouseButtonDown(0))
+            if (CanShoot())
+                Shoot();
         if (Input.GetMouseButtonDown(1))
             DropBomb();
 
@@ -43,6 +44,18 @@ public class PlayerMovement : Tank
     {
         m_Bullets = new Bullet[5];
         m_Bombs = new Bomb[2];
+    }
+    protected bool CanShoot()
+    {
+        //Checks if there are no walls between turret and body
+        RaycastHit2D hits = Physics2D.Raycast(I_ShootTransform.position, GetVector2FromAngle(180 + m_TurretRB2D.rotation), 2.0f);
+        if (hits.collider != null)
+        {
+            if (hits.collider.gameObject != m_BodyRB2D.gameObject && hits.collider.gameObject.layer != GlobalVariables.LayerWallHole &&
+                hits.collider.gameObject.layer != GlobalVariables.LayerBullets)
+                return false;
+        }
+        return true;
     }
 
     ///Public Variables
