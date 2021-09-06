@@ -37,9 +37,9 @@ MonoBehaviour:
   I_MaxShootDistanceForPlayerTank: 20
   I_VisualRangeAngle: 30
   I_SpeedForGradualChangeVelocity: 2
-  I_SpeedForGradualChangeVelocityStationary: 4
+  I_SpeedForGradualChangeVelocityStationary: 5
   I_AngleForHardTurn: 15
-  I_MovementDistanceFromBulletScalarValue: 8
+  I_MovementDistanceFromBulletScalarValue: 40
   I_MovementCurrentDirectionScalar: 1
   I_BombDetectionRadius: 3
   I_MinDistBeforeMoveOnForRetreatingTank: 3

@@ -24,22 +24,6 @@ public class AStarPathFindingScript : MonoBehaviour
     int m_BlurredMin = int.MaxValue;
     int m_BlurredMax = int.MinValue;
 
-    public void Update()
-    {
-        if (GlobalVariables.HasJustStartedAMission || FindObjectOfType<TankSceneManager>().I_Testing)
-        {
-            m_TileMapArray = new Tilemap[2];
-            int interval = 0;
-            foreach (Tilemap tm in GameObject.FindObjectsOfType<Tilemap>())
-            {
-                if (tm.name == GlobalVariables.TilemapWallName || tm.name == GlobalVariables.TilemapHoleName)
-                {
-                    if (interval < 2)
-                        m_TileMapArray[interval++] = tm;
-                }
-            }
-        }
-    }
     public void SetNodeDynamic()
     {
         m_NodeDynamic = m_NodesStatic;
@@ -71,6 +55,18 @@ public class AStarPathFindingScript : MonoBehaviour
     }
     public void SetNodesStatic()
     {
+        //GetTiles
+        m_TileMapArray = new Tilemap[2];
+        int interval = 0;
+        foreach (Tilemap tm in FindObjectsOfType<Tilemap>())
+        {
+            if (tm.name == GlobalVariables.TilemapWallName || tm.name == GlobalVariables.TilemapHoleName)
+            {
+                if (interval < 2)
+                    m_TileMapArray[interval++] = tm;
+            }
+        }
+
         m_NodesStatic = new AStarNodes[I_NumberOfGrids.x, I_NumberOfGrids.y];
         for (int y = 0; y < I_NumberOfGrids.y; y++)
         {
@@ -80,12 +76,12 @@ public class AStarPathFindingScript : MonoBehaviour
 
                 if (m_TileMapArray.Length != 0)
                 {
-                    if (m_TileMapArray[0] != null)
+                    if (m_TileMapArray[0])
                     {
                         foreach (Tilemap t in m_TileMapArray)
                         {
                             Vector3Int tilePos = t.LocalToCell(WorldSpaceFromGrid3(pos));
-                            if (t.GetTile(tilePos) != null)
+                            if (t.GetTile(tilePos))
                             {
                                 //End multiply
                                 int penalty = I_PeniltyForWalls;
@@ -135,7 +131,7 @@ public class AStarPathFindingScript : MonoBehaviour
 
                         if (m_TileMapArray.Length != 0)
                         {
-                            if (m_TileMapArray[0] != null)
+                            if (m_TileMapArray[0])
                             {
                                 foreach (Tilemap t in m_TileMapArray)
                                 {
@@ -412,6 +408,10 @@ public class AStarPathFindingScript : MonoBehaviour
     public Vector2 GetCenterOfTile(Vector2 worldSpace)
     {
         return m_TileMapArray[0].GetCellCenterWorld(m_TileMapArray[0].LocalToCell(worldSpace));
+    }
+    public bool CheckTileMap()
+    {
+        return m_TileMapArray[0];
     }
 }
 

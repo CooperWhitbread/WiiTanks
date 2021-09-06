@@ -19,7 +19,7 @@ public class TankSceneManager : MonoBehaviour
             if (!I_IsLoading)
             {
                 //Reset testing screne when player dies
-                if (GlobalVariables.GetPlayerTankBody() != null)
+                if (GlobalVariables.GetPlayerTankBody())
                 {
                     if (GlobalVariables.GetPlayerTankBody().GetComponent<SpriteRenderer>().enabled == false)
                     {
@@ -39,7 +39,10 @@ public class TankSceneManager : MonoBehaviour
                     if (I_Testing)
                         SceneManager.LoadSceneAsync("TestingScene");
                     else
+                    {
+                        GlobalVariables.GetThisInstance().ResetFunctionsEvenIfDead();
                         SceneManager.LoadSceneAsync("Mission-" + (m_CurrentLevel));
+                    }
                     I_IsLoading = true;
                 }
             }
@@ -53,7 +56,7 @@ public class TankSceneManager : MonoBehaviour
             else if (!I_IsLoading) //Skip if it is loading at the moment
             {
                 //Check if player is alive
-                if (m_CurrentLevel != 0 && GlobalVariables.GetPlayerTankBody() != null)
+                if (m_CurrentLevel != 0 && GlobalVariables.GetPlayerTankBody())
                 {
                     if (GlobalVariables.GetPlayerTankBody().GetComponent<SpriteRenderer>().enabled == false)
                     {

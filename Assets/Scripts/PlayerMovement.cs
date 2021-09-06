@@ -38,18 +38,18 @@ public class PlayerMovement : Tank
 
         //Move and rotate the tank
         RotateTurret(Camera.main.ScreenToWorldPoint(Input.mousePosition));
-        GradualMoveTank(moveDirection, I_RotateSpeed, 180.0f);
+        GradualMoveTank(moveDirection, I_RotateSpeed, I_MoveSpeed, 180.0f);
     }
     protected override void InheritedStart()
     {
-        m_Bullets = new Bullet[5];
-        m_Bombs = new Bomb[2];
+        InitializeBulletsAndBombs(5, 2);
+        PathRequestManager.ResetWallsPathFinding();
     }
     protected bool CanShoot()
     {
         //Checks if there are no walls between turret and body
         RaycastHit2D hits = Physics2D.Raycast(I_ShootTransform.position, GetVector2FromAngle(180 + m_TurretRB2D.rotation), 2.0f);
-        if (hits.collider != null)
+        if (hits.collider)
         {
             if (hits.collider.gameObject != m_BodyRB2D.gameObject && hits.collider.gameObject.layer != GlobalVariables.LayerWallHole &&
                 hits.collider.gameObject.layer != GlobalVariables.LayerBullets)

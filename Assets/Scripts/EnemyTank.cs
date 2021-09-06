@@ -79,7 +79,7 @@ public class EnemyTank : Tank
     }
     protected override void InheritedOnDrawGizmos()
     {
-        if (m_BodyRB2D != null && m_Path != null)
+        if (m_BodyRB2D && m_Path != null)
         {
             for (int i = m_CurrentWayPath; i < m_Path.Length; i++)
             {
@@ -125,7 +125,7 @@ public class EnemyTank : Tank
     {
         RaycastHit2D rayCastHit = Physics2D.Raycast(I_ShootTransform.position, GetVector2FromAngle(m_TurretRB2D.rotation),
             30.0f, 1 << GlobalVariables.LayerTanks | 1 << GlobalVariables.LayerWalls | 1 << GlobalVariables.LayerBullets);
-        if (rayCastHit.collider != null)
+        if (rayCastHit.collider)
         {
             if (rayCastHit.collider.gameObject.name == GlobalVariables.PlayerTankBodyName || rayCastHit.collider.gameObject.layer == GlobalVariables.LayerBullets)
                 return true;
@@ -137,7 +137,7 @@ public class EnemyTank : Tank
 
                 rayCastHit = Physics2D.Raycast(rayCastHit.point, ang,
                     30.0f, 1 << GlobalVariables.LayerTanks | 1 << GlobalVariables.LayerWalls);
-                if (rayCastHit.collider != null)
+                if (rayCastHit.collider)
                 {
                     if (rayCastHit.collider.gameObject.name == GlobalVariables.PlayerTankName ||
                         rayCastHit.collider.gameObject.layer == GlobalVariables.LayerWalls)
@@ -175,7 +175,7 @@ public class EnemyTank : Tank
             {
                 RaycastHit2D hit = Physics2D.Raycast(I_ShootTransform.position, bulletRB2D.position - (Vector2)I_ShootTransform.position, I_MaxDistanceForSeeingBullet + 1,
                     1 << GlobalVariables.LayerTanks | 1 << GlobalVariables.LayerWalls | 1 << GlobalVariables.LayerBullets);
-                if (hit.collider != null)
+                if (hit.collider)
                 {
                     if (hit.collider.gameObject == gob)
                     {
@@ -196,7 +196,7 @@ public class EnemyTank : Tank
         {
             //Checks if there are no walls between turret and body
             RaycastHit2D hits = Physics2D.Raycast(m_BodyRB2D.position, GetVector2FromAngle(m_TurretRB2D.rotation), Vector2.Distance(m_BodyRB2D.position, I_ShootTransform.position));
-            if (hits.collider != null)
+            if (hits.collider)
             {
                 if (hits.collider.gameObject != m_BodyRB2D.gameObject &&
                     hits.collider.gameObject.layer != GlobalVariables.LayerWallHole &&
@@ -212,7 +212,7 @@ public class EnemyTank : Tank
             CapsuleCollider2D cc = m_Bullets[0].GetComponent<CapsuleCollider2D>();
             RaycastHit2D rayCastHit = Physics2D.CapsuleCast(I_ShootTransform.position, cc.size, cc.direction, m_TurretRB2D.rotation, GetVector2FromAngle(m_TurretRB2D.rotation),
                    100.0f, 1 << GlobalVariables.LayerTanks | 1 << GlobalVariables.LayerWalls | 1 << GlobalVariables.LayerBullets);
-            if (rayCastHit.collider != null)
+            if (rayCastHit.collider)
             {
                 switch (rayCastHit.collider.gameObject.layer)
                 {

@@ -11,10 +11,9 @@ public class AStarPathFindingAlg : MonoBehaviour
 {
     private AStarPathFindingScript m_Script;
 
-    public void Awake()
+    public void Start()
     {
         m_Script = GetComponent<AStarPathFindingScript>();
-        m_Script.Update();
         m_Script.SetNodesStatic();
     }
     public void FindPath(PathRequest request, Action<PathResult> callback)
@@ -69,6 +68,7 @@ public class AStarPathFindingAlg : MonoBehaviour
         }
         if (pathSuccess)
         {
+            //if (!GlobalVariables.GetThisInstance().GetComponentInChildren<TankSceneManager>().I_IsLoading)
             wayPoints = RetracePath(startingNode, targetNode);
             pathSuccess = wayPoints.Length > 0;
         }
@@ -129,6 +129,8 @@ public class AStarPathFindingAlg : MonoBehaviour
         int num = 5;
         for (int i = 1; i < path.Count; i++)
         {
+            if (!m_Script.CheckTileMap())
+                return new Vector3[0];
             //Check if going between narrow gap
             Vector2 dir = m_Script.IsSurroundedByTwoWalls(path[i].Position);
             if (dir != Vector2.zero)
@@ -229,4 +231,5 @@ public class AStarPathFindingAlg : MonoBehaviour
 
         return wayPoints;
     }
+    public void SetStaticNodes() { m_Script.SetNodesStatic(); }
 }

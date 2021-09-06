@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.Tilemaps;
+using System.Collections.Generic;
 
 ///Abstract Tank Class
 abstract public class Tank : MonoBehaviour
@@ -25,8 +26,8 @@ abstract public class Tank : MonoBehaviour
     protected Bomb m_BombPrefab;
     protected GameObject m_DeathCrossPrefab;
     protected GameObject m_TredsParentObject;
-    protected Bullet[] m_Bullets = new Bullet[0];
-    protected Bomb[] m_Bombs = new Bomb[0];
+    protected List<Bullet> m_Bullets = new List<Bullet>();
+    protected List<Bomb> m_Bombs = new List<Bomb>();
     protected ParticleSystem m_ShootParticleSystem;
     protected ParticleSystem m_BodyExplosionParticleSystem;
 
@@ -60,16 +61,21 @@ abstract public class Tank : MonoBehaviour
     protected virtual void InheritedOnDrawGizmos() { }
 
     ///Unity Functions
-    private void Awake()
+    private void Start()
     {
         m_BodyRB2D = transform.GetChild(0).GetComponent<Rigidbody2D>();
         m_TurretRB2D = transform.GetChild(1).GetComponent<Rigidbody2D>();
-        m_TredsParentObject = transform.GetChild(2).gameObject;
 
         GlobalVariables gv = GlobalVariables.GetThisInstance();
         m_BombPrefab = gv.I_BombPrefab;
         m_DeathCrossPrefab = gv.I_DeathCrossPrefab;
         m_TredPrefab = gv.I_TredPrefab;
+
+        SetUpVariables();
+        InheritedStart();
+
+        m_StartingPos = m_BodyRB2D.transform.position;
+        m_TredsParentObject = transform.GetChild(2).gameObject;
 
         ParticleSystem[] pts = GetComponentsInChildren<ParticleSystem>();
         foreach (ParticleSystem p in pts)
@@ -84,30 +90,6 @@ abstract public class Tank : MonoBehaviour
         m_BodyExplosionParticleSystem.Stop();
 
         transform.GetChild(0).GetComponent<CapsuleCollider2D>().enabled = true;
-    }
-    private void Start()
-    {
-        m_BodyRB2D = transform.GetChild(0).GetComponent<Rigidbody2D>();
-        m_TurretRB2D = transform.GetChild(1).GetComponent<Rigidbody2D>();
-
-        SetUpVariables();
-        InheritedStart();
-
-        //Initialize all the bullets & bombs
-        for (int i = 0; i < m_Bullets.Length; i++)
-        {
-            m_Bullets[i] = Instantiate(I_BulletScript.BulletPrefab, I_ShootTransform.position, I_ShootTransform.rotation);
-            m_Bullets[i].gameObject.SetActive(false);
-            m_Bullets[i].gameObject.transform.SetParent(gameObject.transform);
-        }
-        for (int i = 0; i < m_Bombs.Length; i++)
-        {
-            m_Bombs[i] = Instantiate(m_BombPrefab, I_ShootTransform.position, I_ShootTransform.rotation);
-            m_Bombs[i].gameObject.SetActive(false);
-            m_Bombs[i].gameObject.transform.SetParent(gameObject.transform);
-        }
-
-        m_StartingPos = m_BodyRB2D.transform.position;
     }
     private void FixedUpdate()
     {
@@ -230,6 +212,41 @@ abstract public class Tank : MonoBehaviour
     }
 
     ///Protected Functions
+    protected void InitializeBulletsAndBombs(int nBullets, int nBombs)
+    {
+        //Delete Current Objects
+        if (m_Bullets != null)
+        {
+            for (int i = 0; i < m_Bullets.Count; i++)
+            {
+                if (m_Bullets[i])
+                    Destroy(m_Bullets[i].gameObject);
+            }
+        }
+        if (m_Bombs != null)
+        {
+            for (int i = 0; i < m_Bombs.Count; i++)
+            {
+                if (m_Bombs[i])
+                    Destroy(m_Bombs[i].gameObject);
+            }
+        }
+
+        //Initialize all the bullets & bombs
+        for (int i = 0; i < nBullets; i++)
+        { 
+            m_Bullets.Add(Instantiate(I_BulletScript.BulletPrefab, I_ShootTransform.position, I_ShootTransform.rotation));
+            m_Bullets[i].gameObject.SetActive(false);
+            m_Bullets[i].gameObject.transform.SetParent(gameObject.transform);
+        }
+
+        for (int i = 0; i < m_Bombs.Count; i++)
+        {
+            m_Bombs.Add(Instantiate(m_BombPrefab, I_ShootTransform.position, I_ShootTransform.rotation));
+            m_Bombs[i].gameObject.SetActive(false);
+            m_Bombs[i].gameObject.transform.SetParent(gameObject.transform);
+        }
+    }
     protected void Shoot()
     {
         int nextFreeBulletIndex = GetNextFreeBulletIndex();
@@ -247,7 +264,7 @@ abstract public class Tank : MonoBehaviour
     }
     protected void DropBomb()
     {
-        for (int i = 0; i < m_Bombs.Length; i++)
+        for (int i = 0; i < m_Bombs.Count; i++)
         {
             if (!m_Bombs[i].gameObject.activeSelf)
             {
@@ -319,7 +336,7 @@ abstract public class Tank : MonoBehaviour
         else if (rb.rotation < -180)
             rb.SetRotation(rb.rotation + 360);
     }
-    protected void GradualMoveTankAutoIfStationary(Vector2 moveDirection, float rotationSpeed, float sharpTurnRot = 90.0f, float sharpRotationSpeed = 3.0f)
+    protected void GradualMoveTankAutoIfStationary(Vector2 moveDirection, float rotationSpeed, float moveSpeed, float sharpTurnRot = 90.0f, float sharpRotationSpeed = 3.0f)
     {
         if (m_PreviousPos == m_BodyRB2D.position)
             m_TimeStationary += Time.deltaTime;
@@ -357,9 +374,9 @@ abstract public class Tank : MonoBehaviour
                 m_isCorrectingStationary = 0;
         }
         else
-            GradualMoveTank(moveDirection, rotationSpeed, sharpTurnRot, sharpRotationSpeed);
+            GradualMoveTank(moveDirection, rotationSpeed, moveSpeed, sharpTurnRot, sharpRotationSpeed);
     }
-    protected void GradualMoveTank(Vector2 moveDirection, float rotationSpeed, float sharpTurnRot = 90.0f, float sharpRotationSpeed = 3.0f)
+    protected void GradualMoveTank(Vector2 moveDirection, float rotationSpeed, float moveSpeed, float sharpTurnRot = 90.0f, float sharpRotationSpeed = 3.0f)
     {
         if (moveDirection != Vector2.zero)
         {
@@ -416,15 +433,15 @@ abstract public class Tank : MonoBehaviour
                     m_SharpRotationOn = true;
                 }
                 else
-                    m_BodyRB2D.velocity = GetVector2FromAngle(newRotateDegree) * I_MoveSpeed;
+                    m_BodyRB2D.velocity = GetVector2FromAngle(newRotateDegree) * moveSpeed;
 
                 m_BodyRB2D.SetRotation(newRotateDegree);
             }
         }
     }
-    protected void GradualMoveTankToTarget(Vector2 target, float rotationSpeed, float sharpTurnRot = 90.0f, float sharpRotationSpeed = 3.0f)
+    protected void GradualMoveTankToTarget(Vector2 target, float rotationSpeed, float moveSpeed, float sharpTurnRot = 90.0f, float sharpRotationSpeed = 3.0f)
     {
-        GradualMoveTank((target - m_BodyRB2D.position).normalized, rotationSpeed, sharpTurnRot, sharpRotationSpeed);
+        GradualMoveTank((target - m_BodyRB2D.position).normalized, rotationSpeed, moveSpeed, sharpTurnRot, sharpRotationSpeed);
     }
  
     ///Logic protected Functions
@@ -438,7 +455,7 @@ abstract public class Tank : MonoBehaviour
         Physics2D.CapsuleCast(I_ShootTransform.position, testCapsule.size,
             testCapsule.direction, m_TurretRB2D.rotation, 
             selfAng, cF2D, selfRayCastHit);
-        if (selfRayCastHit[0].collider != null)
+        if (selfRayCastHit[0].collider)
         {
             Vector2 selfPost = selfAng; //Origion Direction
             Vector2 selfNormal = selfRayCastHit[0].normal; //Wall's normal
@@ -468,7 +485,7 @@ abstract public class Tank : MonoBehaviour
     }
     protected int GetNextFreeBulletIndex() //Returns -1 if all are being used
     {
-        for (int i = 0; i < m_Bullets.Length; i++)
+        for (int i = 0; i < m_Bullets.Count; i++)
         {
             if (!m_Bullets[i].GetComponent<SpriteRenderer>().enabled)
                 return i;

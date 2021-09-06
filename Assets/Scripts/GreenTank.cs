@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GreenTank : EnemyTank
 {
-
+    /*
     ///Inspector Variables
     [SerializeField] float I_MovementDistanceFromBulletScalarValue = 3.0f;
     [SerializeField] float I_MovementCurrentDirectionScalar = 1.0f;
@@ -29,8 +29,7 @@ public class GreenTank : EnemyTank
     {
         m_PlayerRB2D = GlobalVariables.GetPlayerTankBody();
         m_ResetTimeForMove = Time.unscaledTime + m_SecondsForUpdateTargetTracking;
-        m_Bullets = new Bullet[1];
-        m_Bombs = new Bomb[0];
+        InitializeBulletsAndBombs(1, 0);
         PathRequestManager.RequestPath(new PathRequest(m_BodyRB2D.position, m_PlayerRB2D.position, OnPathFound));
 
 
@@ -104,7 +103,7 @@ public class GreenTank : EnemyTank
             GetVector2FromAngle(m_TurretRB2D.rotation - 4.0f), 2.0f,
             1 << GlobalVariables.LayerTanks | 1 << GlobalVariables.LayerWalls);
 
-        if (rayCastHit.collider != null && rayCastHitShort1.collider == null && rayCastHitShort2.collider == null)
+        if (rayCastHit.collider && rayCastHitShort1.collider == null && rayCastHitShort2.collider == null)
         {
             if (rayCastHit.collider.gameObject.name == GlobalVariables.PlayerTankBodyName)
                 return true;
@@ -116,7 +115,7 @@ public class GreenTank : EnemyTank
     public void OnDrawGizmos()
     {
         //Gizmos.DrawLine(m_BodyRB2D.position, GetVector2FromAngle(m_DesiredTurretRotation) * 100);
-        if (m_Path != null)
+        if (m_Path)
         {
             for (int i = m_TargetIndex; i < m_Path.Length; i++)
             {
@@ -142,7 +141,7 @@ public class GreenTank : EnemyTank
     
     private void FollowPath()
     {
-        if (m_Path != null)
+        if (m_Path)
         {
             if (Vector3.Distance(m_BodyRB2D.position, m_CurrentWayPoint) <= 0.80f)
             {
@@ -226,7 +225,7 @@ public class GreenTank : EnemyTank
                 }
             }
             if (tempNeedsMovement)
-                GradualMoveTank(direction, I_SpeedForGradualChangeVelocity, I_AngleForHardTurn, I_SpeedForGradualChangeVelocityStationary);
+                GradualMoveTank(direction, I_SpeedForGradualChangeVelocity, I_MoveSpeed, I_AngleForHardTurn, I_SpeedForGradualChangeVelocityStationary);
         }
         else
             UpdatePath();
@@ -266,5 +265,5 @@ public class GreenTank : EnemyTank
             PathRequestManager.RequestPath(new PathRequest(m_BodyRB2D.position, m_CurrentRetreatPos, OnPathFound));
             m_IsCheckingPath = true;
         }
-    }
+    }*/
 }

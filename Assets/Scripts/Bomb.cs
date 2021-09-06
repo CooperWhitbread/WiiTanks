@@ -126,7 +126,7 @@ public class Bomb : MonoBehaviour
             int hit = I_DistanceColliderObject.GetComponent<CircleCollider2D>().OverlapCollider(contactF, hits);
             for (int i = 0; i < hit; i++)
             {
-                if (hits[i] != null)
+                if (hits[i])
                 {
                     if (hits[i].gameObject.tag == GlobalVariables.TagBullet)
                     {
@@ -152,7 +152,7 @@ public class Bomb : MonoBehaviour
                             for (int x = -3; x <= 3; x++)
                             {
                                 Vector3Int tilePos = new Vector3Int(x + pos.x, y + pos.y, pos.z);
-                                if (Vector3.Distance(tileMapGrid.LocalToCell(tilePos), transform.position) <= 2.5f && tileMap.GetTile(tilePos) != null)
+                                if (Vector3.Distance(tileMapGrid.LocalToCell(tilePos), transform.position) <= 2.5f && tileMap.GetTile(tilePos))
                                 {
                                     if (tileMap.GetTile(tilePos).name == "DestructableRuleTile")
                                     {

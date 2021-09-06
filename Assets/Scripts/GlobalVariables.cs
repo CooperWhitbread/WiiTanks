@@ -23,9 +23,9 @@ public class GlobalVariables : MonoBehaviour
     [SerializeField] protected BoxCollider2D I_CameraBounds;
 
     ///Protected Variables
-    protected static Bullet[] m_Bullets = new Bullet[0];
+    protected static List<Bullet> m_Bullets = new List<Bullet>();
     protected static int m_CurrentBulletIndex = -1;
-    protected static Bomb[] m_Bombs = new Bomb[0];
+    protected static List<Bomb> m_Bombs = new List<Bomb>();
     protected static int m_CurrentBombIndex = -1;
 
     //Layers
@@ -87,7 +87,6 @@ public class GlobalVariables : MonoBehaviour
             m_HasBeenInitialized = true;
         }
     }
-
     private void Update()
     {
         if (m_SceneIndexNumber != SceneManager.GetActiveScene().handle && SceneManager.GetActiveScene().name != "Dead")
@@ -147,7 +146,7 @@ public class GlobalVariables : MonoBehaviour
                             break;
                     }
 
-                    if (temp != null)
+                    if (temp)
                     {
                         temp.name = temp.name.Remove(temp.name.Length - 7);
                     }
@@ -165,50 +164,30 @@ public class GlobalVariables : MonoBehaviour
         }
     }
 
-    public void SetBullets(ref Bullet[] bullets)
+    public void SetBullets(ref List<Bullet> bullets)
     {
         foreach (Bullet b in bullets)
         {
             if (b.isActiveAndEnabled)
             {
                 //Want to keep it
-                if (m_Bullets.Length <= m_CurrentBulletIndex + 1)
-                {
-                    Bullet[] bullet = m_Bullets;
-                    m_Bullets = new Bullet[m_CurrentBulletIndex + 2];
-                    for (int i = 0; i < bullet.Length; i++)
-                        m_Bullets[i] = bullet[i];
-                }
-
-                m_Bullets[m_CurrentBulletIndex + 1] = b;
+                m_Bullets.Add(b);
                 m_CurrentBulletIndex++;
                 m_Bullets[m_CurrentBulletIndex].SetLevelInArray(m_CurrentBulletIndex);
-
-                m_Bullets[m_CurrentBulletIndex].transform.parent = gameObject.transform;
+                if (m_Bullets[m_CurrentBulletIndex])
+                    m_Bullets[m_CurrentBulletIndex].transform.parent = gameObject.transform;
             }
         }
     }
-    public void SetBombs(ref Bomb[] bombs)
+    public void SetBombs(ref List<Bomb> bombs)
     {
         foreach (Bomb b in bombs)
         {
             if (b.isActiveAndEnabled)
             {
-                //Want to keep it
-                if (m_Bombs.Length <= m_CurrentBombIndex + 1)
-                {
-                    Bomb[] bomb = m_Bombs;
-                    m_Bombs = new Bomb[m_CurrentBombIndex + 2];
-                    for (int i = 0; i < bomb.Length; i++)
-                    {
-                        m_Bombs[i] = bomb[i];
-                    }
-                }
-
-                m_Bombs[m_CurrentBombIndex + 1] = b;
+                m_Bombs.Add(b);
                 m_CurrentBombIndex++;
                 m_Bombs[m_CurrentBombIndex].SetLevelInArray(m_CurrentBombIndex);
-
                 m_Bombs[m_CurrentBombIndex].transform.parent = gameObject.transform;
             }
         }
@@ -227,7 +206,7 @@ public class GlobalVariables : MonoBehaviour
         if (m_Bullets[numberInArray])
             Destroy(m_Bullets[numberInArray].gameObject);
         //Drop all the bullets back
-        for (int i = numberInArray; i < m_Bullets.Length -1; i++)
+        for (int i = numberInArray; i < m_Bullets.Count -1; i++)
         {
             m_Bullets[i] = m_Bullets[i + 1];
             m_Bullets[i].SetLevelInArray(i);
@@ -239,7 +218,7 @@ public class GlobalVariables : MonoBehaviour
         if (m_Bombs[numberInArray])
             Destroy(m_Bombs[numberInArray].gameObject);
         //Drop all the bullets back
-        for (int i = numberInArray; i < m_Bombs.Length - 1; i++)
+        for (int i = numberInArray; i < m_Bombs.Count - 1; i++)
         {
             m_Bombs[i] = m_Bombs[i + 1];
             m_Bombs[i].SetLevelInArray(i);
@@ -247,30 +226,30 @@ public class GlobalVariables : MonoBehaviour
         m_CurrentBombIndex--;
     }
 
-    //Getters
+    ///Getters
     static public Rigidbody2D GetPlayerTankBody()
     {
-        if (GameObject.Find(GlobalVariables.PlayerTankBodyName))
-            return GameObject.Find(GlobalVariables.PlayerTankBodyName).GetComponent<Rigidbody2D>();
+        if (GameObject.Find(PlayerTankBodyName))
+            return GameObject.Find(PlayerTankBodyName).GetComponent<Rigidbody2D>();
         return null;
     }
-    static public GlobalVariables GetThisInstance() { return GameObject.Find(GlobalVariables.GlobalVariableObjectName).GetComponent<GlobalVariables>(); }
+    static public GlobalVariables GetThisInstance() { return GameObject.Find(GlobalVariableObjectName).GetComponent<GlobalVariables>(); }
     public Vector2 GetCamerBoundsBottomLeft() { return I_CameraBounds.bounds.center - I_CameraBounds.bounds.size / 2; }
     public Vector2 GetCamerBoundsTopRight() { return I_CameraBounds.bounds.center + I_CameraBounds.bounds.size / 2; }
     public Vector2 GetCameraCenter() { return I_CameraBounds.bounds.center; }
     public Bounds GetCameraBounds() { return I_CameraBounds.bounds; }
 
-    private void ResetFunctionsEvenIfDead()
+    public void ResetFunctionsEvenIfDead()
     {
         GetComponentInChildren<TankSceneManager>().I_IsLoading = false;
         m_SceneIndexNumber = SceneManager.GetActiveScene().handle;
 
-        for (int i = 0; i < m_Bullets.Length; i++)
+        for (int i = 0; i < m_Bullets.Count; i++)
         {
-            if (m_Bullets[i] != null)
+            if (m_Bullets[i])
                 Destroy(m_Bullets[i].gameObject);
         }
-        for (int i = 0; i < m_Bombs.Length; i++)
+        for (int i = 0; i < m_Bombs.Count; i++)
         {
             Destroy(m_Bombs[i].gameObject);
         }
@@ -294,9 +273,9 @@ public class GlobalVariables : MonoBehaviour
         }
 
         //Bullets
-        m_Bullets = new Bullet[0];
+        m_Bullets = new List<Bullet>();
         m_CurrentBulletIndex = -1;
-        m_Bombs = new Bomb[0];
+        m_Bombs = new List<Bomb>();
         m_CurrentBombIndex = -1;
     }
 }

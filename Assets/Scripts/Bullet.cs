@@ -15,10 +15,10 @@ public class Bullet : MonoBehaviour
     private int m_MaxNumberOfHits = 0;
     private float m_TimeForWeirdBulletWallCheck = 0.0f;
     private Vector2 m_PreviousPos = Vector2.zero;
-    private float m_CensecutiveWeirdBulletWallCheck = 0;
+    private float m_CensecutiveWeirdBulletWallCheck = 0.0f;
 
     ///Unity Functions
-    void Awake()
+    private void Awake()
     {
         m_SpriteRenderer = GetComponent<SpriteRenderer>();
         m_RigidBody2D = GetComponent<Rigidbody2D>();
