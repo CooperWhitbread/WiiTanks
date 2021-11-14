@@ -44,6 +44,7 @@ public class StateManager
     {
         if (States.Count != 0)
         {
+            CurrentLevelInState = Random.Range(0, States.Count);
             CurrentState = States[CurrentLevelInState].State;
             TimeForNextSwitch = currentTime + Random.Range(States[CurrentLevelInState].TimeLengthMin, States[CurrentLevelInState].TimeLengthMax);
         }

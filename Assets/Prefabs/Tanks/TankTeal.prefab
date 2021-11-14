@@ -1,34 +1,31 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &8387467266113600456
+--- !u!114 &528916227
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8198327952314824349}
+  m_GameObject: {fileID: 6803041561736079457}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 22d67c869be47994289d33e9e0b43fe2, type: 3}
+  m_Script: {fileID: 11500000, guid: c6941d376f601814e88c6830a4056993, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   I_ShowGizmos: 1
-  I_BulletScript: {fileID: 11400000, guid: 7c5e625a6bda620428ef06bcaaff08e0, type: 2}
-  I_ShootTransform: {fileID: 8198327953634752367}
-  I_TredTransform1: {fileID: 8198327952842796299}
-  I_TredTransform2: {fileID: 8198327953134604891}
+  I_BulletScript: {fileID: 11400000, guid: cd0081db216c8c643af800444dab8c03, type: 2}
+  I_ShootTransform: {fileID: 6803041562517563795}
+  I_TredTransform1: {fileID: 6803041562277688311}
+  I_TredTransform2: {fileID: 6803041561947950247}
   I_MoveSpeed: 1.5
   I_StopDelayForShoot: 0.4
   I_TredDistanceBetweenTreds: 0.2
   I_StateManager:
     States:
-    - State: 1
-      TimeLengthMin: 6
-      TimeLengthMax: 15
     - State: 5
       TimeLengthMin: 10
-      TimeLengthMax: 25
-  I_TurretRotationSpeed: 36
+      TimeLengthMax: 10
+  I_TurretRotationSpeed: 72
   I_MinTimeToShoot: 6
   I_MaxTimeToShoot: 8
   I_MiniIntervalDelay: 0.3
@@ -41,13 +38,19 @@ MonoBehaviour:
   I_AngleForHardTurn: 15
   I_BombDetectionRadius: 3
   I_MinDistBeforeMoveOnForRetreatingTank: 3
---- !u!1001 &6743044296536982462
+--- !u!1001 &8231197586666659138
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3193708379272295291, guid: 9db668d741a54c145aa8360d758b3bee,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 769992891098123094, guid: c9b27be58d781ba41997b73a79ba943c,
+        type: 3}
     - target: {fileID: 3193708379867378978, guid: 9db668d741a54c145aa8360d758b3bee,
         type: 3}
       propertyPath: m_RootOrder
@@ -106,31 +109,37 @@ PrefabInstance:
     - target: {fileID: 3193708379867378979, guid: 9db668d741a54c145aa8360d758b3bee,
         type: 3}
       propertyPath: m_Name
-      value: TankGrey
+      value: TankTeal
       objectReference: {fileID: 0}
+    - target: {fileID: 3193708380492350398, guid: 9db668d741a54c145aa8360d758b3bee,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: -3206531110674126801, guid: c9b27be58d781ba41997b73a79ba943c,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9db668d741a54c145aa8360d758b3bee, type: 3}
---- !u!1 &8198327952314824349 stripped
+--- !u!1 &6803041561736079457 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3193708379867378979, guid: 9db668d741a54c145aa8360d758b3bee,
     type: 3}
-  m_PrefabInstance: {fileID: 6743044296536982462}
+  m_PrefabInstance: {fileID: 8231197586666659138}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &8198327952842796299 stripped
+--- !u!4 &6803041562277688311 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3193708379337273013, guid: 9db668d741a54c145aa8360d758b3bee,
     type: 3}
-  m_PrefabInstance: {fileID: 6743044296536982462}
+  m_PrefabInstance: {fileID: 8231197586666659138}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &8198327953134604891 stripped
+--- !u!4 &6803041561947950247 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3193708379049677285, guid: 9db668d741a54c145aa8360d758b3bee,
     type: 3}
-  m_PrefabInstance: {fileID: 6743044296536982462}
+  m_PrefabInstance: {fileID: 8231197586666659138}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &8198327953634752367 stripped
+--- !u!4 &6803041562517563795 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3193708380690740433, guid: 9db668d741a54c145aa8360d758b3bee,
     type: 3}
-  m_PrefabInstance: {fileID: 6743044296536982462}
+  m_PrefabInstance: {fileID: 8231197586666659138}
   m_PrefabAsset: {fileID: 0}

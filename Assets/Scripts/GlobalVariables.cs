@@ -27,6 +27,8 @@ public class GlobalVariables : MonoBehaviour
     protected static int m_CurrentBulletIndex = -1;
     protected static List<Bomb> m_Bombs = new List<Bomb>();
     protected static int m_CurrentBombIndex = -1;
+    
+    public Vector3[] m_NonSpawingPositions = new Vector3[0];
 
     //Layers
     public const int LayerFloorBoards  = 8;
@@ -76,7 +78,6 @@ public class GlobalVariables : MonoBehaviour
     //Private Variables
     static int m_SceneIndexNumber = -1;
     static bool m_HasBeenInitialized = false;
-    private Vector3[] m_NonSpawingPositions = new Vector3[0];
 
     private void Start()
     {
@@ -149,11 +150,12 @@ public class GlobalVariables : MonoBehaviour
                     if (temp)
                     {
                         temp.name = temp.name.Remove(temp.name.Length - 7);
+                        temp.transform.position = Vector3.zero;
+                        temp.transform.GetChild(0).position = tank.position;
                     }
                 }
             }
 
-            m_NonSpawingPositions = new Vector3[0];
         }
         else
             HasJustStartedAMission = false;

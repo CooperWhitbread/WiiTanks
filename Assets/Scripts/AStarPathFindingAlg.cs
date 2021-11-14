@@ -231,5 +231,9 @@ public class AStarPathFindingAlg : MonoBehaviour
 
         return wayPoints;
     }
-    public void SetStaticNodes() { m_Script.SetNodesStatic(); }
+    public void SetStaticNodes() 
+    { 
+        if (m_Script)
+            m_Script.SetNodesStatic(); 
+    }
 }

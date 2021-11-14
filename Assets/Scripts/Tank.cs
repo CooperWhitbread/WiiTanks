@@ -74,8 +74,8 @@ abstract public class Tank : MonoBehaviour
         SetUpVariables();
         InheritedStart();
 
-        m_StartingPos = m_BodyRB2D.transform.position;
         m_TredsParentObject = transform.GetChild(2).gameObject;
+        m_StartingPos = m_BodyRB2D.transform.position;
 
         ParticleSystem[] pts = GetComponentsInChildren<ParticleSystem>();
         foreach (ParticleSystem p in pts)
@@ -240,7 +240,7 @@ abstract public class Tank : MonoBehaviour
             m_Bullets[i].gameObject.transform.SetParent(gameObject.transform);
         }
 
-        for (int i = 0; i < m_Bombs.Count; i++)
+        for (int i = 0; i < nBombs; i++)
         {
             m_Bombs.Add(Instantiate(m_BombPrefab, I_ShootTransform.position, I_ShootTransform.rotation));
             m_Bombs[i].gameObject.SetActive(false);
@@ -599,5 +599,19 @@ abstract public class Tank : MonoBehaviour
             return false;
 
         return true;
+    }
+    static public Vector2 GetPositionBetweenTwoLines(Vector2 v1, Vector2 p1, Vector2 v2, Vector2 p2)
+    {
+        if (v1.x == 0.0f || v2.x == 0.0f)
+            return Vector2.zero;
+
+        float m1, m2, c1, c2;
+        m1 = v1.y / v1.x;
+        m2 = v2.y / v2.x;
+        c1 = p1.y - m1 * p1.x;
+        c2 = p2.y - m2 * p2.x;
+
+        float x = (c2 - c1) / (m1 - m2);
+        return new Vector2(x, m1 * x + c1);
     }
 }

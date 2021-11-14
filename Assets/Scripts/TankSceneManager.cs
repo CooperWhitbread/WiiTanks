@@ -15,7 +15,7 @@ public class TankSceneManager : MonoBehaviour
     {
         if (I_Testing)
         {
-            //In testing screne
+            //In testing scene
             if (!I_IsLoading)
             {
                 //Reset testing screne when player dies
@@ -27,6 +27,14 @@ public class TankSceneManager : MonoBehaviour
                         I_IsLoading = true;
                     }
                 }
+
+                //Switch back to game screen if the screen is dead
+                if (SceneManager.GetActiveScene().name == "Dead")
+                {
+                    SceneManager.LoadSceneAsync("TestingScene");
+                    I_IsLoading = true;
+                }
+
             }
         }
         else
@@ -36,13 +44,8 @@ public class TankSceneManager : MonoBehaviour
             {
                 if (!I_IsLoading)
                 {
-                    if (I_Testing)
-                        SceneManager.LoadSceneAsync("TestingScene");
-                    else
-                    {
-                        GlobalVariables.GetThisInstance().ResetFunctionsEvenIfDead();
-                        SceneManager.LoadSceneAsync("Mission-" + (m_CurrentLevel));
-                    }
+                    GlobalVariables.GetThisInstance().ResetFunctionsEvenIfDead();
+                    SceneManager.LoadSceneAsync("Mission-" + (m_CurrentLevel));
                     I_IsLoading = true;
                 }
             }
@@ -82,6 +85,8 @@ public class TankSceneManager : MonoBehaviour
                     if (I_NumberOfLevels > m_CurrentLevel)
                     {
                         m_CurrentLevel++;
+
+                        GlobalVariables.GetThisInstance().m_NonSpawingPositions = new Vector3[0];
                         SceneManager.LoadSceneAsync("Mission-" + (m_CurrentLevel));
                         I_IsLoading = true;
                     }

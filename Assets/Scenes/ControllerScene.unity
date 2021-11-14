@@ -183,7 +183,7 @@ MonoBehaviour:
   I_NumberOfGrids: {x: 75, y: 57}
   I_Position: {x: -0.5, y: -0.5}
   I_NodeSize: 0.33333334
-  I_DisplayGridGizmos: 1
+  I_DisplayGridGizmos: 0
   I_PeniltyForWalls: 5
   I_PeniltyMultiplyerForEndOfWall: 5
   I_PeniltyMultiplyerForBomb: 2
@@ -327,7 +327,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   I_Testing: 0
-  I_NumberOfLevels: 5
+  I_NumberOfLevels: 7
   I_StartingLevel: 1
   I_IsLoading: 0
 --- !u!1 &1746797118
@@ -392,8 +392,7 @@ MonoBehaviour:
     type: 3}
   I_GreyTankPrefab: {fileID: 8387467266113600456, guid: f83bba02c1679be4a8768e3efe1d1aca,
     type: 3}
-  I_TealTankPrefab: {fileID: 6350327515381133696, guid: ddc07ca2018d6164097d4952e369faf2,
-    type: 3}
+  I_TealTankPrefab: {fileID: 528916227, guid: f8491fef746a9054e859d53f582ba349, type: 3}
   I_YellowTankPrefab: {fileID: -2686801942679511108, guid: d1056beed7b470c489cfa001e32870d4,
     type: 3}
   I_GreenTankPrefab: {fileID: 5406531794032220875, guid: 0a053776221354b42998ff104a8a15de,
@@ -415,6 +414,7 @@ MonoBehaviour:
   I_DeathCrossPrefab: {fileID: 6032282327030068313, guid: 4cf548f2d6df9a6469c22dbc0977e231,
     type: 3}
   I_CameraBounds: {fileID: 1746797119}
+  m_NonSpawingPositions: []
 --- !u!4 &1746797121
 Transform:
   m_ObjectHideFlags: 0

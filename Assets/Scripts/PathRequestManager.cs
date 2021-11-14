@@ -15,6 +15,7 @@ public class PathRequestManager : MonoBehaviour
     {
         S_Instance = this;
         m_Pathfinding = GetComponent<AStarPathFindingAlg>();
+        ResetWallsPathFinding();
     }
     private void Update()
     {
@@ -32,7 +33,11 @@ public class PathRequestManager : MonoBehaviour
         }
     }
 
-    public static void ResetWallsPathFinding() { S_Instance.m_Pathfinding.SetStaticNodes(); }
+    public static void ResetWallsPathFinding() 
+    {
+        if (S_Instance)
+            S_Instance.m_Pathfinding.SetStaticNodes(); 
+    }
     public static void RequestPath(PathRequest request)
     {
         if (S_Instance)
@@ -44,6 +49,8 @@ public class PathRequestManager : MonoBehaviour
 
             threadStart.Invoke();
         }
+        else
+            request.CallBack(new Vector3[0], false);
     }
     public void FinishedProccessingPath(PathResult result)
     { 

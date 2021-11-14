@@ -154,7 +154,7 @@ public class Bomb : MonoBehaviour
                                 Vector3Int tilePos = new Vector3Int(x + pos.x, y + pos.y, pos.z);
                                 if (Vector3.Distance(tileMapGrid.LocalToCell(tilePos), transform.position) <= 2.5f && tileMap.GetTile(tilePos))
                                 {
-                                    if (tileMap.GetTile(tilePos).name == "DestructableRuleTile")
+                                    if (tileMap.GetTile(tilePos).name == "DestructableWallRuleTile")
                                     {
                                         tileMap.SetTile(tilePos, null);
                                     }
