@@ -189,6 +189,7 @@ TextureImporter:
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
+  ignoreMasterTextureLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -198,8 +199,8 @@ TextureImporter:
   textureSettings:
     serializedVersion: 2
     filterMode: 0
-    aniso: -1
-    mipBias: -100
+    aniso: 1
+    mipBias: 0
     wrapU: 1
     wrapV: 1
     wrapW: 1
@@ -220,6 +221,8 @@ TextureImporter:
   textureType: 8
   textureShape: 1
   singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
   maxTextureSizeSet: 0
   compressionQualitySet: 0
   textureFormatSet: 0
@@ -281,7 +284,7 @@ TextureImporter:
       tessellationDetail: 0
       bones: []
       spriteID: 53c34a6700bb74910800000000000000
-      internalID: 1821630184959523893
+      internalID: -566558058296674357
       vertices: []
       indices: 
       edges: []
@@ -302,7 +305,7 @@ TextureImporter:
       tessellationDetail: 0
       bones: []
       spriteID: 497a46d7f26b38070800000000000000
-      internalID: 8107524069280491412
+      internalID: -8298338510180623418
       vertices: []
       indices: 
       edges: []
@@ -323,7 +326,7 @@ TextureImporter:
       tessellationDetail: 0
       bones: []
       spriteID: cec4be0436ca06d80800000000000000
-      internalID: -8259412174306587412
+      internalID: 2550770731585939164
       vertices: []
       indices: 
       edges: []
@@ -344,7 +347,7 @@ TextureImporter:
       tessellationDetail: 0
       bones: []
       spriteID: da99cb6f1d48d8e90800000000000000
-      internalID: -7021810206678148691
+      internalID: -4144719009924888516
       vertices: []
       indices: 
       edges: []
@@ -365,7 +368,7 @@ TextureImporter:
       tessellationDetail: 0
       bones: []
       spriteID: de8f89074cdb50780800000000000000
-      internalID: -8717352852305413907
+      internalID: -3651007014241657682
       vertices: []
       indices: 
       edges: []
@@ -386,7 +389,7 @@ TextureImporter:
       tessellationDetail: 0
       bones: []
       spriteID: 9962b5c518e9dd6a0800000000000000
-      internalID: -6422803215123011943
+      internalID: 3385767916625473407
       vertices: []
       indices: 
       edges: []
@@ -407,7 +410,7 @@ TextureImporter:
       tessellationDetail: 0
       bones: []
       spriteID: 457e28de8396350f0800000000000000
-      internalID: -1129443388315998380
+      internalID: -3987320697995548531
       vertices: []
       indices: 
       edges: []
@@ -428,7 +431,7 @@ TextureImporter:
       tessellationDetail: 0
       bones: []
       spriteID: 1e3497c55076813a0800000000000000
-      internalID: -6694487573362293791
+      internalID: 298158346300370372
       vertices: []
       indices: 
       edges: []
@@ -449,7 +452,7 @@ TextureImporter:
       tessellationDetail: 0
       bones: []
       spriteID: b52d3325a7756f430800000000000000
-      internalID: 3816333917119828571
+      internalID: 4946601292520697097
       vertices: []
       indices: 
       edges: []
@@ -470,7 +473,7 @@ TextureImporter:
       tessellationDetail: 0
       bones: []
       spriteID: 71d75d4f3b8546ee0800000000000000
-      internalID: -1268791665081615081
+      internalID: -619966655197038833
       vertices: []
       indices: 
       edges: []
@@ -491,7 +494,7 @@ TextureImporter:
       tessellationDetail: 0
       bones: []
       spriteID: a19c1134c4c295200800000000000000
-      internalID: 169215167057479962
+      internalID: -2071578370698533501
       vertices: []
       indices: 
       edges: []
@@ -527,6 +530,19 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    nameFileIdTable:
+      Crosses_10: -2071578370698533501
+      Crosses_8: 4946601292520697097
+      Crosses_1: -8298338510180623418
+      Crosses_3: -4144719009924888516
+      Crosses_5: 3385767916625473407
+      Crosses_6: -3987320697995548531
+      Crosses_2: 2550770731585939164
+      Crosses_11: 8919244267480565293
+      Crosses_9: -619966655197038833
+      Crosses_7: 298158346300370372
+      Crosses_4: -3651007014241657682
+      Crosses_0: -566558058296674357
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

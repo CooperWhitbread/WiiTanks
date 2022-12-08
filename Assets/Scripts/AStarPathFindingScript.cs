@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using System;
+using UnityEngine.UIElements;
 
 public class AStarPathFindingScript : MonoBehaviour
 {
@@ -12,8 +13,8 @@ public class AStarPathFindingScript : MonoBehaviour
     [SerializeField] private float I_NodeSize = 1;
     [SerializeField] private bool I_DisplayGridGizmos = false;
     [SerializeField] private int I_PeniltyForWalls = 1;
-    [SerializeField] private int I_PeniltyMultiplyerForEndOfWall = 4;
-    [SerializeField] private int I_PeniltyMultiplyerForBomb = 4;
+    [SerializeField] private int I_PeniltyMultiplyerForEndOfWall = 20;
+    [SerializeField] private int I_PeniltyMultiplyerForBomb = 20;
     [SerializeField] private int I_BlurPenaltyScale = 2;
 
     ///Private Variables
@@ -40,14 +41,19 @@ public class AStarPathFindingScript : MonoBehaviour
                 for (int x = -radius; x <= radius; x++)
                 {
                     Vector2Int pos = on.GridPosition + new Vector2Int(x, y);
-                    if (pos.x >= 0 && pos.x < I_NumberOfGrids.x && pos.y >= 0 && pos.y < I_NumberOfGrids.y)
-                        m_NodeDynamic[pos.x, pos.y] = new AStarNodes(false, WorldSpaceFromGrid(pos), pos, I_PeniltyMultiplyerForBomb);
+                    Vector2 worldPos = WorldSpaceFromGrid(pos);
+                    double test = Math.Sqrt(Math.Pow(x, 2) + Math.Pow(y, 2));
+                    if (Math.Sqrt(Math.Pow(x, 2) + Math.Pow(y, 2)) <= 2)
+                    {
+                        if (pos.x >= 0 && pos.x < I_NumberOfGrids.x && pos.y >= 0 && pos.y < I_NumberOfGrids.y)
+                            m_NodeDynamic[pos.x, pos.y] = new AStarNodes(false, worldPos, pos, I_PeniltyMultiplyerForBomb);
+                    }
                 }
             }
         }
 
         //Avoid the Tanks
-        foreach (Tank b in FindObjectsOfType<Tank>())
+        foreach (Tank b in FindObjectsOfType<BrownTank>())
         {
             AStarNodes on = GetNodeFromWorldPos(b.GetComponentInChildren<Rigidbody2D>().position);
             m_NodeDynamic[on.GridPosition.x, on.GridPosition.y] = new AStarNodes(true, on.Position, on.GridPosition, I_PeniltyForWalls);

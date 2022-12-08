@@ -16,7 +16,6 @@ public class TealTank : EnemyTank
     {
         I_StateManager.Start(Time.unscaledTime);
         InitializeBulletsAndBombs(1, 0); 
-        RecalculatePath();
     }
     protected override void InheritedFixedUpdateEnemy()
     {

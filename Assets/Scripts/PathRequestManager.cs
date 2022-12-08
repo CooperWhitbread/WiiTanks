@@ -50,7 +50,10 @@ public class PathRequestManager : MonoBehaviour
             threadStart.Invoke();
         }
         else
+        {
+            Debug.LogError("S_Instance in Path Request not set");
             request.CallBack(new Vector3[0], false);
+        }
     }
     public void FinishedProccessingPath(PathResult result)
     { 

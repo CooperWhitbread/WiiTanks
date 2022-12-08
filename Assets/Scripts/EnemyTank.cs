@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class EnemyTank : Tank
 {
@@ -35,11 +36,12 @@ public class EnemyTank : Tank
     protected int m_TargetIndex = 0;
     protected Vector3 m_CurrentWayPoint;
     protected Rigidbody2D m_BulletClose;
+    protected int m_TimeBombEscape = 0;
 
     /// Private Variables
     private float m_TimeBeforeRecalculatigPath = 0.0f; 
 
-    private const float m_SecondsForUpdateTargetTracking = 3.0f;
+    private const float m_SecondsForUpdateTargetTracking = 4.0f;
     private const int m_MaxTurretUpdateDelay = 20;
 
     ///Constant Variables
@@ -59,7 +61,9 @@ public class EnemyTank : Tank
 
         InheritedStartEnemy();
 
-        RecalculatePath();
+        //Not recalculating path here, path request manager not set up
+        //Wait until normal loop
+        //RecalculatePath();
     }
     protected override void InheritedFixedUpdate()
     {
@@ -155,7 +159,7 @@ public class EnemyTank : Tank
     }
     protected void SetNextTimeForRecalculatingPath()
     {
-        m_TimeBeforeRecalculatigPath = Time.unscaledTime + m_SecondsForUpdateTargetTracking;
+        m_TimeBeforeRecalculatigPath += m_SecondsForUpdateTargetTracking;
     }
     protected void OnPathFound(Vector3[] newPath, bool pathSucess)
     {
@@ -380,6 +384,20 @@ public class EnemyTank : Tank
         //Don't want to force it and it isn't close so keep the current pos
         return currentRetreatPos;
     }
+    protected bool CheckIfPointIsInsideWall(Vector3 pos)
+    {
+        foreach (Tilemap tm in FindObjectsOfType<Tilemap>())
+        {
+            if (tm.name == GlobalVariables.TilemapWallName || tm.name == GlobalVariables.TilemapHoleName)
+            {
+                if (tm.GetTile(tm.LocalToCell(pos)) != null)
+                    return true;
+            }
+        }
+        //did not collide with any of the walls, return false
+        return false;
+    }
+
     //Movement AI
     protected void CheckForNextWayPoint()
     {
@@ -403,14 +421,20 @@ public class EnemyTank : Tank
         {
             if (Vector2.Distance(m_BodyRB2D.position, b.transform.position) <= I_BombDetectionRadius)
             {
-                m_BodyRB2D.velocity = (m_BodyRB2D.position - (Vector2)b.transform.position) * I_MoveSpeed;
-                GradualRotation(ref m_TurretRB2D, GetAngleFromVector2(m_BodyRB2D.position - (Vector2)b.transform.position), I_TurretRotationSpeed);
-                tempNeedsMovement = false;
-                RecalculatePath();
-                if (m_TargetIndex != 0)
-                    m_CurrentWayPoint = m_Path[--m_TargetIndex];
+                if (m_TimeBombEscape == 0)
+                {
+                    m_TimeBombEscape = 100;
+                    m_BodyRB2D.velocity = (m_BodyRB2D.position - (Vector2)b.transform.position) * I_MoveSpeed;
+                    GradualRotation(ref m_TurretRB2D, GetAngleFromVector2(m_BodyRB2D.position - (Vector2)b.transform.position), I_TurretRotationSpeed);
+                    tempNeedsMovement = false;
+                    RecalculatePath();
+                    if (m_TargetIndex != 0)
+                        m_CurrentWayPoint = m_Path[--m_TargetIndex];
+                    else
+                        m_CurrentWayPoint = m_BodyRB2D.velocity * 5 + m_BodyRB2D.position;
+                }
                 else
-                    m_CurrentWayPoint = m_BodyRB2D.velocity * 5 + m_BodyRB2D.position;
+                    m_TimeBombEscape--;
             }
         }
         return tempNeedsMovement;
@@ -483,10 +507,8 @@ public class EnemyTank : Tank
     private void FollowPath()
     {
         if (m_Path != null)
-        {
             FollowPathEnemy();
-        }
-        else
+        else if (!m_IsCheckingPath)
         {
             m_IsCheckingPath = false;
             RecalculatePath();

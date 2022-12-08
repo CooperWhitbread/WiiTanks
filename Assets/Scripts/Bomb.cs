@@ -64,7 +64,7 @@ public class Bomb : MonoBehaviour
             {
                 if (transform.parent.GetChild(i).name == "Body")
                 {
-                    if (Vector3.Distance(transform.parent.GetChild(i).transform.position, transform.position) >= 2.0f)
+                    if (Vector3.Distance(transform.parent.GetChild(i).transform.position, transform.position) >= 2.7f)
                         I_DistanceColliderObject.GetComponent<CircleCollider2D>().enabled = true;
                 }
             }
@@ -95,13 +95,9 @@ public class Bomb : MonoBehaviour
             m_TimeUntilDestory = 0.0f;
 
             if (GetComponentInParent<Tank>())
-            {
                 GetComponentInParent<Tank>().ExplodeBomb(m_NumberInArray);
-            }
             else
-            {
                 GetComponentInParent<GlobalVariables>().ExplodeBomb(m_NumberInArray);
-            }
         }
         else if (!m_HasCheckedForExternalExplodeCollider && Time.fixedTime >= m_TimeUntilDestory - 0.5f)
         {

@@ -4,265 +4,154 @@ using UnityEngine;
 
 public class YellowTank : EnemyTank
 {
-    /*
     ///Inspector Variables
-    [SerializeField] float I_MovementDistanceFromBulletScalarValue = 3.0f;
-    [SerializeField] float I_MovementCurrentDirectionScalar = 1.0f;
-    [SerializeField] float I_BombDetectionRadius = 2.5f;
-    [SerializeField] float I_MinDistBeforeMoveOnForRetreatingTank = 1.0f;
-    [SerializeField] float I_MaxDistancebeforeCanReturnMovement = 7.0f;
-    [SerializeField] float I_DistanceBetweenTankScalar = 1.0f;
-    [SerializeField] float I_RandomDistanceAddedValue = 3.0f;
+    [Header("Yellow Tank AI Variables")]
+    [SerializeField] private float I_MinDistBeforeMoveOnForRetreatingTank = 3.0f;
 
-    ///Private Variables
-    private float m_ResetTimeForMove = 0.0f;
-    private float m_SecondsForUpdateTargetTracking = 3.0f;
-    private Vector2 m_CurrentRetreatPos = Vector2.zero;
-    private Vector2 m_PreviousPosition = Vector2.zero;
-    private Vector2[] m_Corners = new Vector2[4];
-    private Vector2 m_PreviousTargetPos = Vector2.zero;
-    private bool m_WantToCheckAllCornersAgain = true;
-    private float m_TimeForNextDistanceCheck = 0.0f;
+    private float m_BombDropTime = 0.0f;
+    private bool m_InRadiusOfBomb = false;
+    private Vector2 m_BombPos = Vector2.zero;
+    private Vector2 m_BombMoveDir = Vector2.zero;
 
     ///Virtual Functions
-    protected override void InheritedStart()
+    protected override void InheritedStartEnemy()
     {
-        m_PlayerRB2D = GlobalVariables.GetPlayerTankBody();
-        m_ResetTimeForMove = Time.unscaledTime + m_SecondsForUpdateTargetTracking;
-        InitializeBulletsAndBombs(1, 0);
-        PathRequestManager.RequestPath(new PathRequest(m_BodyRB2D.position, m_PlayerRB2D.position, OnPathFound));
-
-
-        Vector2 p0 = GlobalVariables.GetThisInstance().GetCamerBoundsBottomLeft();
-        Vector2 p1 = GlobalVariables.GetThisInstance().GetCamerBoundsTopRight();
-        m_Corners[0] = new Vector2(p0.x + 2.5f, p1.y - 2.5f); //Top left
-        m_Corners[1] = p1 + new Vector2(-2.5f, -2.5f); // Top right
-        m_Corners[2] = new Vector2(p1.x - 2.5f, p0.y + 2.5f); // Bottom Right
-        m_Corners[3] = p0 + new Vector2(2.5f, 2.5f);// Bottom Left
-
-        SetNextShootTime(0.2f, 0.2f);
+        I_StateManager.Start(Time.unscaledTime);
+        InitializeBulletsAndBombs(1, 4);
+        m_BombDropTime = Random.Range(0.5f, 3.5f) + Time.time;
     }
-    protected override void InheritedFixedUpdate()
+    protected override void InheritedFixedUpdateEnemy()
     {
-        //Path Finding
-        if (m_ResetTimeForMove <= Time.unscaledTime)
-            //UpdatePath();
+        m_DesiredTurretRotation = GetAngleFromVector2(m_PlayerRB2D.position - m_BodyRB2D.position);
 
-        if (Vector2.Distance(m_PlayerRB2D.position, m_BodyRB2D.position) <= I_MinDistBeforeMoveOnForRetreatingTank)
+        if (Time.time >= m_BombDropTime)
         {
-            UpdatePath();
+            DropBomb();
+            m_InRadiusOfBomb = true;
+            m_BombDropTime = Time.time + Random.Range(3.0f, 5.0f);
+            m_BombPos = m_BodyRB2D.position;
         }
 
-        FollowPath();
-        UpdateTurret();
-
-        if (Time.fixedTime >= m_TimeForNextDistanceCheck)
+        //Reset personal bomb drop
+        if (Vector2.Distance(m_BombPos, m_BodyRB2D.position) > 2.5f)
         {
-            m_TimeForNextDistanceCheck = Time.fixedTime + 4.0f;
-            m_PreviousPosition = m_BodyRB2D.position;
-            if (Vector2.Distance(m_BodyRB2D.position, m_PreviousPosition) <= 0.2f)
-            {
-                m_WantToCheckAllCornersAgain = true;
-                UpdatePath();
-            }
-
+            m_InRadiusOfBomb = false;
+            m_BombMoveDir = Vector2.zero;
         }
-
-        //Shooting
-        AutomaticShoot();
-        if (m_HasShot)
-            SetNextShootTime(I_MinTimeToShoot, I_MaxTimeToShoot);
-
-        if (Vector2.Distance(m_CurrentRetreatPos, m_BodyRB2D.position) <= I_MinDistBeforeMoveOnForRetreatingTank)
-            m_WantToCheckAllCornersAgain = true;
     }
     protected override void InheritedOnCollisionEnter(Collision2D collision)
     {
-        m_WantToCheckAllCornersAgain = true;
-        UpdatePath();
-    }
-
-    ///Private Functions
-    private void UpdateTurret()
-    {
-        GradualRotation(ref m_TurretRB2D, GetAngleFromVector2(m_PlayerRB2D.position - m_BodyRB2D.position), I_TurretRotationSpeed);
     }
     protected override bool CanShoot()
     {
-        //Check if it is in a position that it wants to shoot
-        CapsuleCollider2D ColiderInfo = GlobalVariables.GetThisInstance().I_BulletPrefab.GetComponent<CapsuleCollider2D>();
-        RaycastHit2D rayCastHit = Physics2D.CapsuleCast(I_ShootTransform.position, ColiderInfo.size, ColiderInfo.direction, 
-            m_TurretRB2D.rotation, GetVector2FromAngle(m_TurretRB2D.rotation), 100.0f, 
-            1 << GlobalVariables.LayerTanks | 1 << GlobalVariables.LayerWalls | 1 << GlobalVariables.LayerBullets);
-
-        //Make sure nothing is too close to the tank 
-        RaycastHit2D rayCastHitShort1 = Physics2D.Raycast(m_BodyRB2D.position, 
-            GetVector2FromAngle(m_TurretRB2D.rotation + 4.0f), 2.0f,
-            1 << GlobalVariables.LayerTanks | 1 << GlobalVariables.LayerWalls);
-        RaycastHit2D rayCastHitShort2 = Physics2D.Raycast(m_BodyRB2D.position, 
-            GetVector2FromAngle(m_TurretRB2D.rotation - 4.0f), 2.0f,
-            1 << GlobalVariables.LayerTanks | 1 << GlobalVariables.LayerWalls);
-
-        if (rayCastHit.collider && rayCastHitShort1.collider == null && rayCastHitShort2.collider == null)
-        {
-            if (rayCastHit.collider.gameObject.name == GlobalVariables.PlayerTankBodyName)
-                return true;
-            else if (rayCastHit.collider.gameObject.layer == GlobalVariables.LayerBullets && Vector2.Distance(rayCastHit.point, m_BodyRB2D.position) <= 2.0f)
-                return true;
-        }
-        return false; //Diddn't hit player tank
+        return GenericCanShoot();
     }
-    public void OnDrawGizmos()
+    protected override void FollowPathEnemy()
     {
-        //Gizmos.DrawLine(m_BodyRB2D.position, GetVector2FromAngle(m_DesiredTurretRotation) * 100);
-        if (m_Path != null)
+        //If has just dropped bomb, force it to escape first
+        if (m_InRadiusOfBomb)
         {
-            for (int i = m_TargetIndex; i < m_Path.Length; i++)
+            //Go through to see if a direction needs to be picked
+            if (m_BombMoveDir == Vector2.zero)
             {
-                Gizmos.color = Color.black;
-                Gizmos.DrawCube(m_Path[i], Vector3.one / 4);
+                //See if can escape this direction
+                RaycastHit2D[] rch = new RaycastHit2D[10];
+                ContactFilter2D cf = new ContactFilter2D();
+                Vector2 testingMovePos = m_CurrentWayPoint;
+                int defualtBreakLoop = 10;
 
-                if (i == m_TargetIndex)
+                while (defualtBreakLoop > 0)
                 {
-                    Gizmos.DrawLine(m_BodyRB2D.position, m_Path[i]);
-                }
-                else
-                {
-                    Gizmos.DrawLine(m_Path[i - 1], m_Path[i]);
-                }
-            }
-        }
-
-        Gizmos.color = Color.red;
-        Gizmos.DrawCube(m_CurrentWayPoint, Vector3.one / 2);
-
-        //Gizmos.DrawLine(debugDirectionPos * 5 + m_BodyRB2D.position, m_BodyRB2D.position);
-    }
-    private void FollowPath()
-    {
-        if (m_Path)
-        {
-            if (Vector3.Distance(m_BodyRB2D.position, m_CurrentWayPoint) <= 0.80f)
-            {
-                if (m_TargetIndex + 1 >= m_Path.Length)
-                {
-                    m_CurrentWayPoint = m_BodyRB2D.velocity * 5 + m_BodyRB2D.position;
-                    UpdatePath();
-                    return;
-                }
-
-                //more swery path following
-                if (Vector3.Distance(m_Path[m_TargetIndex + 1], m_CurrentWayPoint) >= 3.0f)
-                {
-                    //Add swerve
-                    while (true)
+                    defualtBreakLoop--;
+                    int num = Physics2D.CircleCast(m_BombPos, 1.0f,
+                        testingMovePos - m_BodyRB2D.position, cf, rch, 2.2f);
+                    if (num == 0)
                     {
-                        float ang = GetAngleFromVector3(m_Path[m_TargetIndex + 1] - (Vector3)m_BodyRB2D.position);
-                        ang += Random.Range(40.0f, 80.0f) * (Random.Range(0, 2) * 2 - 1);
-                        Vector2 theDirection = GetVector2FromAngle(ang);
-                        RaycastHit2D rch = Physics2D.Raycast(m_BodyRB2D.position, theDirection, 2.0f,
-                            1 << GlobalVariables.LayerTanks | 1 << GlobalVariables.LayerWalls | 1 << GlobalVariables.LayerWallHole);
-                        if (rch.collider == null)
-                        {
-                            m_CurrentWayPoint += (Vector3)theDirection * 2.0f;
-                            break;
-                        }
+                        m_BombMoveDir = testingMovePos - m_BodyRB2D.position;
+                        break;
                     }
-                }
-                else
-                    m_CurrentWayPoint = m_Path[++m_TargetIndex];
-            }
 
-            //Get the bullets
-            Bullet[] bullets = GetBulletsThatAreVisable();
-            Vector2 direction = ((Vector2)m_CurrentWayPoint - m_BodyRB2D.position) * I_MovementCurrentDirectionScalar;
+                    bool canMove = true;
+                    for (int i = 0; i < num; i++)
+                    {
+                        //if is itself, we want to ignore it
+                        if (rch[i].collider.gameObject != m_BodyRB2D.gameObject)
+                            canMove = false;
+                    }
 
-            foreach (Bullet b in bullets)
-            {
-                Rigidbody2D rb = b.GetComponent<Rigidbody2D>();
-
-                //Check bullet is moving towards tank
-                if (Mathf.Abs(GetAngleFromVector2(rb.velocity) - GetAngleFromVector2(m_BodyRB2D.position - rb.position)) < 90.0f)
-                {
-                    float distance = Vector2.Distance(b.transform.position, m_BodyRB2D.position);
-                    Vector2 normal;
-                    if (Vector2.SignedAngle(rb.velocity, m_BodyRB2D.position - rb.position) <= 0)
-                        normal = new Vector2(rb.velocity.normalized.y, -rb.velocity.normalized.x);
-                    else
-                        normal = new Vector2(-rb.velocity.normalized.y, rb.velocity.normalized.x);
-
-                    direction += normal / distance * I_MovementDistanceFromBulletScalarValue;
-                }
-            }
-            foreach (Tank i in FindObjectsOfType<Tank>())
-            {
-                if (i.gameObject != gameObject && i.gameObject != GlobalVariables.GetPlayerTankBody().transform.parent.gameObject)
-                {
-                    direction += (m_BodyRB2D.position - i.GetComponentInChildren<Rigidbody2D>().position).normalized /
-                        Mathf.Pow(Vector2.Distance(m_BodyRB2D.position, i.GetComponentInChildren<Rigidbody2D>().position), 1) *
-                        I_DistanceBetweenTankScalar;
+                    //If there is nothing in the way, move here
+                    if (canMove)
+                    {
+                        m_BombMoveDir = testingMovePos - m_BodyRB2D.position;
+                        break;
+                    }
+                    else //Create a new position to check
+                        testingMovePos = m_BodyRB2D.position + new Vector2(Random.Range(-1, 1), Random.Range(-1, 1));
                 }
             }
 
-            direction = direction.normalized;
-
-            //Bomb
-            Bomb[] bombs = GameObject.FindObjectsOfType<Bomb>();
-            bool tempNeedsMovement = true;
-            foreach (Bomb b in bombs)
-            {
-                if (Vector2.Distance(m_BodyRB2D.position, b.transform.position) <= I_BombDetectionRadius)
-                {
-                    m_BodyRB2D.velocity = (m_BodyRB2D.position - (Vector2)b.transform.position) * I_MoveSpeed;
-                    GradualRotation(ref m_TurretRB2D, GetAngleFromVector2(m_BodyRB2D.position - (Vector2)b.transform.position), I_TurretRotationSpeed);
-                    tempNeedsMovement = false;
-                    UpdatePath();
-                    if (m_TargetIndex != 0)
-                        m_CurrentWayPoint = m_Path[--m_TargetIndex];
-                    else
-                        m_CurrentWayPoint = m_BodyRB2D.velocity * 5 + m_BodyRB2D.position;
-                }
-            }
-            if (tempNeedsMovement)
-                GradualMoveTank(direction, I_SpeedForGradualChangeVelocity, I_MoveSpeed, I_AngleForHardTurn, I_SpeedForGradualChangeVelocityStationary);
+            //Move the tank
+            GradualMoveTankAutoIfStationary(m_BombMoveDir.normalized, I_SpeedForGradualChangeVelocity, 
+                I_MoveSpeed, I_AngleForHardTurn, I_SpeedForGradualChangeVelocityStationary);
         }
         else
-            UpdatePath();
+        {
+            //Do a normal movement 
+            CheckForNextWayPoint();
+            bool tempNeedsMovement = AvoidBomb();
+
+            if (tempNeedsMovement)
+            {
+                Vector2 direction = GetMoveDirAvoidingBullets();
+                GradualMoveTankAutoIfStationary(direction.normalized, I_SpeedForGradualChangeVelocity, 
+                    direction.magnitude, I_AngleForHardTurn, I_SpeedForGradualChangeVelocityStationary);
+            }
+        }
     }
-    private void UpdatePath()
+    protected override void RecalculatePath()
     {
         if (!m_IsCheckingPath)
         {
-            if (Random.Range(0, 2) == 1 || !m_WantToCheckAllCornersAgain)
-                m_WantToCheckAllCornersAgain = false;
-
-            if (Vector2.Distance(m_CurrentRetreatPos, m_BodyRB2D.position) <= I_MinDistBeforeMoveOnForRetreatingTank || 
-                Vector2.Distance(m_PreviousTargetPos, m_BodyRB2D.position) >= I_MaxDistancebeforeCanReturnMovement && m_WantToCheckAllCornersAgain)
+            switch (I_StateManager.CurrentState)
             {
-                m_WantToCheckAllCornersAgain = false;
-                m_PreviousTargetPos = m_CurrentRetreatPos;
-                Vector2 pos = Vector2.zero;
-                float closestDiff = -500.0f;
+                case StateManager.State.Attack:
+                    Vector2 bL = GlobalVariables.GetThisInstance().GetCamerBoundsBottomLeft();
+                    Vector2 tR = GlobalVariables.GetThisInstance().GetCamerBoundsTopRight();
+                    Vector2 targetPos = new Vector2(Random.Range(bL.x, tR.x), Random.Range(bL.y, tR.y));
 
-                for (int i = 0; i < 4; i++)
-                {
-                    //Get the current corner
-                    if (m_CurrentRetreatPos != m_Corners[i])
+                    int time = 0;
+                    while (time < 20)
                     {
-                        float diff = Vector2.Distance(m_Corners[i], m_PlayerRB2D.position) - Vector2.Distance(m_Corners[i], m_BodyRB2D.position) + 
-                            Random.Range(-I_RandomDistanceAddedValue, I_RandomDistanceAddedValue);
-                        if (diff > closestDiff)
+                        if (!CheckIfPointIsInsideWall(targetPos))
+                            time = 21;
+                        else
                         {
-                            pos = m_Corners[i];
-                            closestDiff = diff;
+                            //if target pos in inside a wall, get a new position
+                            targetPos = new Vector2(Random.Range(bL.x, tR.x), Random.Range(bL.y, tR.y));
+                            time++;
+                        }
+
+                        if (time == 20)
+                        {
+                            //Stops random position still being supplied while the rest of the code can still run
+                            targetPos = CheckForNewCornerPosAvoidingPlayer(m_BodyRB2D.position, I_MinDistBeforeMoveOnForRetreatingTank, true);
                         }
                     }
-                }
-                m_CurrentRetreatPos = pos;
+                    //Debug.DrawLine(m_BodyRB2D.position, targetPos, Color.black, 90.0f);
+                    PathRequestManager.RequestPath(new PathRequest(m_BodyRB2D.position, targetPos, OnPathFound));
+                    m_IsCheckingPath = true;
+                    break;
             }
-
-            PathRequestManager.RequestPath(new PathRequest(m_BodyRB2D.position, m_CurrentRetreatPos, OnPathFound));
-            m_IsCheckingPath = true;
+            SetNextTimeForRecalculatingPath();
         }
-    }*/
+    }
+    protected override void InheritedOnDrawGizmosEnemy()
+    {
+        if (CanShoot())
+            Gizmos.color = Color.green;
+        else
+            Gizmos.color = Color.red;
+
+        Debug.DrawLine(m_BodyRB2D.position, m_BodyRB2D.position + GetVector2FromAngle(m_TurretRB2D.rotation) * 10.0f, Gizmos.color);
+    }
 }

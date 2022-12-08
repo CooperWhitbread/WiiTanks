@@ -1,0 +1,145 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &2038308410884821608
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 3193708379272295291, guid: 9db668d741a54c145aa8360d758b3bee,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: -5729083747018591566, guid: c9b27be58d781ba41997b73a79ba943c,
+        type: 3}
+    - target: {fileID: 3193708379867378978, guid: 9db668d741a54c145aa8360d758b3bee,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3193708379867378978, guid: 9db668d741a54c145aa8360d758b3bee,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3193708379867378978, guid: 9db668d741a54c145aa8360d758b3bee,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3193708379867378978, guid: 9db668d741a54c145aa8360d758b3bee,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3193708379867378978, guid: 9db668d741a54c145aa8360d758b3bee,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3193708379867378978, guid: 9db668d741a54c145aa8360d758b3bee,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3193708379867378978, guid: 9db668d741a54c145aa8360d758b3bee,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3193708379867378978, guid: 9db668d741a54c145aa8360d758b3bee,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3193708379867378978, guid: 9db668d741a54c145aa8360d758b3bee,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3193708379867378978, guid: 9db668d741a54c145aa8360d758b3bee,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3193708379867378978, guid: 9db668d741a54c145aa8360d758b3bee,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3193708379867378979, guid: 9db668d741a54c145aa8360d758b3bee,
+        type: 3}
+      propertyPath: m_Name
+      value: TankYellow
+      objectReference: {fileID: 0}
+    - target: {fileID: 3193708380492350398, guid: 9db668d741a54c145aa8360d758b3bee,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 396732735775326835, guid: c9b27be58d781ba41997b73a79ba943c,
+        type: 3}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 9db668d741a54c145aa8360d758b3bee, type: 3}
+--- !u!4 &3466595693823092409 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3193708380690740433, guid: 9db668d741a54c145aa8360d758b3bee,
+    type: 3}
+  m_PrefabInstance: {fileID: 2038308410884821608}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &3466595694323352461 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3193708379049677285, guid: 9db668d741a54c145aa8360d758b3bee,
+    type: 3}
+  m_PrefabInstance: {fileID: 2038308410884821608}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &3466595694656961757 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3193708379337273013, guid: 9db668d741a54c145aa8360d758b3bee,
+    type: 3}
+  m_PrefabInstance: {fileID: 2038308410884821608}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &3466595695183914827 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3193708379867378979, guid: 9db668d741a54c145aa8360d758b3bee,
+    type: 3}
+  m_PrefabInstance: {fileID: 2038308410884821608}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &3032250394637022479
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3466595695183914827}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da491744ab8223d48b54b840a9351400, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  I_ShowGizmos: 0
+  I_BulletScript: {fileID: 11400000, guid: 7c5e625a6bda620428ef06bcaaff08e0, type: 2}
+  I_ShootTransform: {fileID: 3466595693823092409}
+  I_TredTransform1: {fileID: 3466595694656961757}
+  I_TredTransform2: {fileID: 3466595694323352461}
+  I_MoveSpeed: 2.5
+  I_StopDelayForShoot: 0.4
+  I_TredDistanceBetweenTreds: 0.2
+  I_StateManager:
+    States:
+    - State: 1
+      TimeLengthMin: 10
+      TimeLengthMax: 10
+  I_TurretRotationSpeed: 36
+  I_MinTimeToShoot: 6
+  I_MaxTimeToShoot: 8
+  I_MiniIntervalDelay: 0.3
+  I_TurretTargetVariationMax: 20
+  I_MaxDistanceForSeeingBullet: 5
+  I_MaxShootDistanceForPlayerTank: 20
+  I_VisualRangeAngle: 30
+  I_SpeedForGradualChangeVelocity: 2
+  I_SpeedForGradualChangeVelocityStationary: 3
+  I_AngleForHardTurn: 15
+  I_BombDetectionRadius: 3
+  I_MinDistBeforeMoveOnForRetreatingTank: 3
