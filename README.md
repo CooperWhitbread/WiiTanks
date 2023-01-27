@@ -1,7 +1,7 @@
 # WiiTanks
 A recreation of the wii mini game Wii Tanks on Wii Play for computers. This game is run on the Unity Game Engine. This is a personal fun project to learn about making games and how to use Unity, and a game engine in general. I have made all the assests with reference to the origional game. 
 
-Features
+## Features
 - Missions 1 - 7 playable 
 - Tanks completed with first AI system
  - Brown
